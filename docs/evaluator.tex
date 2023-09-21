@@ -1,0 +1,482 @@
+% Created 2023-09-21 Thu 13:31
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{listings}
+\author{Biggie Dickus}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Biggie Dickus},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 30.0.50 (Org mode 9.6.7)}, 
+ pdflang={English}}
+
+% Setup for code blocks [1/2]
+
+\usepackage{fvextra}
+
+\fvset{%
+  commandchars=\\\{\},
+  highlightcolor=white!95!black!80!blue,
+  breaklines=true,
+  breaksymbol=\color{white!60!black}\tiny\ensuremath{\hookrightarrow}}
+
+% Make line numbers smaller and grey.
+\renewcommand\theFancyVerbLine{\footnotesize\color{black!40!white}\arabic{FancyVerbLine}}
+
+\usepackage{xcolor}
+
+% In case engrave-faces-latex-gen-preamble has not been run.
+\providecolor{EfD}{HTML}{f7f7f7}
+\providecolor{EFD}{HTML}{28292e}
+
+% Define a Code environment to prettily wrap the fontified code.
+\usepackage[breakable,xparse]{tcolorbox}
+\DeclareTColorBox[]{Code}{o}%
+{colback=EfD!98!EFD, colframe=EfD!95!EFD,
+  fontupper=\footnotesize\setlength{\fboxsep}{0pt},
+  colupper=EFD,
+  IfNoValueTF={#1}%
+  {boxsep=2pt, arc=2.5pt, outer arc=2.5pt,
+    boxrule=0.5pt, left=2pt}%
+  {boxsep=2.5pt, arc=0pt, outer arc=0pt,
+    boxrule=0pt, leftrule=1.5pt, left=0.5pt},
+  right=2pt, top=1pt, bottom=0.5pt,
+  breakable}
+
+% Support listings with captions
+\usepackage{float}
+\floatstyle{plain}
+\newfloat{listing}{htbp}{lst}
+\newcommand{\listingsname}{Listing}
+\floatname{listing}{\listingsname}
+\newcommand{\listoflistingsname}{List of Listings}
+\providecommand{\listoflistings}{\listof{listing}{\listoflistingsname}}
+
+
+% Setup for code blocks [2/2]: syntax highlighting colors
+
+\newcommand\efstrut{\vrule height 2.1ex depth 0.8ex width 0pt}
+\definecolor{EFD}{HTML}{000000}
+\definecolor{EfD}{HTML}{ffffff}
+\newcommand{\EFD}[1]{\textcolor{EFD}{#1}} % default
+\definecolor{EFh}{HTML}{7f7f7f}
+\newcommand{\EFh}[1]{\textcolor{EFh}{#1}} % shadow
+\definecolor{EFsc}{HTML}{228b22}
+\newcommand{\EFsc}[1]{\textcolor{EFsc}{\textbf{#1}}} % success
+\definecolor{EFw}{HTML}{ff8e00}
+\newcommand{\EFw}[1]{\textcolor{EFw}{\textbf{#1}}} % warning
+\definecolor{EFe}{HTML}{ff0000}
+\newcommand{\EFe}[1]{\textcolor{EFe}{\textbf{#1}}} % error
+\definecolor{EFc}{HTML}{b22222}
+\newcommand{\EFc}[1]{\textcolor{EFc}{#1}} % font-lock-comment-face
+\definecolor{EFcd}{HTML}{b22222}
+\newcommand{\EFcd}[1]{\textcolor{EFcd}{#1}} % font-lock-comment-delimiter-face
+\definecolor{EFs}{HTML}{8b2252}
+\newcommand{\EFs}[1]{\textcolor{EFs}{#1}} % font-lock-string-face
+\definecolor{EFd}{HTML}{8b2252}
+\newcommand{\EFd}[1]{\textcolor{EFd}{#1}} % font-lock-doc-face
+\definecolor{EFm}{HTML}{008b8b}
+\newcommand{\EFm}[1]{\textcolor{EFm}{#1}} % font-lock-doc-markup-face
+\definecolor{EFk}{HTML}{9370db}
+\newcommand{\EFk}[1]{\textcolor{EFk}{#1}} % font-lock-keyword-face
+\definecolor{EFb}{HTML}{483d8b}
+\newcommand{\EFb}[1]{\textcolor{EFb}{#1}} % font-lock-builtin-face
+\definecolor{EFf}{HTML}{0000ff}
+\newcommand{\EFf}[1]{\textcolor{EFf}{#1}} % font-lock-function-name-face
+\definecolor{EFv}{HTML}{a0522d}
+\newcommand{\EFv}[1]{\textcolor{EFv}{#1}} % font-lock-variable-name-face
+\definecolor{EFt}{HTML}{228b22}
+\newcommand{\EFt}[1]{\textcolor{EFt}{#1}} % font-lock-type-face
+\definecolor{EFo}{HTML}{008b8b}
+\newcommand{\EFo}[1]{\textcolor{EFo}{#1}} % font-lock-constant-face
+\definecolor{EFwr}{HTML}{ff0000}
+\newcommand{\EFwr}[1]{\textcolor{EFwr}{\textbf{#1}}} % font-lock-warning-face
+\newcommand{\EFnc}[1]{#1} % font-lock-negation-char-face
+\definecolor{EFpp}{HTML}{483d8b}
+\newcommand{\EFpp}[1]{\textcolor{EFpp}{#1}} % font-lock-preprocessor-face
+\newcommand{\EFrc}[1]{\textbf{#1}} % font-lock-regexp-grouping-construct
+\newcommand{\EFrb}[1]{\textbf{#1}} % font-lock-regexp-grouping-backslash
+\newcommand{\EFob}[1]{#1} % org-block
+\definecolor{EFhn}{HTML}{008b8b}
+\newcommand{\EFhn}[1]{\textcolor{EFhn}{#1}} % highlight-numbers-number
+\definecolor{EFhq}{HTML}{9370db}
+\newcommand{\EFhq}[1]{\textcolor{EFhq}{#1}} % highlight-quoted-quote
+\definecolor{EFhs}{HTML}{008b8b}
+\newcommand{\EFhs}[1]{\textcolor{EFhs}{#1}} % highlight-quoted-symbol
+\definecolor{EFrda}{HTML}{707183}
+\newcommand{\EFrda}[1]{\textcolor{EFrda}{#1}} % rainbow-delimiters-depth-1-face
+\definecolor{EFrdb}{HTML}{7388d6}
+\newcommand{\EFrdb}[1]{\textcolor{EFrdb}{#1}} % rainbow-delimiters-depth-2-face
+\definecolor{EFrdc}{HTML}{909183}
+\newcommand{\EFrdc}[1]{\textcolor{EFrdc}{#1}} % rainbow-delimiters-depth-3-face
+\definecolor{EFrdd}{HTML}{709870}
+\newcommand{\EFrdd}[1]{\textcolor{EFrdd}{#1}} % rainbow-delimiters-depth-4-face
+\definecolor{EFrde}{HTML}{907373}
+\newcommand{\EFrde}[1]{\textcolor{EFrde}{#1}} % rainbow-delimiters-depth-5-face
+\definecolor{EFrdf}{HTML}{6276ba}
+\newcommand{\EFrdf}[1]{\textcolor{EFrdf}{#1}} % rainbow-delimiters-depth-6-face
+\definecolor{EFrdg}{HTML}{858580}
+\newcommand{\EFrdg}[1]{\textcolor{EFrdg}{#1}} % rainbow-delimiters-depth-7-face
+\definecolor{EFrdh}{HTML}{80a880}
+\newcommand{\EFrdh}[1]{\textcolor{EFrdh}{#1}} % rainbow-delimiters-depth-8-face
+\definecolor{EFrdi}{HTML}{887070}
+\newcommand{\EFrdi}[1]{\textcolor{EFrdi}{#1}} % rainbow-delimiters-depth-9-face
+\begin{document}
+
+\tableofcontents
+
+\section{Base base}
+\label{sec:orge75e878}
+L'evaluator è "basato" sull'evaluator presente al capitolo \texttt{4.1} di \href{https://web.mit.edu/6.001/6.037/sicp.pdf}{Structure and Interpretation of Computer Programs}
+l'evaluator presente nel libro non è purtroppo progettato in maniera molto object oriented, e le idee di fondo di questo vanno riviste ai fini di non creare abominii.
+
+\subsection{Idee del cazzo di lisp da tenere a mente}
+\label{sec:orgd5da389}
+lisp è un linguaggio che sa essere abbastanza stronzo a volte, specie per quel povero crisitano che sta leggendo questo documento per capire che cazzo di codice ho scritto (pace all'anima sua)
+
+ci sono due/tre particolarità di questo essere\footnote{queste cazzate sarebbero più da scheme/common lisp, che sono quelli che ho usato come "ispirazione"} da tenere a mente quando andrete a soffrirvi sto interpreter
+\begin{enumerate}
+\item La struttura dati base del lisp è la lista (concatenata), la struttura base che rappresenta il codice è la stessa cazzo di lista.
+questa struttura è descritta da un insieme di coppie di puntatori che contengono
+\begin{itemize}
+\item un puntatore \texttt{head} (o \texttt{car}) che punta al primo elemento della lista
+\item un puntatore \texttt{tail} (o \texttt{cdr}) che punta alla cella successiva della lista
+\end{itemize}
+i nomi \texttt{car} e \texttt{cdr} sono più comuni, più che altro che sono lì dall'alba dei tempi e la gente ci si è abituata.
+\item Lisp è \emph{"expression oriented"}, vale a dire, ogni espressione, ogni CAZZO di espressione, ritorna un valore, un if, un loop, un print, una definizione, un assegnamento\ldots{} tutto.
+\item In lisp le funzioni sono variabili, anche un pover \texttt{def fizzbuzz (n)} sotto è una variabile (ahimè, una lambda), a cui è stato dato un nome per pietà
+\item In lisp le funzioni tengono traccia di tutte le variabili locali presenti quando queste sono state definite (vedre (su google) i termini \texttt{Closure}\footnote{specificando che cerchi roba di programmazione, altrimenti ti vengono cose da Poggiolini sulla chiusura di un insieme rispetto a un'operazione} e \texttt{Lexical Binding})
+\end{enumerate}
+
+\subsection{Quello del libro}
+\label{sec:orgccd1639}
+L'evaluator del libro è incentrato 2 funzioni
+\begin{description}
+\item[{\texttt{eval}}] valuta un'espressione, ritornando il valore che assume
+\item[{\texttt{apply}}] chiama questa funzione con questi argomenti ("applica" la funzione agli argomenti), e ritornami il valore ritornato dalla funzione
+\end{description}
+
+Le strutture dati principali dell'evaluator, oltre all'albero del codice che grazialcazzo, sono
+\begin{description}
+\item[{\texttt{environment}}] "ambiente" dell'esecuzione, banalmente che cazzo di variaibili sono definite e che valore hanno, questo include, oltre alla variabili, le funzioni definite fino a quel momento.
+\item[{\texttt{procedure}}] la funzione
+\end{description}
+
+\subsection{Funzioni del libro}
+\label{sec:org9897c61}
+\subsubsection{Eval}
+\label{sec:org9f2ed5b}
+\begin{enumerate}
+\item Nel libro
+\label{sec:orgc7aded5}
+il codice del libro per la funzione \texttt{eval} è sotto copiaincollato
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFrda{(}\EFk{define} \EFrdb{(}\EFf{eval} exp env\EFrdb{)}
+  \EFrdb{(}\EFk{cond} \EFrdc{(}\EFrdd{(}self-evaluating? exp\EFrdd{)} exp\EFrdc{)}
+        \EFrdc{(}\EFrdd{(}variable? exp\EFrdd{)} \EFrdd{(}lookup-variable-value exp env\EFrdd{)}\EFrdc{)}
+        \EFrdc{(}\EFrdd{(}quoted? exp\EFrdd{)} \EFrdd{(}text-of-quotation exp\EFrdd{)}\EFrdc{)}
+        \EFrdc{(}\EFrdd{(}assignment? exp\EFrdd{)} \EFrdd{(}eval-assignment exp env\EFrdd{)}\EFrdc{)}
+        \EFrdc{(}\EFrdd{(}definition? exp\EFrdd{)} \EFrdd{(}eval-definition exp env\EFrdd{)}\EFrdc{)}
+        \EFrdc{(}\EFrdd{(}if? exp\EFrdd{)} \EFrdd{(}eval-if exp env\EFrdd{)}\EFrdc{)}
+        \EFrdc{(}\EFrdd{(}lambda? exp\EFrdd{)} \EFrdd{(}make-procedure \EFrde{(}lambda-parameters
+
+                                        \EFrdf{(}lambda-body exp\EFrdf{)}
+                                        env\EFrde{)}\EFrdd{)}
+         exp\EFrdc{)}
+        \EFrdc{(}\EFrdd{(}begin? exp\EFrdd{)}
+         \EFrdd{(}eval-sequence \EFrde{(}begin-actions exp\EFrde{)} env\EFrdd{)}\EFrdc{)}
+        \EFrdc{(}\EFrdd{(}cond? exp\EFrdd{)} \EFrdd{(}eval \EFrde{(}cond->if exp\EFrde{)} env\EFrdd{)}\EFrdc{)}
+        \EFrdc{(}\EFrdd{(}application? exp\EFrdd{)}
+
+         \EFrdd{(}apply \EFrde{(}eval \EFrdf{(}operator exp\EFrdf{)} env\EFrde{)}
+                \EFrde{(}list-of-values \EFrdf{(}operands exp\EFrdf{)} env\EFrde{)}\EFrdd{)}\EFrdc{)}
+
+        \EFrdc{(}\EFk{else}
+         \EFrdd{(}error \EFs{"Unknown expression type: EVAL"} exp\EFrdd{)}\EFrdc{)}\EFrdb{)}\EFrda{)}
+\end{Verbatim}
+\end{Code}
+\item Tradotto in java
+\label{sec:orgdb96ddb}
+questo, per mortali che toccano erba ed escono di casa, si traduce in una gigantesca catena di \texttt{if-else}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFt{Value} \EFf{evaluate}\EFrda{(}\EFt{Expression} \EFv{exp}, \EFt{Environment} \EFv{env}\EFrda{)} \EFrda{\{}
+    \EFk{if}\EFrdb{(}isSelfEvaluating\EFrdc{(}exp\EFrdc{)}\EFrdb{)}
+        \EFk{return} exp;
+    \EFk{if}\EFrdb{(}isVariable\EFrdc{(}exp\EFrdc{)}\EFrdb{)}
+        \EFk{return} env.lookupVariabile\EFrdb{(}exp\EFrdb{)};
+    \EFk{if}\EFrdb{(}isQuoted\EFrdc{(}exp\EFrdc{)}\EFrdb{)}
+        \EFk{return} textOfQuotation\EFrdb{(}exp\EFrdb{)};
+    \EFk{if}\EFrdb{(}isAssignment\EFrdc{(}exp\EFrdc{)}\EFrdb{)} \EFrdb{\{}
+        env.evalAssignment\EFrdc{(}exp\EFrdc{)};
+        \EFk{return} cazzoNeSo;
+    \EFrdb{\}}
+    \EFk{if}\EFrdb{(}isDefinition\EFrdc{(}exp\EFrdc{)}\EFrdb{)} \EFrdb{\{}
+        env.evalDefinition\EFrdc{(}exp\EFrdc{)};
+        \EFk{return} cazzoNeSo;
+    \EFrdb{\}}
+    \EFk{if}\EFrdb{(}isIf\EFrdc{(}exp\EFrdc{)}\EFrdb{)} \EFrdb{\{}
+        \EFk{return} evaluateIf\EFrdc{(}exp, env\EFrdc{)};
+    \EFrdb{\}}
+    \EFk{if}\EFrdb{(}isLambda\EFrdc{(}exp\EFrdc{)}\EFrdb{)} \EFrdb{\{}
+        \EFk{return} \EFk{new} \EFt{Procedure}\EFrdc{(}Procedure.parametersOfExpression\EFrdd{(}exp\EFrdd{)},
+                             Procedure.bodyOfExpression\EFrdd{(}exp\EFrdd{)},
+                             env\EFrdc{)};
+    \EFrdb{\}}
+    \EFk{if}\EFrdb{(}isSequence\EFrdc{(}exp\EFrdc{)}\EFrdb{)} \EFrdb{\{}
+        \EFk{return} evalSequence\EFrdc{(}exp\EFrdc{)};
+    \EFrdb{\}}
+    \EFk{if}\EFrdb{(}isCond\EFrdc{(}exp\EFrdc{)}\EFrdb{)} \EFrdb{\{}
+        \EFt{Expression} \EFv{ifs} = translateCondToIfChain\EFrdc{(}exp\EFrdc{)};
+        \EFk{return} evaluate\EFrdc{(}ifs\EFrdc{)};
+    \EFrdb{\}}
+    \EFk{if}\EFrdb{(}isFuncall\EFrdc{(}exp\EFrdc{)}\EFrdb{)} \EFrdb{\{}
+        operator = evaluate\EFrdc{(}expressionOperator\EFrdd{(}exp\EFrdd{)}\EFrdc{)};
+        operands = evaluateAllInList\EFrdc{(}expressionOperands\EFrdd{(}exp\EFrdd{)}\EFrdc{)};
+        \EFk{return} applyFunction\EFrdc{(}operator, operands\EFrdc{)};
+    \EFrdb{\}}
+    \EFcd{// }\EFc{arrivati qui abbiamo finito le operazioni che sappiamo fare}
+    \EFcd{// }\EFc{quindi non so che cazzo dirti,}
+    \EFcd{// }\EFc{se arrivo qui vuo dire che non so gestire l'espressione data}
+    \EFcd{// }\EFc{quindi ti becchi un'eccezione}
+    \EFk{throw} \EFk{new} \EFt{InvalidArgumentException}\EFrdb{(}\EFs{"cannot evaluate given expression"}\EFrdb{)};
+\EFrda{\}}
+\end{Verbatim}
+\end{Code}
+visto che non siamo yanderedev, questo si può riarchitetturare (tra gli altri modi) con un
+\begin{enumerate}
+\item Factory disabile
+\label{sec:org60b07de}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{public} \EFk{interface} \EFt{Evaluator} \EFrda{\{}
+    \EFk{public} \EFt{Value} \EFf{evaluate}\EFrdb{(}\EFt{Expression} \EFv{exp}, \EFt{Environment} \EFv{env}\EFrdb{)};
+\EFrda{\}}
+
+\EFt{Value} \EFf{evaluate}\EFrda{(}\EFt{Expression} \EFv{exp}, \EFt{Environment} \EFv{env}\EFrda{)} \EFrda{\{}
+    \EFt{Evaluaotr} \EFv{ev} = EvaluatorPicker.determineEvaluator\EFrdb{(}exp\EFrdb{)};
+    \EFk{return} ev.evaluate\EFrdb{(}exp, env\EFrdb{)};
+\EFrda{\}}
+
+\EFcd{/* }\EFc{...}\EFcd{ */}
+
+\EFk{class} \EFt{EvaluatorPicker} \EFrda{\{}
+    \EFk{public} \EFt{Evaluator} \EFf{determineEvaluator}\EFrdb{(}\EFt{exp}\EFrdb{)} \EFrdb{\{}
+        \EFk{if}\EFrdc{(}isCompositeExpression\EFrdd{(}exp\EFrdd{)}\EFrdc{)} \EFrdc{\{}
+            \EFk{return} determineFromOperator\EFrdd{(}exp.getOperator\EFrde{(}\EFrde{)}\EFrdd{)};
+        \EFrdc{\}}
+        \EFk{else} \EFrdc{\{} \EFcd{// }\EFc{vale a dire, se l'espressione è atomica (un singolo nome o un letterale)}
+            \EFk{if}\EFrdd{(}isSymbol\EFrde{(}exp\EFrde{)}\EFrdd{)}
+                \EFk{return} \EFk{new} \EFt{LookupEvaluator}\EFrdd{(}\EFrdd{)};
+            \EFk{else}
+                \EFk{return} \EFk{new} \EFt{ConstantEvaluator}\EFrdd{(}\EFrdd{)};
+        \EFrdc{\}}
+    \EFrdb{\}}
+
+    \EFk{private} \EFt{Evaluator} \EFf{determineFromOperator}\EFrdb{(}\EFt{op}\EFrdb{)} \EFrdb{\{}
+        \EFt{String} \EFv{opName} = op.getName\EFrdc{(}\EFrdc{)};
+        \EFt{Evaluator} \EFv{ev} = opnameEvaluatorMap.get\EFrdc{(}opname\EFrdc{)};
+        \EFk{if}\EFrdc{(}ev == notFound\EFrdc{)} \EFrdc{\{}
+            \EFcd{// }\EFc{se non è un'operatore predefinito allora era una funzione normale}
+            \EFk{return} \EFk{new} \EFt{FunctionApplicationEvaluator}\EFrdd{(}\EFrdd{)};
+
+            \EFcd{// }\EFc{NOTA : non mi ricordo come si fa a dire in java "non è nella map"}
+            \EFcd{// }\EFc{quando lo trovo te lo metto bellino}
+        \EFrdc{\}}
+    \EFrdb{\}}
+
+    \EFk{private} \EFt{HasMap} \EFv{opnameEvaluatorMap} =
+    \EFrdb{\{}
+        \EFrdc{\{}\EFs{"quote"} : \EFk{new} \EFt{QuoteEvaluator}\EFrdd{(}\EFrdd{)}\EFrdc{\}},
+        \EFrdc{\{}\EFs{"if"} : \EFk{new} \EFt{IfEvaluator}\EFrdd{(}\EFrdd{)}\EFrdc{\}},
+        \EFrdc{\{}\EFs{"set"} : \EFk{new} \EFt{AssignmentEvaluator}\EFrdd{(}\EFrdd{)}\EFrdc{\}},
+        \EFrdc{\{}\EFs{"define"} : \EFk{new} \EFt{DefinitionEvaluator}\EFrdd{(}\EFrdd{)}\EFrdc{\}},
+        \EFrdc{\{}\EFs{"lambda"} : \EFk{new} \EFt{LambdaEvaluator}\EFrdd{(}\EFrdd{)}\EFrdc{\}},
+        \EFrdc{\{}\EFs{"sequence"} : \EFk{new} \EFt{SequenceEvaluator}\EFrdd{(}\EFrdd{)}\EFrdc{\}},
+        \EFrdc{\{}\EFs{"cond"} : \EFk{new} \EFt{CondEvaluator}\EFrdd{(}\EFrdd{)}\EFrdc{\}}
+    \EFrdb{\}};
+\EFrda{\}}
+\end{Verbatim}
+\end{Code}
+
+Se hai idee migliori di questo factory disabile sarei molto felice di sentirle, io le sto un po' finendo.
+\item Factory meno disabile
+\label{sec:org37f9f33}
+Sarebbe anche possibile avere un \texttt{Evaluable} che viene costruito in base alla form, maragi definito come
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{public} \EFk{interface} \EFt{Evaluable} \EFrda{\{}
+    \EFt{Value} \EFf{evaluate}\EFrdb{(}\EFt{Environment} \EFv{env}\EFrdb{)};
+\EFrda{\}}
+
+\end{Verbatim}
+\end{Code}
+
+\begin{quote}
+NOTA 1: non so se sarbbe meglio passare l'env qui o averlo interno, per adesso mettiamo che viene passato, potrebbe cambiare
+\end{quote}
+
+\begin{quote}
+NOTA 2: poi bisognerebbe trovare anche il modo di unificare il fatto che viene costruita da un'espressione, magari sarebbe meglio avere un'interfaccia che unisce \texttt{evaluate()} e un \texttt{fromExpression()}
+\end{quote}
+
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{public} \EFk{class} \EFt{ConstantExpression} \EFk{implements} \EFt{Evaluable} \EFrda{\{}
+    \EFcd{/* }\EFc{...}\EFcd{ */}
+\EFrda{\}}
+
+\EFk{public} \EFk{class} \EFt{FunctoinApplication} \EFk{implements} \EFt{Evaluable} \EFrda{\{}
+    \EFcd{/* }\EFc{...}\EFcd{ */}
+\EFrda{\}}
+\end{Verbatim}
+\end{Code}
+
+(al momento manco gli sbatti per scrivere questa cosa per intero, t'attacchi al cazzo, poi quando si implementa saranno cazzi)
+\end{enumerate}
+\end{enumerate}
+
+\subsubsection{Apply}
+\label{sec:orgf2297d5}
+per definire apply, ovvero l'applicazoine di procedure, dobbiamo un attimo vedere come sono definite le procedure all'interno del programma
+
+\begin{enumerate}
+\item Procedure
+\label{sec:orgdc104bb}
+le procedure\footnote{salvo quelle builtin, e magari delle foreign call, a cui devo pensare dopo come cazzo fare} sono, come detto sopra, delle variabili in questo caso degli oggetti, questi avranno
+\begin{itemize}
+\item degli argomenti
+\item un body (cazzo di codice contiene sta funzione)
+\end{itemize}
+
+risparmiando i dettagli saranno fatte tipo così
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{class} \EFt{Procedure} \EFrda{\{}
+    \EFt{LispList} \EFv{functionArguments};
+    \EFt{LispCode} \EFv{functionBody};
+
+    Environment \EFt{definitionEnvironment}
+
+        \EFk{public} \EFf{Procedure}\EFrdb{(}\EFt{LispList} \EFv{arguments}, \EFt{LispList} \EFv{functionBody},
+                         \EFt{Environment} \EFv{definitionEnvironment}\EFrdb{)} \EFrdb{\{}
+        \EFk{this}.functionArguments = functionArguments;
+        \EFk{this}.functionBody = functionBody;
+        \EFk{this}.definitionEnvironment = definitionEnvironment;
+    \EFrdb{\}}
+
+    \EFcd{/* }\EFc{getter e setter e sticazzi}\EFcd{ */}
+\EFrda{\}}
+\end{Verbatim}
+\end{Code}
+
+quello che ci interessa adesso è il metodo \texttt{call}
+
+\item Tornando ad \texttt{apply}
+\label{sec:org3f4825d}
+dato il \texttt{Procedure.call(arguments)} sopra definito è abbastanza facile definire \texttt{apply}, prima però la definizione del libro, per documentazoine
+
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFrda{(}\EFk{define} \EFrdb{(}\EFf{apply} procedure arguments\EFrdb{)}
+  \EFrdb{(}\EFk{cond} \EFrdc{(}\EFrdd{(}primitive-procedure? procedure\EFrdd{)}
+         \EFrdd{(}apply-primitive-procedure procedure arguments\EFrdd{)}\EFrdc{)}
+        \EFrdc{(}\EFrdd{(}compound-procedure? procedure\EFrdd{)}
+         \EFrdd{(}eval-sequence
+          \EFrde{(}procedure-body procedure\EFrde{)}
+          \EFrde{(}extend-environment
+           \EFrdf{(}procedure-parameters procedure\EFrdf{)}
+           arguments
+           \EFrdf{(}procedure-environment procedure\EFrdf{)}\EFrde{)}\EFrdd{)}\EFrdc{)}
+        \EFrdc{(}\EFk{else}
+         \EFrdd{(}error
+          \EFs{"Unknown procedure type: APPLY"} procedure\EFrdd{)}\EFrdc{)}\EFrdb{)}\EFrda{)}
+\end{Verbatim}
+\end{Code}
+
+che tradotta brutalmente darebbe
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFt{Value} \EFf{applyProcedure}\EFrda{(}\EFt{Procedure} \EFv{proc}, \EFt{LispList} \EFv{args}\EFrda{)} \EFrda{\{}
+    \EFk{if} \EFrdb{(}proc.isPrimitiveProcedure\EFrdc{(}\EFrdc{)}\EFrdb{)} \EFrdb{\{}
+        \EFk{return} applyPrimitive\EFrdc{(}proc, args\EFrdc{)};
+    \EFrdb{\}}
+    \EFk{if} \EFrdb{(}proc.isCompoundProcedure\EFrdc{(}\EFrdc{)}\EFrdb{)} \EFrdb{\{}
+        \EFk{return} evalSequence\EFrdc{(}proc.getBody\EFrdd{(}\EFrdd{)},
+                            proc.getEnvironment\EFrdd{(}\EFrdd{)}.extend\EFrdd{(}proc.getArglist,
+                                                         args\EFrdd{)}\EFrdc{)};
+    \EFrdb{\}}
+\EFrda{\}}
+\end{Verbatim}
+\end{Code}
+
+\begin{quote}
+NOTA : \texttt{Environment.extend()} rende un \texttt{Environment} con gli stessi binding di \texttt{this} a cui si aggiungono poi tutti i nomi dell'\texttt{arglist} a cui vengono assegnati tutti i valor dell'\texttt{args} dato, veda il lettore se va bene come interfaccia
+\end{quote}
+
+si nota qui un dispatch esplicito sul "tipo", una bestemmia per ogni apprezzatore di orientazione a oggetti\footnote{e di un minimo di scalabilità}, una traduzione un po' più javanese potrebbe essere.
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{public} \EFk{interface} \EFt{LispCallable} \EFrda{\{}
+    \EFk{public} \EFt{Value} \EFf{call}\EFrdb{(}\EFt{LispList} \EFv{givenArguments}\EFrdb{)};
+\EFrda{\}}
+
+\EFk{public} \EFk{class} \EFt{BuiltinFunction} \EFk{implements} \EFt{LispCallable} \EFrda{\{}
+    \EFcd{/* }\EFc{devo ancora vedere come fare la cosa del builtin, mi spiace}\EFcd{ */}
+
+    \textcolor[HTML]{008b8b}{@Override}
+    \EFk{public} \EFt{Value} \EFf{call}\EFrdb{(}\EFt{LispList} \EFv{givenArguments}\EFrdb{)} \EFrdb{\{}
+        \EFcd{/* }\EFc{il dispatch so' cazzo tua farlo mo'}\EFcd{ */}
+    \EFrdb{\}}
+\EFrda{\}}
+
+\EFk{public} \EFk{class} \EFt{UserDefinedFunction} \EFk{implements} \EFt{LispCallable} \EFrda{\{}
+    \EFk{private} \EFt{LispCode} \EFv{functionBody};
+    \EFk{private} \EFt{LispList} \EFv{formalParameters};
+    \EFcd{// }\EFc{nome figo per dire "i nomi degli argomenti che devi passarmi"}
+    \EFk{private} \EFt{Environment} \EFv{definitionEnvironment};
+
+    \EFk{public} \EFf{UserDefinedFunction}\EFrdb{(}\EFt{LispCode} \EFv{functionBody},
+                               \EFt{LispList} \EFv{formalParameters},
+                               \EFt{Environment} \EFv{definitionEnvironment}\EFrdb{)} \EFrdb{\{}
+        \EFk{this}.functionBody = functionBody;
+        \EFk{this}.formalParameters = formalParameters;
+        \EFk{this}.definitionEnvironment = definitionEnvironment;
+    \EFrdb{\}}
+
+    \textcolor[HTML]{008b8b}{@Override}
+    \EFk{public} \EFt{Value} \EFf{call}\EFrdb{(}\EFt{LispList} \EFv{givenArguments}\EFrdb{)} \EFrdb{\{}
+        \EFt{Environment} \EFv{extendedEnvironment} =
+            definitionEnvironment.extend\EFrdc{(}formalParameters, givenArguments\EFrdc{)};
+        \EFk{return} evalSequence\EFrdc{(}functionBody, extendedEnvironment\EFrdc{)};
+    \EFrdb{\}}
+\EFrda{\}}
+\end{Verbatim}
+\end{Code}
+
+e, avendo tradotto l'infame dispatch in polimorfismo come piace al vicario, si può tradurre \texttt{apply} semplicemente come un
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFt{Value} \EFf{apply}\EFrda{(}\EFt{Procedure} \EFv{proc}, \EFt{LispList} \EFv{vals}\EFrda{)} \EFrda{\{}
+    \EFk{return} proc.call\EFrdb{(}vals\EFrdb{)};
+\EFrda{\}}
+\end{Verbatim}
+\end{Code}
+\end{enumerate}
+\end{document}
