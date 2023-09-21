@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+cfonts "NOW CLEANING..." && mvn clean &&\
+ cfonts "NOW COMPILING..." &&  mvn compile &&\
+ cfonts "NOW TESTING..." && mvn test
