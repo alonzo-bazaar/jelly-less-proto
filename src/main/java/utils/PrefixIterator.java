@@ -126,13 +126,18 @@ class CircularCharBuffer {
         if(size < buf.length) return; // in caso venga chiamata da un cretino
 
         Character[] newBuf = new Character[size];
+        int newStartIndex = 0;
+        int newEndIndex = this.size();
+        // packing new buffer contents at the front
 
-        for(int i = 0, j = startIndex; j!=endIndex; j = indexAfter(j)) {
+        for (int i = 0, j = startIndex; j != endIndex; j = indexAfter(j), ++i) {
             newBuf[i] = buf[j];
         }
-
-        startIndex = 0;
-        endIndex = this.size();
+        
+        // si fa in questo modo perchè start e end servono per fare this.size()
+        // quindi modificarli direttamente senza un valore intermedio può portare a cazzi
+        this.startIndex = newStartIndex;
+        this.endIndex = newEndIndex;
         this.buf = newBuf;
     }
 
@@ -144,12 +149,53 @@ class CircularCharBuffer {
 
     int size() {
         if(startIndex <= endIndex)
+            // - - - start <buffer contents here> end - -
             return endIndex - startIndex;
         else
+            // <buffer contents here> end - - start <buffer contents here>
             return (buf.length - startIndex) + endIndex;
     }
 
     int indexAfter(int index) {
         return (index + 1) % buf.length;
+    }
+
+    void printAllaCazzoDiCane() {
+        System.out.println("start : " + this.startIndex
+                           + " end : " + this.endIndex
+                           + " buffer = " + this.buf.length
+                           + " circular size = " + this.size());
+
+        if (this.startIndex <= this.endIndex) {
+            int i = 0;
+            while (i < this.startIndex) {
+                System.out.print(" ,");
+                ++i;
+            }
+            while (i < this.endIndex) {
+                System.out.print("" + this.buf[i] + ",");
+                ++i;
+            }
+            while (i < this.buf.length) {
+                System.out.print("-,");
+                ++i;
+            }
+        }
+        else {
+            int i = 0;
+            while (i < this.endIndex) {
+                System.out.print("" + this.buf[i] + ",");
+                ++i;
+            }
+            while (i < this.startIndex) {
+                System.out.print("-,");
+                ++i;
+            }
+            while (i < this.buf.length) {
+                System.out.print("" + this.buf[i] + ",");
+                ++i;
+            }
+        }
+        System.out.println("");
     }
 }

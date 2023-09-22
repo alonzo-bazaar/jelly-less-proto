@@ -20,9 +20,50 @@ public class PrefixIteratorTest
 
     /* circular char buffer tests */
     /* prima senza utilizzare l'iterator sovrastante */
+    @Test
+    public void indexAfter() {
+        CircularCharBuffer ccb = new CircularCharBuffer(null);
+        ccb.increaseBufferSize(2);
+        assertEquals(ccb.indexAfter(0), 1);
+        assertEquals(ccb.indexAfter(1), 0);
+
+        ccb.increaseBufferSize(5);
+        assertEquals(ccb.indexAfter(0), 1);
+        assertEquals(ccb.indexAfter(1), 2);
+        assertEquals(ccb.indexAfter(2), 3);
+        assertEquals(ccb.indexAfter(3), 4);
+        assertEquals(ccb.indexAfter(4), 0);
+
+        ccb.increaseBufferSize(8);
+        assertEquals(ccb.indexAfter(0), 1);
+        assertEquals(ccb.indexAfter(1), 2);
+        assertEquals(ccb.indexAfter(2), 3);
+        assertEquals(ccb.indexAfter(3), 4);
+        assertEquals(ccb.indexAfter(4), 5);
+        assertEquals(ccb.indexAfter(5), 6);
+        assertEquals(ccb.indexAfter(6), 7);
+        assertEquals(ccb.indexAfter(7), 0);
+    }
 
     @Test
-    public void bufferPushPoppingSize() {
+    public void sizeRemainsAfterReallocating() {
+        CircularCharBuffer ccb = new CircularCharBuffer(null);
+        ccb.push('a'); assertEquals(ccb.size(), 1);
+        ccb.push('a'); assertEquals(ccb.size(), 2);
+        ccb.push('a'); assertEquals(ccb.size(), 3);
+        ccb.push('a'); assertEquals(ccb.size(), 4);
+
+        ccb.moreBufferSize();
+        assertEquals(ccb.size(), 4);
+        ccb.pop(); assertEquals(ccb.size(), 3);
+        ccb.pop(); assertEquals(ccb.size(), 2);
+        ccb.pop(); assertEquals(ccb.size(), 1);
+        ccb.moreBufferSize();
+        assertEquals(ccb.size(), 1);
+    }
+
+    @Test
+    public void bufferPushPoppingSizeTortureTest() {
         CircularCharBuffer ccb = new CircularCharBuffer(null);
         assertEquals(ccb.size(), 0);
         ccb.push('a'); assertEquals(ccb.size(), 1);
@@ -38,8 +79,62 @@ public class PrefixIteratorTest
         ccb.pop(); assertEquals(ccb.size(), 1);
         ccb.pop(); assertEquals(ccb.size(), 0);
         ccb.push('a'); assertEquals(ccb.size(), 1);
+        ccb.push('a'); assertEquals(ccb.size(), 2);
+        ccb.pop(); assertEquals(ccb.size(), 1);
         ccb.pop(); assertEquals(ccb.size(), 0);
+        ccb.push('a'); assertEquals(ccb.size(), 1);
+        ccb.pop(); assertEquals(ccb.size(), 0);
+
+        ccb.push('a'); assertEquals(ccb.size(), 1);
+        ccb.pop(); assertEquals(ccb.size(), 0);
+
+        ccb.push('a'); assertEquals(ccb.size(), 1);
+        ccb.pop(); assertEquals(ccb.size(), 0);
+
+        ccb.push('a'); assertEquals(ccb.size(), 1);
+        ccb.pop(); assertEquals(ccb.size(), 0);
+
+        ccb.push('a'); assertEquals(ccb.size(), 1);
+        ccb.pop(); assertEquals(ccb.size(), 0);
+
+        ccb.push('a'); assertEquals(ccb.size(), 1);
+        ccb.pop(); assertEquals(ccb.size(), 0);
+
+        ccb.push('a'); assertEquals(ccb.size(), 1);
+        ccb.push('a'); assertEquals(ccb.size(), 2);
+        ccb.pop(); assertEquals(ccb.size(), 1);
+
+
+        ccb.push('a'); assertEquals(ccb.size(), 2);
+        ccb.push('a'); assertEquals(ccb.size(), 3);
+        ccb.pop(); assertEquals(ccb.size(), 2);
+
+
+        ccb.push('a'); assertEquals(ccb.size(), 3);
+        ccb.push('a'); assertEquals(ccb.size(), 4);
+        ccb.pop(); assertEquals(ccb.size(), 3);
+
+
+        ccb.push('a'); assertEquals(ccb.size(), 4);
+        ccb.push('a'); assertEquals(ccb.size(), 5);
+        ccb.pop(); assertEquals(ccb.size(), 4);
+
+
+        ccb.push('a'); assertEquals(ccb.size(), 5);
+        ccb.push('a'); assertEquals(ccb.size(), 6);
+        ccb.pop(); assertEquals(ccb.size(), 5);
+
+
+        ccb.push('a'); assertEquals(ccb.size(), 6);
+        ccb.push('a'); assertEquals(ccb.size(), 7);
+        ccb.pop(); assertEquals(ccb.size(), 6);
+
+
+        ccb.push('a'); assertEquals(ccb.size(), 7);
+        ccb.push('a'); assertEquals(ccb.size(), 8);
+        ccb.pop(); assertEquals(ccb.size(), 7);
     }
+
     @Test
     public void bufferPushingPrefix() {
         CircularCharBuffer ccb = new CircularCharBuffer(null);
