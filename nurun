@@ -1,7 +1,7 @@
 #!/usr/bin/bash
-cfonts "NOW CLEANING..."
+cfonts "CLEAN"
 mvn clean
-cfonts "NOW COMPILING..."
+cfonts "COMPILE"
 mvn compile
-cfonts "NOW RUNNING..."
+cfonts "RUN"
 ./run "$*"
