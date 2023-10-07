@@ -7,16 +7,20 @@ import java.util.ArrayList;
 
 public class IteratorCollector {
     /**
-     * abbastanza un functoide */
+     * è abbastanza un functoide
+     * mi servivano queste funzioni e non stavano bene da nessun'altra parte
+     */
 
-    public static LinkedList<Object> collectToLinked(Iterator<Object> ic) {
-        LinkedList<Object> res = new LinkedList<Object>();
+    // che static potesse essere usato per generic non me lo ricordavo
+    // https://docs.oracle.com/javase/tutorial/extra/generics/methods.html
+    public static <T> LinkedList<T> collectToLinked(Iterator<T> ic) {
+        LinkedList<T> res = new LinkedList<T>();
         collectIntoList(ic, res);
         return res;
     }
 
-    public static ArrayList<Object> collectToArray(Iterator<Object> ic) {
-        ArrayList<Object> res = new ArrayList<Object>();
+    public static <T> ArrayList<T> collectToArray(Iterator<T> ic) {
+        ArrayList<T> res = new ArrayList<T>();
         collectIntoList(ic, res);
         return res;
     }
@@ -31,10 +35,10 @@ public class IteratorCollector {
         return sb.toString();
     }
 
-    private static void collectIntoList(Iterator<Object> ic, List<Object> li) {
-        Object o;
-        while(ic.hasNext() && ((o=ic.next()) != null)) {
-            li.add(o);
+    private static <T> void collectIntoList(Iterator<T> ic, List<T> li) {
+        T t;
+        while(ic.hasNext() && ((t=ic.next()) != null)) {
+            li.add(t);
         }
     }
 }

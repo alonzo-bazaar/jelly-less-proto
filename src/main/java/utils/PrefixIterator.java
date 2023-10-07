@@ -47,6 +47,15 @@ public class PrefixIterator implements Iterator<Character> {
         return this._hasNext();
     }
 
+    public String getPrefix(int len) {
+        buf.pushUntilSize(len);
+        return buf.getPrefix(len);
+    }
+
+    public Character peekCharacter() {
+        return this.getPrefix(1).charAt(0);
+    }
+
     Character _next() {
         return this.wrapped.next();
     }
@@ -56,16 +65,18 @@ public class PrefixIterator implements Iterator<Character> {
     }
 }
 
-/* 90% di questa roba non sarebbe servita se tu avessi fatto un cazzo di pop_front
- * per i test magari metti prima qualcosa che fa pop_front()
- * poi si sotituisce questo dopo?
+/**
+ * questa non è proprio fatta per essere questa grandissima disaccoppiata
+ * è solo che LinkedCharBuffer è inefficiente in culo come implementazione
+ * questo è solo per dire "ay fra, sappi che ti levo dal cazzo appena posso"
+ * rendendolo il più sostituibile possibile
  */
-
 abstract class CharQueue {
     abstract void pushUntilSize(int size);
     abstract Character pop();
     abstract boolean isPrefix(String s);
     abstract boolean isEmpty();
+    abstract String getPrefix(int len);
 }
 
 class LinkedCharBuffer extends CharQueue {
@@ -108,162 +119,27 @@ class LinkedCharBuffer extends CharQueue {
     boolean isEmpty() {
         return !list.isEmpty();
     }
-}
-
-// TODO questo coso sembra far cagare tanti cazzi
-class CircularCharBuffer extends CharQueue {
-    private Character[] buf = new Character[1];
-    /* purtroppo ArrayList non permette di ridimensionare l'array a botta
-     * quindi si torna al caro vecchissimo
-     */
-    private PrefixIterator master;
-
-    // start inclusive, end exclusive
-    // endIndex==startIndex nel caso (legale) in cui sia 0
-    private int startIndex = 0;
-    private int endIndex = 0;
-
-    CircularCharBuffer(PrefixIterator master) {
-        this.master = master;
-    }
 
     @Override
-    public boolean isPrefix(String s) {
-        if (s.length() > this.size()) {
-            return false;
+    String getPrefix(int len) {
+        if (list.size() < len) {
+            /* TODO : ok, e che cazzo faccio qui?
+             * tiro un'eccezione che poi catcha l'iterator?
+             * o cosa?
+             * di certo non ritorno null, ma qualcosa devo farla
+             */
+            System.out.println("serviva un prefisso lungo " + len +
+                               " ma ho solo " + list.size() +
+                               "(poi grazialcazzo risistemi st'errore, cazzo di print)");
         }
-        int sIter = 0;
-        int bIter = this.startIndex;
-        while (bIter != this.endIndex && sIter != s.length()) {
-            if (buf[bIter] != s.charAt(sIter)) {
-                return false;
-            }
-            sIter++;
-            bIter = indexAfter(bIter);
+        StringBuffer st = new StringBuffer(len);
+        int left = len;
+        for (Character c : list) {
+            if (left == 0)
+                break;
+            st.append(c);
+            --left;
         }
-        return sIter == s.length();
-    }
-
-    @Override
-    public void pushUntilSize(int size) {
-        Character next;
-        while (this.size() < size &&
-                master._hasNext() &&
-                (next = master._next())!=null) {
-            // _hasNext() altrimenti si pushano nulli nel buffer e so' cazzi
-            // TODO: metti un test che eviti il riverificarsi di sta merda
-            // TODO: controlla come mai master dava hasNext = true anche quando next era null
-            this.push(next);
-        }
-    }
-
-    @Override
-    boolean isEmpty() {
-        return startIndex == endIndex;
-    }
-
-    @Override
-    public Character pop() throws ArrayStoreException {
-        if (isEmpty()) {
-            throw new ArrayStoreException("trying to pop out of an empty array");
-        } else {
-            Character c = buf[startIndex];
-            startIndex = indexAfter(startIndex);
-            return c;
-        }
-    }
-
-    // hic sunt internals
-
-    boolean isFull() {
-        return indexAfter(endIndex) == startIndex;
-    }
-
-    void push(Character c) {
-        if (isFull()) {
-            moreBufferSize();
-        }
-        buf[endIndex] = c;
-        this.endIndex = indexAfter(this.endIndex);
-    }
-
-    void increaseBufferSize(int size) {
-        if (size < buf.length) return; // in caso venga chiamata da un cretino
-
-        Character[] newBuf = new Character[size];
-        int newStartIndex = 0;
-        int newEndIndex = this.size();
-        // packing new buffer contents at the front
-
-        for (int i = 0, j = startIndex; j != endIndex; j = indexAfter(j), ++i) {
-            newBuf[i] = buf[j];
-        }
-
-        /* si fa in questo modo perchè start e end servono per fare this.size()
-         * che serve per aggiornare i valori
-         * quindi modificarli direttamente senza un valore intermedio può portare a cazzi
-         * perchè poi si chiamerebbe this.size() mentre si stanno aggiornando gli indici
-         * chiamandola quindi in uno stato inconsistente
-         */
-        this.startIndex = newStartIndex;
-        this.endIndex = newEndIndex;
-        this.buf = newBuf;
-    }
-
-    void moreBufferSize() {
-        // euristica alla cazzo di cane
-        increaseBufferSize(2 * buf.length);
-    }
-
-
-    int size() {
-        if (startIndex <= endIndex)
-            // - - - start <buffer contents here> end - -
-            return endIndex - startIndex;
-        else
-            // <buffer contents here> end - - start <buffer contents here>
-            return (buf.length - startIndex) + endIndex;
-    }
-
-    int indexAfter(int index) {
-        return (index + 1) % buf.length;
-    }
-
-    void printAllaCazzoDiCane() {
-        System.out.println("start : " + this.startIndex
-                + " end : " + this.endIndex
-                + " buffer = " + this.buf.length
-                + " circular size = " + this.size());
-
-        if (this.startIndex <= this.endIndex) {
-            int i = 0;
-            while (i < this.startIndex) {
-                System.out.print(" ,");
-                ++i;
-            }
-            while (i < this.endIndex) {
-                System.out.print("" + this.buf[i] + ",");
-                ++i;
-            }
-            while (i < this.buf.length) {
-                System.out.print("-,");
-                ++i;
-            }
-        } else {
-            int i = 0;
-            while (i < this.endIndex) {
-                System.out.print("" + this.buf[i] + ",");
-                ++i;
-            }
-            while (i < this.startIndex) {
-                System.out.print("-,");
-                ++i;
-            }
-            while (i < this.buf.length) {
-                System.out.print(this.buf[i] + ",");
-                ++i;
-            }
-        }
-        System.out.println();
+        return st.toString();
     }
 }

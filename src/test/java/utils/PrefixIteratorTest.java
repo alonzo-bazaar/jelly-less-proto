@@ -5,23 +5,19 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import junit.framework.TestResult;
-
 public class PrefixIteratorTest
 {
     /* prefix iterator tests */
+    private PrefixIterator fromString(String s) {
+        return new PrefixIterator(new StringCharIterator(s));
+    }
     @Test
     public void ok() {
-        PrefixIterator pi = new PrefixIterator(new StringCharIterator("mamma mia"));
+        PrefixIterator pi = fromString("mamma mia");
         assertFalse(pi.startsWith("mia"));
         assertTrue(pi.startsWith("mamma"));
-        pi = new PrefixIterator(new StringCharIterator("mia mamma"));
+        pi = fromString("mia mamma");
         assertTrue(pi.startsWith("mia"));
         assertFalse(pi.startsWith("mamma"));
-    }
-
-    @Test
-    public void robus() {
-        
     }
 }
