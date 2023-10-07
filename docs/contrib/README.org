@@ -1,0 +1,7 @@
+* Cazzo è sto sta cartella
+questa cartella dei doc è fatta, più delle altre, per quei poveri cristiani che finiranno col fare con me questo bellissimo progetto
+
+si spiegano quindi  più che negli altri doc(spero) i motivi di certe classi, scelte strutturali, e lo scopo di bla bla e bla all'interno dell'architettura di questa bellissima applicazione
+
+poi vorrei anche vedere che farà cagare tutto al cazzo, ma almeno dovrebbe essere meno doloroso di non avere questa cartella
+

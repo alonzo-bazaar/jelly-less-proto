@@ -1,0 +1,151 @@
+* Idea generale
+ci sono molti modi di interpretare/compilare/eseguire un linguaggio per fottere un attimo i disegni a [[https://craftinginterpreters.com/a-map-of-the-territory.html][questo libro]][fn::di cui ho letto mezzo capitolo prima di rompermi il cazzo che non potevo scaricare il pdf, perchè sono un bambino viziato]
+[[./mountain.png]]
+quello che intendo fare, per mera facilità di interpretazione, è un =Tree-Walk Interpreter= (quella casetta messa a cazzo in mezzo alla montagna)
+
+sarebbe a dire
+ - prendi il codice
+ - capisci che cazzo di struttura ha
+ - runna brutalmente dalla struttura senza neanche pensarci di usarla per transpiling &Co.
+
+ognino di questi passi ha come input l'output dello step precedente
+ - la prima parte ha come output il codice
+ - capire la struttura ha come input il codice e come output la struttura
+ - runnare la struttura ha come input la struttura
+
+quindi rappresentiamo tutto malissimo con un
+#+begin_src 
+  codice -> struttura -> esecuzione struttura
+#+end_src
+
+si illustrano mo' queste fasi del programma
+
+* Prendi il codice
+abbiamo due modi per prendere il codice, il primo è il classico "leggi un file"
+a fini di testing e per certi use case vorrei però che fosse anche possibile leggere codice lisp da una stringa messa nel codice java
+
+per abusare un po' l'uml possiamo metterla in questo modo
+[[./chars.png]]
+
+* Struttura del codice
+per semplificarci la vita, capire la struttura del codice qui si divide in 2 passi
+ - tokenizing
+ - il resto
+
+** Tokenizing
+con tokenizing si intende prendere la stringa di codice e dividerla in quei pezzi che hanno effettivamente un significato, quindi un
+#+begin_src java
+  "for(int i=1; i<max; ++i) {res = res*i;}"
+#+end_src
+viene diviso nella sequenza
+#+begin_src java
+    {"for", "(", "int", "i", "=", "1", ";", "i", "<", "max", ";", "++", "i", ")",
+            "{", "res", "=", "res", "*", "i", ";", "}"}
+#+end_src
+
+** Il resto
+il resto consiste nel prendere la sequenza di sottostringhe data dal tokenizer e usarla per costruire il dannatissimo /Albero del Codice/.
+
+*** Perché è una cazzata farlo in lisp
+qui è dove lisp inizia a tirare di brutto, perchè l'albero del codice è definito solo ed interamete dalle parentesi, per quanto "prendi stringa di parentesi e costruisci l'albero che definisce" sia un po' stronzo, non è niente rispetto a quanto ci vuole a fare parsing di linguaggio più comuni.
+
+*** Perchè non è una cazzata farlo in java
+se pensi in java potresi avere anche solo un
+#+begin_src java
+  x + 2;
+#+end_src
+che ti obbligherebbe a dover
+ - capire che ~x + 2~ è un'espressione
+ - capire che è l'applicazione dell'operatore ~+~ a ~x~ e ~2~
+
+non troppo bastardo, ma metti un
+#+begin_src java
+  x + 2 * y;
+#+end_src
+qui dobbiamo
+ - capire che è un'espressoine
+ - capire che ~+~ e ~*~ sono gli operatori
+ - andare di precedenza di operatori per fare ~x + (2 * y)~
+
+visto che ho già abbastanza traumi di mio con la precedenza di operatori, e che non voglio capire come implementarla, direi di evitare
+
+poi andiamo a casi come
+#+begin_src java
+  if(x>10)
+      return x;
+  else
+      return x+2;
+#+end_src
+
+e onestamente, direi di evitare
+
+* Esecuzione della struttura
+#+begin_quote
+*NOTA*: di solito per capire un minimo cosa cazzo sto facendo devo iniziare a implementarlo.
+Questa parte non l'ho ancora fatta, quindi la discussione potrebbero essere un po' confusa.
+C'è evaluator.org nella cartella docs/ (quella sopra questa) con un po' di dettagli extra, ma sono più note che mi sono fatto per me, quindi potrebbe far cagare altrettanto il cazzo, scusate
+#+end_quote
+
+ora che abbiamo la struttura (di lista) del codice possiamo pensare a come eseguirla, prendiamo, come esempio di questa sezione, l'espressione
+#+begin_src lisp
+  (if (= x 10)
+      (print "fa 10")
+    (print "non fa 10"))
+#+end_src
+
+per eseguire questa espressione dobbiamo
+ - capire che è un ~if~
+ - ora che sappiamo che è un ~if~
+   - capire quale sia la condizione da controllare
+   - capire quale parte del ~then~
+   - capire quale quella dell'~else~
+ - determinare se la condizione da controllare è vera
+   - se lo è esegui la parte del ~then~
+   - altrimenti quella dell'~else~
+
+detta in modo un po' meno stronzo
+ - capire che è un ~if~
+ - capito che è un ~if~, determinare le parti dell'~if~, "costruire" l'~if~, per così dire
+ - costruito l'if, eseguirlo
+
+sono sotto illustrate le tre parti in questione
+
+#+begin_quote
+sotto non gli ho ancora illustarati perchè devo capire meglio come farli e come documentarli
+#+end_quote
+
+* COMMENT Forse forse
+potresi dividere la parte di discussione di questa in approccio originale con tanti if e approccio tirato male con factory, vedi poi
+
+** Capire che è un if, e costruirlo
+in lisp è frequente che "lo statement ~boh~ è una lista che inizla col simbolo ~boh~"
+per capire che è un ~if~ basta quindi vedere che l'espressione
+ - è una lista
+ - inizia con ~if~
+
+il libo da cui ho fottuto malamente l'interpreter distingue i varii tipi di espressione con una gigantesca cascata di if, visto che era più chiaro di altri approcci più efficienti.
+
+*** TBD[fn::TBD vuol dire To Be Determined]: Factory
+visto che non sono yanderedev eviterei di portare questo approccio a java, e per decidrere tra 40 approcci possibili di cazzo fare di solito in java fai un factory, e qui ci sta bene un factory (almeno credo, devo ancora andare a rivedere dal libro come cazzo è fatto un factory)
+
+** Eseguire l'if
+*** Output del factory
+nel factory in questione dovrebbe entrare l'espressione, quella di prima
+#+begin_src lisp
+  (if (= x 10)
+      (print "fa 10")
+    (print "non fa 10"))
+#+end_src
+
+e ne uscirebbe una cosa come (non so come rappresentare oggetti in java, spero vada bene anche così)
+#+begin_src python
+  IfStatement(condition=Funcall(=, [x, 10])
+              thenExp=Funcall(print, ["fa 10"])
+              elseExp=Funcall(print, ["fa 10"]))
+#+end_src
+
+*** Vamo de polimorfismo
+abbiamo costruito una classe if 
+
+
+

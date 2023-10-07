@@ -1,0 +1,247 @@
+% Created 2023-10-07 Sat 11:53
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{listings}
+\author{Biggie Dickus}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Biggie Dickus},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 30.0.50 (Org mode 9.6.7)}, 
+ pdflang={English}}
+
+% Setup for code blocks [1/2]
+
+\usepackage{fvextra}
+
+\fvset{%
+  commandchars=\\\{\},
+  highlightcolor=white!95!black!80!blue,
+  breaklines=true,
+  breaksymbol=\color{white!60!black}\tiny\ensuremath{\hookrightarrow}}
+
+% Make line numbers smaller and grey.
+\renewcommand\theFancyVerbLine{\footnotesize\color{black!40!white}\arabic{FancyVerbLine}}
+
+\usepackage{xcolor}
+
+% In case engrave-faces-latex-gen-preamble has not been run.
+\providecolor{EfD}{HTML}{f7f7f7}
+\providecolor{EFD}{HTML}{28292e}
+
+% Define a Code environment to prettily wrap the fontified code.
+\usepackage[breakable,xparse]{tcolorbox}
+\DeclareTColorBox[]{Code}{o}%
+{colback=EfD!98!EFD, colframe=EfD!95!EFD,
+  fontupper=\footnotesize\setlength{\fboxsep}{0pt},
+  colupper=EFD,
+  IfNoValueTF={#1}%
+  {boxsep=2pt, arc=2.5pt, outer arc=2.5pt,
+    boxrule=0.5pt, left=2pt}%
+  {boxsep=2.5pt, arc=0pt, outer arc=0pt,
+    boxrule=0pt, leftrule=1.5pt, left=0.5pt},
+  right=2pt, top=1pt, bottom=0.5pt,
+  breakable}
+
+% Support listings with captions
+\usepackage{float}
+\floatstyle{plain}
+\newfloat{listing}{htbp}{lst}
+\newcommand{\listingsname}{Listing}
+\floatname{listing}{\listingsname}
+\newcommand{\listoflistingsname}{List of Listings}
+\providecommand{\listoflistings}{\listof{listing}{\listoflistingsname}}
+
+
+% Setup for code blocks [2/2]: syntax highlighting colors
+
+\newcommand\efstrut{\vrule height 2.1ex depth 0.8ex width 0pt}
+\definecolor{EFD}{HTML}{000000}
+\definecolor{EfD}{HTML}{ffffff}
+\newcommand{\EFD}[1]{\textcolor{EFD}{#1}} % default
+\definecolor{EFh}{HTML}{7f7f7f}
+\newcommand{\EFh}[1]{\textcolor{EFh}{#1}} % shadow
+\definecolor{EFsc}{HTML}{228b22}
+\newcommand{\EFsc}[1]{\textcolor{EFsc}{\textbf{#1}}} % success
+\definecolor{EFw}{HTML}{ff8e00}
+\newcommand{\EFw}[1]{\textcolor{EFw}{\textbf{#1}}} % warning
+\definecolor{EFe}{HTML}{ff0000}
+\newcommand{\EFe}[1]{\textcolor{EFe}{\textbf{#1}}} % error
+\definecolor{EFc}{HTML}{b22222}
+\newcommand{\EFc}[1]{\textcolor{EFc}{#1}} % font-lock-comment-face
+\definecolor{EFcd}{HTML}{b22222}
+\newcommand{\EFcd}[1]{\textcolor{EFcd}{#1}} % font-lock-comment-delimiter-face
+\definecolor{EFs}{HTML}{8b2252}
+\newcommand{\EFs}[1]{\textcolor{EFs}{#1}} % font-lock-string-face
+\definecolor{EFd}{HTML}{8b2252}
+\newcommand{\EFd}[1]{\textcolor{EFd}{#1}} % font-lock-doc-face
+\definecolor{EFm}{HTML}{008b8b}
+\newcommand{\EFm}[1]{\textcolor{EFm}{#1}} % font-lock-doc-markup-face
+\definecolor{EFk}{HTML}{9370db}
+\newcommand{\EFk}[1]{\textcolor{EFk}{#1}} % font-lock-keyword-face
+\definecolor{EFb}{HTML}{483d8b}
+\newcommand{\EFb}[1]{\textcolor{EFb}{#1}} % font-lock-builtin-face
+\definecolor{EFf}{HTML}{0000ff}
+\newcommand{\EFf}[1]{\textcolor{EFf}{#1}} % font-lock-function-name-face
+\definecolor{EFv}{HTML}{a0522d}
+\newcommand{\EFv}[1]{\textcolor{EFv}{#1}} % font-lock-variable-name-face
+\definecolor{EFt}{HTML}{228b22}
+\newcommand{\EFt}[1]{\textcolor{EFt}{#1}} % font-lock-type-face
+\definecolor{EFo}{HTML}{008b8b}
+\newcommand{\EFo}[1]{\textcolor{EFo}{#1}} % font-lock-constant-face
+\definecolor{EFwr}{HTML}{ff0000}
+\newcommand{\EFwr}[1]{\textcolor{EFwr}{\textbf{#1}}} % font-lock-warning-face
+\newcommand{\EFnc}[1]{#1} % font-lock-negation-char-face
+\definecolor{EFpp}{HTML}{483d8b}
+\newcommand{\EFpp}[1]{\textcolor{EFpp}{#1}} % font-lock-preprocessor-face
+\newcommand{\EFrc}[1]{\textbf{#1}} % font-lock-regexp-grouping-construct
+\newcommand{\EFrb}[1]{\textbf{#1}} % font-lock-regexp-grouping-backslash
+\newcommand{\EFob}[1]{#1} % org-block
+\definecolor{EFhn}{HTML}{008b8b}
+\newcommand{\EFhn}[1]{\textcolor{EFhn}{#1}} % highlight-numbers-number
+\definecolor{EFhq}{HTML}{9370db}
+\newcommand{\EFhq}[1]{\textcolor{EFhq}{#1}} % highlight-quoted-quote
+\definecolor{EFhs}{HTML}{008b8b}
+\newcommand{\EFhs}[1]{\textcolor{EFhs}{#1}} % highlight-quoted-symbol
+\definecolor{EFrda}{HTML}{707183}
+\newcommand{\EFrda}[1]{\textcolor{EFrda}{#1}} % rainbow-delimiters-depth-1-face
+\definecolor{EFrdb}{HTML}{7388d6}
+\newcommand{\EFrdb}[1]{\textcolor{EFrdb}{#1}} % rainbow-delimiters-depth-2-face
+\definecolor{EFrdc}{HTML}{909183}
+\newcommand{\EFrdc}[1]{\textcolor{EFrdc}{#1}} % rainbow-delimiters-depth-3-face
+\definecolor{EFrdd}{HTML}{709870}
+\newcommand{\EFrdd}[1]{\textcolor{EFrdd}{#1}} % rainbow-delimiters-depth-4-face
+\definecolor{EFrde}{HTML}{907373}
+\newcommand{\EFrde}[1]{\textcolor{EFrde}{#1}} % rainbow-delimiters-depth-5-face
+\definecolor{EFrdf}{HTML}{6276ba}
+\newcommand{\EFrdf}[1]{\textcolor{EFrdf}{#1}} % rainbow-delimiters-depth-6-face
+\definecolor{EFrdg}{HTML}{858580}
+\newcommand{\EFrdg}[1]{\textcolor{EFrdg}{#1}} % rainbow-delimiters-depth-7-face
+\definecolor{EFrdh}{HTML}{80a880}
+\newcommand{\EFrdh}[1]{\textcolor{EFrdh}{#1}} % rainbow-delimiters-depth-8-face
+\definecolor{EFrdi}{HTML}{887070}
+\newcommand{\EFrdi}[1]{\textcolor{EFrdi}{#1}} % rainbow-delimiters-depth-9-face
+\begin{document}
+
+\tableofcontents
+
+\section{Le basi}
+\label{sec:orgbe6922f}
+Lisp è un linguaggio di programmazione caratterizzato, tra i molti altri, da due fatti
+\begin{itemize}
+\item è stato fatto negli anni 60
+\item è stato fatto (tra gli altri) da matematici\footnote{che l'informatica non esisteva troppo all'epoca come disciplina}
+\end{itemize}
+
+è abbastanza uno scempio per chi non ha passato anni ed anni a sviluppare varii strati di sindrome di stoccolma verso di esso, quindi è comprensibile che possa farvi schifo
+
+per vostra sfortuna lisp non è un singolo linguaggio, ma è una famiglia di linguaggi, tutti basati sulle stesse 2/3 idee di base, ma ci hanno fatti tutti il cazzo che volevano
+giusto per dire, ecco da \href{https://en.wikipedia.org/wiki/Lisp\_(programming\_language)}{wikipedia} la timeline dei lisp
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/big/Pictures/Screenshots/clippato.png}
+\end{center}
+
+Lo schifo che intendo fare sarà più uno scheme fatto male con un paio di cose fottute da common lisp.
+Scheme perchè scheme è quello più facile da approssimare (lo standard del linguaggio sono sulle 80 pagine, e la gente (inclusi gli autori dello standard) si fa seghe su quanto sia corto lo standard)
+
+\subsection{Ma sto lisp com'è fatto?}
+\label{sec:org5e935bb}
+in lisp, quasi tutto è una lista, una lista è fatta così
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFrda{(} roba roba roba \EFrda{)}
+\end{Verbatim}
+\end{Code}
+
+con quasi tutto si intende che anche il codice è una lista, ad esempio, un \texttt{if} è una lista messa così
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFrda{(}\EFk{if} <condizione> <qua il then> <qua l'else>\EFrda{)}
+\end{Verbatim}
+\end{Code}
+ai fini di renderci la vita ancora peggiore, \texttt{<condizione>} non viene testato se è vero o falso, ma se è \texttt{nil}\footnote{nil sarebbe sia il \texttt{false} che il \texttt{null} del lisp} o meno (noto anche come "non nil")
+
+e una chiamata a funzione è una lista messa così
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFrda{(}<funzione> <argomento>*\EFrda{)}
+\end{Verbatim}
+\end{Code}
+con funzione si intende anche roba stra builtin come \texttt{+}, \texttt{=}, \texttt{/}, \ldots{}, ad esempio per sommare due(o più) numeri si fa
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFrda{(}+ 2 3\EFrda{)}
+\EFrda{(}+ 2 3 4 5\EFrda{)}
+...
+\end{Verbatim}
+\end{Code}
+
+se vogliamo controllare se \texttt{x == y} si fa\footnote{all'epoca \texttt{==} non era ancora diventato il simbolo del "sono uguali?", i primi standard di questo affare, essendo anni 60, sono antecedenti al C, che era più anni 70}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFrda{(}= x y\EFrda{)}
+\end{Verbatim}
+\end{Code}
+
+o per dire \texttt{square(x)}, si fa
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFrda{(}square x\EFrda{)}
+\end{Verbatim}
+\end{Code}
+
+mettiamo di voler dire "se x è dispari \(print(x^{2})\), altrimeti \(print(\frac{x}{2})\)"
+questo si tradurrebbe con
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFrda{(}\EFk{if} \EFrdb{(}= 0 \EFrdc{(}mod x 2\EFrdc{)}\EFrdb{)}
+    \EFrdb{(}print \EFrdc{(}/ x 2\EFrdc{)}\EFrdb{)}
+  \EFrdb{(}print \EFrdc{(}* x x\EFrdc{)}\EFrdb{)}\EFrda{)}
+\end{Verbatim}
+\end{Code}
+
+\subsection{Qualche cagata da tenere a mente}
+\label{sec:orgd6ca674}
+TBD
+
+\subsection{Perchè lisp?}
+\label{sec:orgb4c5200}
+Due motivi
+\begin{itemize}
+\item mi piace il linguaggio\footnote{comunque versioni un po' più moderne di quella fatta qui, con cose bellissime quali struct, classi, e ambienti di sviluppo decenti}
+\item è una cagata farlo\footnote{rispetto ad altri interpreter, poi grazialcazzo che fare un interpreter è comunque un dito in culo}
+\end{itemize}
+\subsubsection{Parsing}
+\label{sec:orgdbc8b27}
+Fare parsing di lisp è una minchiata, la sintassi è all'incirca (si avvisa il lettore che questo non è mai nella vita un ebnf valido, dovrebbe solo rendere l'idea)
+\begin{verbatim}
+lettera :: [a-z] | [A-Z]
+cifra :: [0-9]
+simbolo :: (<qualsiasi carattere che non sia uno spazio>)*
+stringa :: " <qualsiasi carttere>* "
+numero :: <cifra>*
+espressione :: simbolo | stringa | numero | ( <espressione>* )
+\end{verbatim}
+
+e \href{https://www.softwarepreservation.org/projects/LISP/book/LISP\%201.5\%20Programmers\%20Manual.pdf}{certi manuali}\footnote{vecchi quanto la merda ma comunque} iniziano, giusto per, definendo l'intera sintassi ed evaluator del linguaggio, perchè gli andava\footnote{e perchè il manuale l'aveva scritto il primo autore del linguaggio\footnotemark}\footnotetext[8]{\label{org6240c76}più dello standard/definizione, il codice l'hanno fatto vari suoi studenti che programmavano decisamente meglio di lui, lui insegnava elettronica credo}
+
+\subsubsection{Evaluator}
+\label{sec:org53e6f0d}
+le regole di valutazione del lisp sono anch'esse abbastanza una cagata da descrivere, ci vorrano sui 2/3 check neanche per capire se un'espressione è un if, un loop, o un che, e da lì mezzo secondo e l'hai già scomposta, ez.
+\end{document}
