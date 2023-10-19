@@ -1,0 +1,43 @@
+#+begin_src java
+  LispRuntime lr = LispRuntime();
+  /* ... */
+  lr.evalExpand("(point-sum @@@ @@@)", 
+                {LispStruct("point", KeyArgs({{"x", "10"}, {"y", "10"}})),
+                        LispStruct("point", KeyArgs({{"x", "20"}, {"y", "20"}}))}
+                );
+
+  LispExpression evalBoh() {
+      /**
+       ,* tipo eval()
+       ,* ma espande placeholder
+       ,* diocane boh();
+       ,*/
+  }
+#+end_src
+
+#+begin_src java
+  class Point {
+      int x;
+      int y;
+  }
+
+  class LispCompositeValue {
+      Object wrapped;
+
+      LispValue getField(String fieldName) {
+          /* LispValue perchè tanto se lo aspetta lisp */
+          Object sticazzi = puttanaioDiReflection(Object, fieldName);
+          return new LispValue(sticazzi);
+      }
+  }
+
+  class LispPrimitiveValue {
+      /* sostituisci questa bellissima boiata a LispValue
+       ,* perchè cazzo ho voluto fare gli struct
+       ,*/
+
+      /* visto che non puoi fare getFiled
+       ,* visto che sono privati quanto la merda
+       ,*/
+  }
+#+end_src

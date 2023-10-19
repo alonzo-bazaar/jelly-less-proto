@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+cfonts "coverage"
+mvn jacoco:prepare-agent test jacoco:report

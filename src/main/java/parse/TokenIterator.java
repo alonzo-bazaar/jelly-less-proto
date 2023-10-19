@@ -19,38 +19,58 @@ public class TokenIterator implements Iterator<String>{
     @Override
     public String next() {
         String res = extractNextToken();
-        skipWhite();
         return res;
     }
 
-    void skipWhite() {
-        /* versione fatta un po' alla cazzo, fatta per accertarsi che
-         * lastWasWhite venga aggiornato per tutti i caratteri, anche skippati
-         */
-        while(chars.hasNext() && chars.startsWithWhitespace())
-            chars.next();
-    }
-
     String extractNextToken() {
+        chars.ignoreCommentsAndWhitespace();
+        // guarda, vaffanculo
+        // now the stream begins with the token, so
         if (this.startsWithSpecial())
             return this.nextSpecial();
+
+        else if (this.chars.startsWith("\"")) 
+            return this.nextString();
         else
             return this.nextNormal();
     }
 
     String nextNormal() {
         StringBuffer sb = new StringBuffer();
+        // TODO extract common stopping conditions to better their extensibility
         while (chars.hasNext() &&
-               !chars.startsWithWhitespace()
-               && !this.startsWithSpecial()) {
+               !chars.startsWithWhitespace() &&
+               !chars.startsWith("\"") &&
+               !this.startsWithSpecial()) {
             sb.append(chars.next());
         }
+        return sb.toString();
+    }
+
+    String nextString() {
+        StringBuffer sb = new StringBuffer();
+        // opening '"'
+        sb.append(chars.next());
+        String[] escapes = {"\\\"", "\\\t", "\\\n"}; // escape explosion incoming
+        while (chars.hasNext() && !chars.startsWith("\"")) {
+            for (String s : escapes) {
+                if (chars.startsWith(s)) {
+                    sb.append(s);
+                    chars.ignorePastPrefix(s);
+                }
+            }
+            if(chars.hasNext() && !chars.startsWith("\""))
+                sb.append(chars.next());
+        }
+        // closing '"'
+        sb.append(chars.next());
         return sb.toString();
     }
 
     String nextSpecial() {
         StringBuffer sb = new StringBuffer();
         while (chars.hasNext() &&
+               !chars.startsWith("\"") &&
                !chars.startsWithWhitespace() &&
                this.specialStartsWith(sb.toString().concat(chars.getPrefix(1)))) {
             sb.append(chars.next());
@@ -60,6 +80,7 @@ public class TokenIterator implements Iterator<String>{
 
     @Override
     public boolean hasNext() {
+        chars.ignoreCommentsAndWhitespace();
         return chars.hasNext();
     }
 
@@ -79,7 +100,6 @@ public class TokenIterator implements Iterator<String>{
                 return true;
             }
         }
-
         return false;
     }
 }

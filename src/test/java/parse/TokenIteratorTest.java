@@ -154,6 +154,96 @@ public class TokenIteratorTest {
     }
 
     @Test
+    public void string() {
+        TokenIterator ti = fromString("\"stringus\"");
+        assertEquals(ti.next(), "\"stringus\"");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void stringStartingWithWhitespace() {
+        TokenIterator ti = fromString("\"    stringus\"");
+        assertEquals(ti.next(), "\"    stringus\"");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void stringEndingWithWhitespace() {
+        TokenIterator ti = fromString("\"stringus      \"");
+        assertEquals(ti.next(), "\"stringus      \"");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void stringBeforeTokens() {
+        TokenIterator ti = fromString("\"something\"in the way  ");
+        assertEquals(ti.next(), "\"something\"");
+        assertEquals(ti.next(), "in");
+        assertEquals(ti.next(), "the");
+        assertEquals(ti.next(), "way");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void stringAfterTokens() {
+        TokenIterator ti = fromString("çeci est une\"stringa\"");
+        assertEquals(ti.next(), "çeci");
+        assertEquals(ti.next(), "est");
+        assertEquals(ti.next(), "une");
+        assertEquals(ti.next(), "\"stringa\"");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void multipleStrings() {
+        TokenIterator ti = fromString("\"jojo\" \"bizarre\" \"strings\"");
+        assertEquals(ti.next(), "\"jojo\"");
+        assertEquals(ti.next(), "\"bizarre\"");
+        assertEquals(ti.next(), "\"strings\"");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void multipleAttachedStrings() {
+        TokenIterator ti = fromString("\"jojo\"\"bizarre\"\"strings\"");
+        assertEquals(ti.next(), "\"jojo\"");
+        assertEquals(ti.next(), "\"bizarre\"");
+        assertEquals(ti.next(), "\"strings\"");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void stringsAndSpecials() {
+        TokenIterator ti = fromString("(strcat\"kite\"\"mmurt\" \"mannaggia \\\"\" bello bello\"mannaggia\")");
+        assertEquals(ti.next(), "(");
+        assertEquals(ti.next(), "strcat");
+        assertEquals(ti.next(), "\"kite\"");
+        assertEquals(ti.next(), "\"mmurt\"");
+        assertEquals(ti.next(), "\"mannaggia \\\"\"");
+        assertEquals(ti.next(), "bello");
+        assertEquals(ti.next(), "bello");
+        assertEquals(ti.next(), "\"mannaggia\"");
+        assertEquals(ti.next(), ")");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void emptyString() {
+        TokenIterator ti = fromString("\"\"");
+        assertEquals(ti.next(), "\"\"");
+        assertFalse(ti.hasNext());
+    }
+    
+    @Test
+    public void multipleEmptyStrings() {
+        TokenIterator ti = fromString("\"\"\"\"\"\"");
+        assertEquals(ti.next(), "\"\"");
+        assertEquals(ti.next(), "\"\"");
+        assertEquals(ti.next(), "\"\"");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
     public void gettingStupid() {
         TokenIterator ti = fromString("((((((((((((((((((((");
         assertEquals(ti.next(), "(");

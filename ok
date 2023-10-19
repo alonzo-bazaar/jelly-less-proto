@@ -1,0 +1,26 @@
+import utils.*;
+import parse.*;
+PrefixIterator piFromString(String str) {
+    return new PrefixIterator(new StringCharIterator(str));    
+}
+SignificantCharsIterator sciFromString(String str) {
+    return new SignificantCharsIterator(new StringCharIterator(str));
+}
+TokenIterator tiFromString(String str) {
+    return new TokenIterator(new SignificantCharsIterator(new StringCharIterator(str)));
+}
+PrefixIterator pi = piFromString("diocane");
+SignificantCharsIterator sci = sciFromString("      kitemmuort ");
+TokenIterator ti = tiFromString("(    kitemmuort   )");
+TokenIterator toot = tiFromString("ti voglio //bastonare\n bene");
+
+void tiMaybeNext(TokenIterator ti) {
+    String altrimenti = "vaffanculo, niente";
+    if(ti.hasNext()){
+        ti.next();
+    }
+    else{
+        System.out.println(altrimenti);
+    }
+}
+toot = tiFromString("    // cazzo \n checco");

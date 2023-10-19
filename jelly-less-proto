@@ -1,0 +1,15 @@
+  /home/big/meth/maven/jelly-less-proto:
+  drwxr-xr-x. 1 big big   236 Oct 13 08:12 .
+  drwxr-xr-x. 1 big big    68 Sep 28 11:34 ..
+  drwxr-xr-x. 1 big big   312 Oct 13 07:54 docs
+  -rw-r--r--. 1 big big 18092 Sep 21 10:36 LICENSE
+  -rwxr--r--. 1 big big   122 Sep 24 16:58 nuclear
+  -rwxr--r--. 1 big big    94 Sep 27 17:22 nurun
+  -rw-r--r--. 1 big big   868 Oct  6 10:54 ok
+  -rw-r--r--. 1 big big  3330 Oct  6 16:47 pom.xml
+  -rwxr-xr-x. 1 big big 16792 Oct  5 16:10 prinasc
+  -rw-r--r--. 1 big big   171 Oct  5 16:07 printasci.c
+  -rw-r--r--. 1 big big 1027 Oct 13 08:13 README.md
+  -rwxr--r--. 1 big big    75 Sep 14 14:40 run
+  drwxr-xr-x. 1 big big    16 Sep  9 11:53 src
+  drwxr-xr-x. 1 big big   172 Oct  8 15:55 target
