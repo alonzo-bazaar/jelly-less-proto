@@ -1,4 +1,8 @@
 target/
+# cartella con script di bash per compensare la mia incompetenza con maven
+scripts/
+# cartella con script per testare su jshell
+jshell-scripts/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
