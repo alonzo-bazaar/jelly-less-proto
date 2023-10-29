@@ -1,2 +1,0 @@
-#!/usr/bin/bash
-mvn exec:java -Dexec.mainClass=jellyt.App -Dexec.args="$*"

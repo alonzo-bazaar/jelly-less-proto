@@ -1,7 +1,0 @@
-#!/usr/bin/bash
-cfonts "CLEAN"
-mvn clean
-cfonts "COMPILE"
-mvn compile
-cfonts "RUN"
-./run "$*"
