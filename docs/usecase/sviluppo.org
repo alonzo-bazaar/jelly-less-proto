@@ -1,0 +1,8 @@
+#+begin_quote
+*NOTA* : tutto, TUTTO quello che sto per menzionare lo ha fatto meglio clojure
+e con meglio intendo decisamente meglio
+
+troppo, troppo, troppo meglio
+#+end_quote
+
+

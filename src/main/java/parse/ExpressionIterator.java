@@ -7,6 +7,7 @@ import java.util.Stack;
 import lang.LispExpression;
 import lang.Cons;
 import lang.Serializer;
+import utils.StringCharIterator;
 import lang.Constants; // for NIL
 import lang.Ops; // for type checking
 
@@ -18,6 +19,17 @@ public class ExpressionIterator implements Iterator<LispExpression> {
 
     public ExpressionIterator(TokenIterator tokens) {
         this.tokens = tokens;
+    }
+
+    public ExpressionIterator(Iterator<Character> chars) {
+        this.tokens = new TokenIterator
+            (new SignificantCharsIterator(chars));
+    }
+
+    public ExpressionIterator (String s) {
+        this.tokens = new TokenIterator
+        (new SignificantCharsIterator
+         (new StringCharIterator(s)));
     }
 
     @Override

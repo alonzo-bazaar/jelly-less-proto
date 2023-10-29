@@ -1,0 +1,47 @@
+* Direzione
+intanto si vuole qualcosa che funzioni, di cui vedere eventuali pregi/difetti/&Co.
+
+quando si è arrivati a qualcosa che funziona si possono iniziare ad aggiungere feature, espandere un type system, raffinare interfaccie, e riscrivere quel cazzo di parser che fa cagare al cazzo
+
+si vuole estendere in modo che il linguaggio poi possa supportare
+ - lambda list
+ - interop
+ - struct
+ - type
+
+si spera inoltre di
+magari fare una classe ~Token~
+magari fare una classe ~AST~, per quanto poi la cosa, se voglio implementarla, vorrei implementarla con un minimo di /"hey, ecco L'EBNF"/, quindi boh, però potrebbe aiutare parecchio certi aspetti e la tesibilitas
+
+al momento si mira ad arrivare a una versione che funzioni, e che sia abbastanza flessibile da permettere l'introduzione delle feature sopra elencate
+
+** Che funzioni
+perchè funzioni decente ci serve
+*** Evaluable
+ - che funzioni/esista
+ - fare che lo crei a partire da un synthax tree, factory
+ - fare che lo/li valuti
+ - documentarne la grammatica
+ - testability
+
+**** Procedure
+ - vedere come definire procedure builtin (~car~ ~cdr~) *E* procedure ffi (~call~ ~callStatic~)
+
+**** Base env
+ - definire un environment iniziale con le sue belle cose già fatte
+
+*** "Machine"
+ - dare un'api con un senso, questa deve essere visibile come una lisp machine invocabile dal codice java
+ - metodi per file/stringhe, o si generalizza il reader?
+
+*** Chiamata Batch/Repl
+ - dare un'api a machine che può essere utilizzato da ~App~ per lanciare i varii tipi di esecuzione
+ - ay caramba
+
+
+** E quando funziona
+ - raffinare/introdurre il type system
+ - rivedere la struttura della lambda list, e possibilmente come tradurla a java in caso, quali accorgimenti/regole dare alla chiamata java, quali, ad esempio
+   - una chimata a java non può usare parametri keyword, solo posizionali e /forse/ parametri quelli extra (~&rest~)
+   - boh
+

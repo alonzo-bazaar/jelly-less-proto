@@ -1,0 +1,24 @@
+* Type system?
+premesso che volgio avere i tipi, due idee per avere un type system potrebbero essere
+ - appoggiarsi al type system del java sottostante
+ - gestire "manualmente" i tipi
+ - una qualche via di mezzo
+
+appoggiarsi al type system del java sottostante, bellissimo, ma come faccio con possibili struct?
+potrei appoggiarmi al type system di java solo per i primitivi e poi tirarla a cazzo con i tipi user defined
+
+potrei fare la javascriptata e avere il tipo codificato con il nome(quindi stringa) di se stesso all'interno dell'espressione
+
+potrei codificare i tipi con degli id, quindi int è tipo 1, double tipo 2, stringhe tipo 2, funzioni tipo 4, o 0, sticazzi
+
+poi per i tipi user defined avrei una mappa da nomeTipo -> id tipo?
+la cosa finirebbe con l'imporre il limite artificiale di \(2^31\) tipi, ma se hai così tanti tipi avrei qualche cazzo di domanda da farti
+
+* Classe Type?
+potrei rimandare il problema creando semplicemente una classe ~Type~ che può essere paragonata&Co. Considerando che col cazzo che mi fo tipi parametrici
+quindi ~sameType~ sarabbe un ~Type.equals()~, che poi lo codifichi internamente con una stringa o id o long o float[fn::se proprio decidessi di non essere più umano] conta poco.
+
+e al massimo potrei subclassare la classe type e creare una classe ~ParametricType~ che fa boh, cazzi sua, e può essere paragonata ad altri type, che ne so
+
+* Let this groove
+get you to move

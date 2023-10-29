@@ -1,6 +1,8 @@
 package lang;
 
-public class Cons implements LispExpression {
+import java.security.InvalidParameterException;
+
+public class Cons implements LispList {
     LispExpression car;
     LispExpression cdr;
 
@@ -9,10 +11,12 @@ public class Cons implements LispExpression {
         this.cdr = cdr;
     }
 
+    @Override
     public LispExpression getCar() {
         return this.car;
     }
 
+    @Override
     public LispExpression getCdr() {
         return this.cdr;
     }
@@ -30,14 +34,16 @@ public class Cons implements LispExpression {
         last.setCdr(new Cons(lv, Constants.NIL));
     }
 
+    @Override
     public Cons last() {
-        Cons c = this;
-        for (;
-             !Ops.isNil(c) && Ops.isCons(c.getCdr());
-             c = (Cons)c.getCdr());
+        Cons c;
+        for (c = this;
+             !Ops.isNil(c) && c.getCdr() instanceof Cons next;
+             c = next);
         return c;
     }
 
+    @Override
     public int length() {
         int res = 1;
         for (Cons c = this;
@@ -48,21 +54,36 @@ public class Cons implements LispExpression {
         return res;
     }
 
+    @Override
     public LispExpression nthCdr(int n) {
         /* 0 indexed, che ci mancherebbe altro */
         if (n <= 0)
             return this;
-        if (Ops.isCons(cdr))
-            return ((Cons)cdr).nthCdr(n - 1);
+        if (cdr instanceof LispList ll)
+            return ll.nthCdr(n - 1);
         else
-            return Constants.NIL;
+            throw new InvalidParameterException("cannot take cdr of " + cdr.toString() + ". It is not a list");
     }
 
+    @Override
     public LispExpression nth(int n) {
         /* 0 indexed, che ci mancherebbe altro */
         LispExpression le = nthCdr(n);
         if(Ops.isCons(cdr))
             return ((Cons)le).car;
         return Constants.NIL;
+    }
+
+    @Override
+    public String toString() {
+        return "cons(" + getCar().toString() + ", " + getCdr().toString() + ")";
+    }
+
+    public boolean isProperList() {
+        if (cdr == Constants.NIL)
+            return true;
+        if(cdr instanceof Cons ccdr)
+            return ccdr.isProperList();
+        return false;
     }
 }

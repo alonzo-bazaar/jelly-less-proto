@@ -19,4 +19,21 @@ public class LispValue<T extends Object> implements LispExpression {
     public void copy(LispValue<T> lv) {
         this.val = lv.get();
     }
+
+    public boolean equals(LispExpression le) {
+        if (le instanceof LispValue lv) {
+            return val.equals(lv.get());
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        String className = val
+            .getClass()
+            .getSimpleName()
+            .substring(0, 3)
+            .toLowerCase();
+        return className + "(" + val.toString() + ")";
+    }
 }

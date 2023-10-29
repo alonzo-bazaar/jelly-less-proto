@@ -21,7 +21,7 @@ class RunningParameters {
 
     public static RunningParameters fromArgs(String[] args) {
         /* usage:
-           <call> repl <file>, starts a repl after having loaded file
+           <call> repl [<file>], starts a repl after having loaded file
            <call> batch <file>, runs file in batch mode, no repl is touched
          */
         if(hasFile(args)) {
@@ -50,7 +50,7 @@ class RunningParameters {
     }
 
     private static boolean specifiesRunningMode(String s) {
-        return (s == "repl") || (s == "batch");
+        return s.equals("repl") || s.equals("batch");
     }
 
     private static RunningMode argsRunningMode(String[] args) {
