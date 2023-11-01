@@ -161,6 +161,7 @@ public class BuiltinFuncallEvaluable implements Evaluable {
             int i = 0;
             for (Object o : values) {
                 System.out.println(i + " : " + o);
+                i++;
             }
             return Constants.NIL;
         }

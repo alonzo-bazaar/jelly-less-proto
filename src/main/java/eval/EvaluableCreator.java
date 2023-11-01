@@ -28,11 +28,12 @@ public class EvaluableCreator {
                                        fromExpression(c.nth(3))); 
             case "while":
                 return new WhileLoopEvaluable(fromExpression(c.nth(1)),
-                                              sequenceFromConsList((Cons)c.nthCdr(2)));
+                                              sequenceFromConsList((LispList)c.nthCdr(2)));
             case "let":
                 LispExpression frameDesc = c.nth(1);
                 LispExpression body = c.nthCdr(2);
-                if (frameDesc instanceof Cons desc && body instanceof Cons bod) {
+                if (frameDesc instanceof Cons desc &&
+                    body instanceof Cons letBod) {
                     List<LispSymbol> names = Utils.toJavaList(desc)
                         .stream()
                         .map(bind -> (LispSymbol)((Cons)bind).nth(0))
@@ -41,15 +42,41 @@ public class EvaluableCreator {
                         .stream()
                         .map(bind -> fromExpression(((Cons)bind).nth(1)))
                         .toList();
-                    return new LetEvaluation(names, vals, sequenceFromConsList(bod));
+                    return new LetEvaluation(names,
+                                             vals,
+                                             sequenceFromConsList(letBod));
                 }
                 else
                     throw new InvalidParameterException("let form is malformed");
-            case "do":
+            case "lambda":
+                LispExpression formalParameters = c.nth(1);
+                LispExpression lambdaBody = c.nthCdr(2);
+                if (formalParameters instanceof Cons params &&
+                    lambdaBody instanceof Cons lamdaBod) {
+                    List<LispSymbol> paramsList = Utils.toJavaList(params)
+                        .stream()
+                        .map(a -> (LispSymbol)a)
+                        .toList();
+                    return new LambdaEvaluable(paramsList,
+                                               sequenceFromConsList(lamdaBod));
+                }
+                else
+                    throw new InvalidParameterException
+                        ("lambda expression is malformed");
             case "define":
+                if(c.nth(1) instanceof LispSymbol definedVarName)
+                    return new DefinitionEvaluable(definedVarName,
+                            fromExpression(c.nth(2)));
+                else
+                    throw new InvalidParameterException
+                        ("define form expects a symbol as its first argument");
             case "set":
-                if(c.nth(1) instanceof LispSymbol varName)
-                    return new SetEvaluable(varName, fromExpression(c.nth(2)));
+                if(c.nth(1) instanceof LispSymbol setVarName)
+                    return new SetEvaluable(setVarName,
+                                            fromExpression(c.nth(2)));
+                else
+                    throw new InvalidParameterException
+                        ("set form expects a symbol as its first argument");
             case "begin":
                 return sequenceFromConsList(c);
             }
@@ -63,14 +90,17 @@ public class EvaluableCreator {
                      .map(arg -> fromExpression(arg))
                      .toList());
 
-            // in this case, it must be a plain funcall
-            return null;
-            
+
         }
-        else {
-            System.out.println("cazzo");
-            return null;
-        }
+        // and if all else fails, it is a normal function call
+        return new FuncallEvaluable(fromExpression(c.getCar()),
+                                    Utils.toJavaList((LispList)c.getCdr()));
+        /* NOTA: qui fromExpression del car visto che il car potrebbe essere
+         * sia un simbolo (e quindi si cerca la funzione associata)
+         * (se si trova un simbolo fromExpression ritorna una LookupEvaluation)
+         * che una lambda (e quindi si chiama la funzione descritta)
+         * (se si trova una lambda fromExpression ritorna una lambdaEvaluation)
+         */
     }
 
     static boolean isSpecialFormName(LispSymbol sym) {

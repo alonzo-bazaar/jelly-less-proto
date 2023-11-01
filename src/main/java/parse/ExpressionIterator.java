@@ -3,6 +3,8 @@ package parse;
 import java.security.InvalidParameterException;
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.Queue;
+import java.util.LinkedList;
 
 import lang.LispExpression;
 import lang.Cons;
@@ -14,6 +16,7 @@ import lang.Ops; // for type checking
 public class ExpressionIterator implements Iterator<LispExpression> {
     private TokenIterator tokens;
     private Stack<LispExpression> stack = new Stack<LispExpression>();
+    private Queue<LispExpression> precomputed = new LinkedList<LispExpression>();
     // with stack.peek() being the expression we're now building to add
     // somewhere in the tree of the toplevel expression that next() will yield
 
@@ -32,34 +35,41 @@ public class ExpressionIterator implements Iterator<LispExpression> {
          (new StringCharIterator(s)));
     }
 
+    public void setString(String s) {
+        /* TODO THIS IS VERY TEMPORARY
+         * IT IS ONLY USED IN THE REPL
+         * PLEASE DO NOT KEEP THIS, RESTRUCTURE THE THINGS THAT MADE THIS NECESSARY
+         * SO THAT THIS MAY NO LONGER BE NECESSARY
+         */
+        this.tokens = new TokenIterator
+            (new SignificantCharsIterator
+             (new StringCharIterator(s)));
+    }
+
     @Override
     public LispExpression next() {
         try {
-            LispExpression le = _next();
-            return le;
-        } catch (UnbalancedParensException upe){
-            System.out.println("paren error : " + upe.getMessage());
-            upe.printStackTrace();
-        } catch (TokensExhaustedException tee){
-            System.out.println("tokens error : " + tee.getMessage());
-            tee.printStackTrace();
+            precompute();
+            if(!_hasNext()) return null;
+            return precomputed.remove();
+        } catch (Throwable t) {
+            System.out.println("error reading expression : " + t.getClass().getCanonicalName());
+            System.out.println(t.getMessage());
+            return null;
         }
-        return null;
-        // TODO qui non so che cazzo dovrei fare
-        // temo la premessa di avere un iterator qui fosse un po' cagata dall'inizio
-        // intanto faccio questo, poi vedrò di avere un'API più pertinente per queste parti del codice
     }
 
-    LispExpression _next()
-        throws UnbalancedParensException, TokensExhaustedException {
+    LispExpression getNext() throws UnbalancedParensException , TokensExhaustedException{
         while (tokens.hasNext()) {
             String token = tokens.next();
+            if(token == null && !stack.isEmpty()) // TODO quando ristrutturi token qui ci metti un Token.isEOF()
+                throw new TokensExhaustedException("tokens exhausted with incomplete form, probably due to an unclosed parenthesis");
             if (token.equals("(")) {
                 stack.push(Constants.NIL);
             }
             else if (token.equals(")")) {
                 if (stack.isEmpty()) {
-                    throw new UnbalancedParensException("end of file before parsing, closing parentheses does not match any previously open parentheses");
+                    throw new UnbalancedParensException("end of file before parsing, closing parentheses does not match any previously open parenthesis");
                 }
                 LispExpression expr = stack.pop();
                 if (stack.isEmpty()) {
@@ -77,12 +87,31 @@ public class ExpressionIterator implements Iterator<LispExpression> {
                 }
             }
         }
-        throw new TokensExhaustedException("tokens exhausted before being able to building form, probably due to an unclosed parentheses");
+        return null;
+    }
+
+    void precompute() throws UnbalancedParensException, TokensExhaustedException {
+        LispExpression le;
+        le = getNext();
+        while(le != null) {
+            precomputed.add(le);
+            le = getNext();
+        }
     }
 
     @Override
     public boolean hasNext() {
-        return tokens.hasNext();
+        try {
+            return _hasNext();
+        }
+        catch (Throwable t) {
+            return false;
+        }
+    }
+
+    boolean _hasNext() throws UnbalancedParensException, TokensExhaustedException {
+        precompute();
+        return !precomputed.isEmpty();
     }
 
     private void addToTop(LispExpression le) throws InvalidParameterException {

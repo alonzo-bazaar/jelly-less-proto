@@ -24,7 +24,7 @@ public class Machine {
         return null;
     }
 
-    Object evalExpr(LispExpression le) {
+    public Object evalExpr(LispExpression le) {
         Evaluable ev = EvaluableCreator.fromExpression(le);
         return ev.eval(env);
     }

@@ -35,23 +35,24 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.jacoco</groupId>
-      <artifactId>jacoco-maven-plugin</artifactId>
-      <version>0.8.11</version>
-    </dependency>
   </dependencies>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+    <pluginManagement>
+      <!-- lock down plugins versions to avoid using Maven defaults -->
       <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+        <!--
+            clean lifecycle,
+            see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle
+        -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
         </plugin>
-        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+        <!--
+            default lifecycle, jar packaging:
+            see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging
+        -->
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.0.2</version>
@@ -59,33 +60,44 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.0</version>
-          <!-- https://stackoverflow.com/questions/61860989/another-maven-source-option-6-is-no-longer-supported-use-7-or-later -->
+          <!--
+              https://stackoverflow.com/questions/61860989
+              (another "maven source option 6 is no longer supported use 7 or later")
+          -->
           <configuration>
             <source>21</source>
             <target>21</target>
           </configuration>
         </plugin>
+
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.1</version>
         </plugin>
+
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.0.2</version>
         </plugin>
+
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
           <version>2.5.2</version>
         </plugin>
+
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
           <version>2.8.2</version>
         </plugin>
-        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+        <!--
+            site lifecycle,
+            see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle
+        -->
         <plugin>
           <artifactId>maven-site-plugin</artifactId>
           <version>3.7.1</version>
         </plugin>
+
         <plugin>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
@@ -138,7 +150,6 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
             </execution>
           </executions>
         </plugin>
-
       </plugins>
     </pluginManagement>
   </build>

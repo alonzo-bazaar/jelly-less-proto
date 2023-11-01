@@ -3,6 +3,8 @@ package jellyt;
 import java.util.Scanner;
 
 import eval.Machine;
+import lang.LispExpression;
+import parse.ExpressionIterator;
 
 /**
  * the jellyt package contains some sort of package level façade
@@ -46,14 +48,25 @@ public class App
     public static void repl() {
         Machine m = new Machine();
         Scanner scan = new Scanner(System.in);
-        String str;
+        String str = "";
+        ExpressionIterator ei = new ExpressionIterator(str);
 
         while (true) {
             try {
-                replPrompt();
-                str = scan.nextLine();
-                Object obj = m.evalString(str);
-                System.out.println(obj);
+                if (ei.hasNext()) {
+                    LispExpression le = ei.next();
+                    Object o = m.evalExpr(le);
+                    System.out.println(o);
+                }
+                else {
+                    replPrompt();
+                    if (!scan.hasNext()) {
+                        scan.close();
+                        break;
+                    }
+                    str = scan.nextLine();
+                    ei.setString(str);
+                }
             } catch (Throwable t) {
                 System.out.println("Oooooops!!! an exception happened");
                 System.out.println("of type : " + t.getClass().getCanonicalName());

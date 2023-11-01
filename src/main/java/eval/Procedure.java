@@ -5,7 +5,7 @@ import java.util.List;
 import lang.LispSymbol;
 import lang.LispExpression;
 
-public class Procedure {
+public class Procedure implements LispExpression {
     private Environment definitionEnvironment;
     // TODO to be refined into a lambda list class that also allows optional and/or keyword arguments
     private List<LispSymbol> formalParameters;
