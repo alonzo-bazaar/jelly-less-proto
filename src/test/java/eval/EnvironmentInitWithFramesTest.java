@@ -8,8 +8,6 @@ import org.junit.Test;
 import java.util.LinkedList;
 import java.util.HashMap;
 
-import lang.LispExpression;
-import lang.LispValue;
 import lang.LispSymbol;
 import lang.Constants;
 
@@ -19,16 +17,16 @@ public class EnvironmentInitWithFramesTest {
     public void initializeWithFrames() {
         LinkedList<EnvFrame> envLst = new LinkedList<>();
 
-        HashMap<String, LispExpression> m0 = new HashMap<>();
+        HashMap<String, Object> m0 = new HashMap<>();
         m0.put("nope", Constants.NIL);
         EnvFrame env0 = new EnvFrame(m0);
 
-        HashMap<String, LispExpression> m1 = new HashMap<>();
+        HashMap<String, Object> m1 = new HashMap<>();
         m1.put("yee", Constants.T);
         EnvFrame env1 = new EnvFrame(m1);
 
-        HashMap<String, LispExpression> m2 = new HashMap<>();
-        m2.put("yoo", new LispValue<Integer>(42));
+        HashMap<String, Object> m2 = new HashMap<>();
+        m2.put("yoo", 42);
         EnvFrame env2 = new EnvFrame(m2);
 
         envLst.addLast(env0);
@@ -39,27 +37,23 @@ public class EnvironmentInitWithFramesTest {
 
     @Test
     public void testLookup() {
-        LispExpression le = env.lookup(new LispSymbol("nope"));
+        Object le = env.lookup(new LispSymbol("nope"));
         assertEquals(le, Constants.NIL);
     }
 
     @Test
     public void testDefine() throws EnvironmentException {
-        env.define(new LispSymbol("waluigi"), new LispValue<Integer>(1));
+        env.define(new LispSymbol("waluigi"), 1);
        
-        LispExpression le = env.lookup(new LispSymbol("waluigi"));
-        if((le instanceof LispValue lv) && (lv.get() instanceof Integer i)) {
-            assertEquals((int)i, 1);
-        }
+        Object o = env.lookup(new LispSymbol("waluigi"));
+        assertEquals((int)o, 1);
     }
 
     @Test
     public void testSet() throws EnvironmentException {
-        env.set(new LispSymbol("nope"), new LispValue<Integer>(20));
-        LispExpression le = env.lookup(new LispSymbol("nope"));
-        if((le instanceof LispValue lv) && (lv.get() instanceof Integer i)) {
-            assertEquals((int)i, 20);
-        }
+        env.set(new LispSymbol("nope"), 20);
+        Object o = env.lookup(new LispSymbol("nope"));
+        assertEquals((int)o, 20);
     }
 
     @After

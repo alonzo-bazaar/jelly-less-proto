@@ -8,17 +8,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import lang.Constants;
-import lang.LispExpression;
-import lang.LispValue;
-import lang.LispSymbol;
 import parse.ExpressionIterator;
 
 public class BuiltinFuncallEvaluableTest {
     private Evaluable fromString(String s) {
         ExpressionIterator ei = new ExpressionIterator(s);
-        LispExpression le = ei.next();
-        return EvaluableCreator.fromExpression(le);
+        Object o = ei.next();
+        return EvaluableCreator.fromExpression(o);
     }
 
     private Environment env = new Environment();
