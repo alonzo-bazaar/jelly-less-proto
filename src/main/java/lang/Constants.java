@@ -6,5 +6,5 @@ public class Constants {
      * e non sapevo dove metterle nel package
      */
     public static final NilValue NIL = new NilValue();
-    public static final LispValue<Boolean> T = new LispValue<Boolean>(true);
+    public static final Boolean T = Boolean.TRUE;
 }

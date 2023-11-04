@@ -1,12 +1,10 @@
 package eval;
 
 import java.util.LinkedList;
-
 import java.util.HashMap;
 import java.util.List;
 
 import lang.LispSymbol;
-import lang.LispExpression;
 
 public class Environment {
     private LinkedList<EnvFrame> frames;
@@ -21,12 +19,12 @@ public class Environment {
         this.frames = frames;
     }
     
-    public LispExpression lookup(LispSymbol name) {
+    public Object lookup(LispSymbol name) {
         // mi spiace per il null ma non vedo come altro esprimere
         // "hai cercato un valore che non esisteva"
         // non ha troppo senso tirare un'eccezione qui, è un comportamento previsto
         for (EnvFrame frame : frames) {
-            LispExpression le = frame.lookup(name);
+            Object le = frame.lookup(name);
             if(le!=null)
                 return le;
         }
@@ -45,11 +43,11 @@ public class Environment {
         return new Environment(newFrames);
     }
 
-    public Environment extend(List<LispSymbol> ls, List<LispExpression> le) {
+    public Environment extend(List<LispSymbol> ls, List<Object> le) {
         return this.extend(new EnvFrame(ls, le));
     }
 
-    public void set(LispSymbol sym, LispExpression val)
+    public void set(LispSymbol sym, Object val)
         throws VariableDoesNotExistException
     {
         if(!hasSymbol(sym))
@@ -61,7 +59,7 @@ public class Environment {
             frames.get(0).set(sym, val);
     }
 
-    public void define(LispSymbol sym, LispExpression val)
+    public void define(LispSymbol sym, Object val)
         throws VariableAlreadyExistsException
     {
         if(hasSymbol(sym))
@@ -83,17 +81,17 @@ public class Environment {
 }
 
 class EnvFrame {
-    private HashMap<String, LispExpression> nameToExpr;
+    private HashMap<String, Object> nameToExpr;
 
     EnvFrame() {
         this.nameToExpr = new HashMap<>();
     }
 
-    EnvFrame(HashMap<String,LispExpression> nameToExpr) {
+    EnvFrame(HashMap<String,Object> nameToExpr) {
         this.nameToExpr = nameToExpr;
     }
 
-    EnvFrame(List<LispSymbol> names, List<LispExpression> exprs) {
+    EnvFrame(List<LispSymbol> names, List<Object> exprs) {
         this.nameToExpr = new HashMap<>();
         /* expects names and exprs to have the same size
          * I would assert it, but I don't know if throwing an exception in the
@@ -105,7 +103,7 @@ class EnvFrame {
     }
 
     // Environment does all the checking, input data assumed to be valid
-    LispExpression lookup(LispSymbol sym) {
+    Object lookup(LispSymbol sym) {
         return nameToExpr.get(sym.getName());
     }
 
@@ -113,7 +111,7 @@ class EnvFrame {
         return nameToExpr.containsKey(sym.getName());
     }
 
-    void set(LispSymbol sym, LispExpression val) {
+    void set(LispSymbol sym, Object val) {
         nameToExpr.put(sym.getName(), val);
     }
 }

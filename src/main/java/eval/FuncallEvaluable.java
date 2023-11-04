@@ -2,19 +2,18 @@ package eval;
 
 import java.security.InvalidParameterException;
 import java.util.List;
-import lang.LispExpression;
 
 public class FuncallEvaluable implements Evaluable {
     private Evaluable proc;
-    private List<LispExpression> args;
+    private List<Object> args;
 
-    public FuncallEvaluable(Evaluable proc, List<LispExpression> args) {
+    public FuncallEvaluable(Evaluable proc, List<Object> args) {
         this.proc = proc;
         this.args = args;
     }
 
     @Override
-    public LispExpression eval(Environment env) {
+    public Object eval(Environment env) {
         if (proc.eval(env) instanceof Procedure fun) {
             return fun.call(args);
         }

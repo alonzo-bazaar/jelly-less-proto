@@ -1,12 +1,11 @@
 package eval;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 
 import parse.ExpressionIterator;
 
@@ -19,12 +18,12 @@ public class BuiltinFuncallEvaluableTest {
 
     private Environment env = new Environment();
 
-    @Before
+    @BeforeEach
     public void refreshEnv() {
         env = new Environment();
     }
 
-    @After
+    @AfterEach
     public void resetEnvironment() {
         env.reset();
     }
@@ -32,5 +31,12 @@ public class BuiltinFuncallEvaluableTest {
     @Test
     public void testLessThan() {
         Evaluable less = fromString("(> 10 10.1)");
+        assertFalse((boolean)less.eval(env));
+    }
+
+    @Test
+    public void testMoreThan() {
+        Evaluable more = fromString("(< 10 10.1)");
+        assertTrue((boolean)more.eval(env));
     }
 }

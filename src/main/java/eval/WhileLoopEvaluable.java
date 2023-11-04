@@ -1,14 +1,11 @@
 package eval;
 
-import lang.Ops;
 import lang.Constants;
-import lang.LispExpression;
 
 public class WhileLoopEvaluable implements Evaluable {
     private Evaluable cond;
     private SequenceEvaluable body;
 
-    private LispExpression runningValue;
 
     public WhileLoopEvaluable(Evaluable cond, SequenceEvaluable body) {
         this.cond = cond;
@@ -16,11 +13,10 @@ public class WhileLoopEvaluable implements Evaluable {
     }
 
     @Override
-    public LispExpression eval(Environment e) {
-        runningValue = Constants.NIL;
-        LispExpression check = cond.eval(e);
-        while(!Ops.isNil(check) &&
-              !Ops.isFalse(check)) {
+    public Object eval(Environment e) {
+        Object runningValue = Constants.NIL;
+        Object check = cond.eval(e);
+        while(Utils.isTruthy(check)) {
             runningValue = body.eval(e);
             check = cond.eval(e);
         }

@@ -3,7 +3,6 @@ package jellyt;
 import java.util.Scanner;
 
 import eval.Machine;
-import lang.LispExpression;
 import parse.ExpressionIterator;
 
 /**
@@ -54,9 +53,9 @@ public class App
         while (true) {
             try {
                 if (ei.hasNext()) {
-                    LispExpression le = ei.next();
-                    Object o = m.evalExpr(le);
-                    System.out.println(o);
+                    Object expr = ei.next();
+                    Object val = m.evalExpr(expr);
+                    System.out.println(val);
                 }
                 else {
                     replPrompt();

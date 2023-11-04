@@ -1,6 +1,5 @@
 package eval;
 
-import lang.LispExpression;
 import lang.LispSymbol;
 
 import static lang.Constants.NIL;
@@ -15,9 +14,9 @@ public class DefinitionEvaluable implements Evaluable {
     }
 
     @Override
-    public LispExpression eval(Environment e) {
+    public Object eval(Environment e) {
         try {
-            LispExpression computed_val = uncomputedVal.eval(e);
+            Object computed_val = uncomputedVal.eval(e);
             e.define(sym, computed_val);
             return computed_val;
         }

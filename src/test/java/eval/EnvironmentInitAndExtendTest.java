@@ -1,16 +1,17 @@
 package eval;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 
 import lang.LispSymbol;
 import lang.Constants;
 
 public class EnvironmentInitAndExtendTest {
     private Environment env;
-    @Before
+    @BeforeEach
     public void initializeAndExtend() throws EnvironmentException {
         env = new Environment();
         env.define(new LispSymbol("nope"), Constants.NIL);
@@ -41,7 +42,7 @@ public class EnvironmentInitAndExtendTest {
             assertEquals((int)o, 20);
     }
 
-    @After
+    @AfterEach
     public void resetEnv() {
         env.reset();
     }

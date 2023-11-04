@@ -1,9 +1,10 @@
 package eval;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 
 import java.util.LinkedList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import lang.Constants;
 
 public class EnvironmentInitWithFramesTest {
     private Environment env;
-    @Before
+    @BeforeEach
     public void initializeWithFrames() {
         LinkedList<EnvFrame> envLst = new LinkedList<>();
 
@@ -56,7 +57,7 @@ public class EnvironmentInitWithFramesTest {
         assertEquals((int)o, 20);
     }
 
-    @After
+    @AfterEach
     public void resetEnv() {
         env.reset();
     }

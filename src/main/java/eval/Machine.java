@@ -1,6 +1,5 @@
 package eval;
 
-import lang.LispExpression;
 import parse.ExpressionIterator;
 
 public class Machine {
@@ -14,7 +13,7 @@ public class Machine {
     public Object evalString(String s) {
         ExpressionIterator ei = new ExpressionIterator(s);
         while (ei.hasNext()) {
-            LispExpression le = ei.next();
+            Object le = ei.next();
             if (ei.hasNext())
                 this.evalExpr(le);
             else
@@ -24,7 +23,7 @@ public class Machine {
         return null;
     }
 
-    public Object evalExpr(LispExpression le) {
+    public Object evalExpr(Object le) {
         Evaluable ev = EvaluableCreator.fromExpression(le);
         return ev.eval(env);
     }
@@ -46,15 +45,15 @@ public class Machine {
     }
 
     // boh
-    LispExpression lispEvalString(String s) {
+    Object lispEvalString(String s) {
         return null;
     }
 
-    LispExpression lispEvalFile(String s) {
+    Object lispEvalFile(String s) {
         return null;
     }
 
-    Object extractObjectFromExpression(LispExpression le) {
+    Object extractObjectFromExpression(Object le) {
         return null;
     }
 }

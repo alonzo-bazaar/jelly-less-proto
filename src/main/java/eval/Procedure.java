@@ -3,9 +3,8 @@ package eval;
 import java.util.List;
 
 import lang.LispSymbol;
-import lang.LispExpression;
 
-public class Procedure implements LispExpression {
+public class Procedure {
     private Environment definitionEnvironment;
     // TODO to be refined into a lambda list class that also allows optional and/or keyword arguments
     private List<LispSymbol> formalParameters;
@@ -19,7 +18,7 @@ public class Procedure implements LispExpression {
         this.functionBody = functionBody;
     }
 
-    public LispExpression call(List<LispExpression> arguments) {
+    public Object call(List<Object> arguments) {
         return functionBody.eval(definitionEnvironment.extend(formalParameters,
                                                               arguments));
     }

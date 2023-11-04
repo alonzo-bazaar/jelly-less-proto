@@ -1,7 +1,7 @@
 package eval;
 
 import java.util.List;
-import lang.LispExpression;
+
 import lang.LispSymbol;
 
 public class LambdaEvaluable implements Evaluable {
@@ -24,7 +24,7 @@ public class LambdaEvaluable implements Evaluable {
     }
 
     @Override
-    public LispExpression eval(Environment e) {
+    public Procedure eval(Environment e) {
         return new Procedure(e, formalParameters, body);
     }
 }

@@ -2,7 +2,6 @@ package eval;
 
 import java.util.List;
 
-import lang.LispExpression;
 import lang.LispSymbol;
 
 public class LetEvaluation implements Evaluable {
@@ -19,8 +18,8 @@ public class LetEvaluation implements Evaluable {
     }
 
     @Override
-    public LispExpression eval(Environment e) {
-        List<LispExpression> computed_vals =
+    public Object eval(Environment e) {
+        List<Object> computed_vals =
             uncomputed_vals
             .stream()
             .map(exp -> exp.eval(e))

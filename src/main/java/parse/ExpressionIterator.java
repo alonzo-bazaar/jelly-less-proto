@@ -6,17 +6,15 @@ import java.util.Stack;
 import java.util.Queue;
 import java.util.LinkedList;
 
-import lang.LispExpression;
 import lang.Cons;
 import lang.Serializer;
 import utils.StringCharIterator;
-import lang.Constants; // for NIL
-import lang.Ops; // for type checking
+import lang.Constants;
 
-public class ExpressionIterator implements Iterator<LispExpression> {
+public class ExpressionIterator implements Iterator<Object> {
     private TokenIterator tokens;
-    private Stack<LispExpression> stack = new Stack<LispExpression>();
-    private Queue<LispExpression> precomputed = new LinkedList<LispExpression>();
+    private Stack<Object> stack = new Stack<Object>();
+    private Queue<Object> precomputed = new LinkedList<Object>();
     // with stack.peek() being the expression we're now building to add
     // somewhere in the tree of the toplevel expression that next() will yield
 
@@ -47,7 +45,7 @@ public class ExpressionIterator implements Iterator<LispExpression> {
     }
 
     @Override
-    public LispExpression next() {
+    public Object next() {
         try {
             precompute();
             if(!_hasNext()) return null;
@@ -59,11 +57,12 @@ public class ExpressionIterator implements Iterator<LispExpression> {
         }
     }
 
-    LispExpression getNext() throws UnbalancedParensException , TokensExhaustedException{
+    Object getNext() throws UnbalancedParensException , TokensExhaustedException{
         while (tokens.hasNext()) {
             String token = tokens.next();
             if(token == null && !stack.isEmpty()) // TODO quando ristrutturi token qui ci metti un Token.isEOF()
                 throw new TokensExhaustedException("tokens exhausted with incomplete form, probably due to an unclosed parenthesis");
+            assert token != null;
             if (token.equals("(")) {
                 stack.push(Constants.NIL);
             }
@@ -71,7 +70,7 @@ public class ExpressionIterator implements Iterator<LispExpression> {
                 if (stack.isEmpty()) {
                     throw new UnbalancedParensException("end of file before parsing, closing parentheses does not match any previously open parenthesis");
                 }
-                LispExpression expr = stack.pop();
+                Object expr = stack.pop();
                 if (stack.isEmpty()) {
                     return expr;
                 } else {
@@ -79,7 +78,7 @@ public class ExpressionIterator implements Iterator<LispExpression> {
                 }
             }
             else {
-                LispExpression expr = Serializer.fromToken(token);
+                Object expr = Serializer.fromToken(token);
                 if (stack.isEmpty()) {
                     return expr;
                 } else {
@@ -91,7 +90,7 @@ public class ExpressionIterator implements Iterator<LispExpression> {
     }
 
     void precompute() throws UnbalancedParensException, TokensExhaustedException {
-        LispExpression le;
+        Object le;
         le = getNext();
         while(le != null) {
             precomputed.add(le);
@@ -114,8 +113,8 @@ public class ExpressionIterator implements Iterator<LispExpression> {
         return !precomputed.isEmpty();
     }
 
-    private void addToTop(LispExpression le) throws InvalidParameterException {
-        if (Ops.isNil(stack.peek())) {
+    private void addToTop(Object le) throws InvalidParameterException {
+        if (stack.peek() == Constants.NIL) {
             stack.pop();
             stack.push(new Cons(le, Constants.NIL));
         }

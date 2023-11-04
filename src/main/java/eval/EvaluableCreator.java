@@ -5,7 +5,7 @@ import java.util.List;
 import lang.*;
 
 public class EvaluableCreator {
-    public static Evaluable fromExpression(LispExpression le) {
+    public static Evaluable fromExpression(Object le) {
         if (le instanceof Cons c) {
             return fromList(c);
         }
@@ -30,8 +30,8 @@ public class EvaluableCreator {
                 return new WhileLoopEvaluable(fromExpression(c.nth(1)),
                                               sequenceFromConsList((LispList)c.nthCdr(2)));
             case "let":
-                LispExpression frameDesc = c.nth(1);
-                LispExpression body = c.nthCdr(2);
+                Object frameDesc = c.nth(1);
+                Object body = c.nthCdr(2);
                 if (frameDesc instanceof Cons desc &&
                     body instanceof Cons letBod) {
                     List<LispSymbol> names = Utils.toJavaList(desc)
@@ -49,8 +49,8 @@ public class EvaluableCreator {
                 else
                     throw new InvalidParameterException("let form is malformed");
             case "lambda":
-                LispExpression formalParameters = c.nth(1);
-                LispExpression lambdaBody = c.nthCdr(2);
+                Object formalParameters = c.nth(1);
+                Object lambdaBody = c.nthCdr(2);
                 if (formalParameters instanceof Cons params &&
                     lambdaBody instanceof Cons lamdaBod) {
                     List<LispSymbol> paramsList = Utils.toJavaList(params)
@@ -87,7 +87,7 @@ public class EvaluableCreator {
                     (sym,
                      Utils.toJavaList((LispList)c.getCdr())
                      .stream()
-                     .map(arg -> fromExpression(arg))
+                     .map(EvaluableCreator::fromExpression)
                      .toList());
 
 
@@ -119,12 +119,12 @@ public class EvaluableCreator {
     static SequenceEvaluable sequenceFromConsList(LispList c) {
         List<Evaluable> evals = Utils.toJavaList(c)
             .stream()
-            .map(exp -> fromExpression(exp))
+            .map(EvaluableCreator::fromExpression)
             .toList();
         return new SequenceEvaluable(evals);
     }
 
-    public static Evaluable fromAtom(LispExpression exp) {
+    public static Evaluable fromAtom(Object exp) {
         if (exp instanceof LispSymbol sym)
             return new LookupEvaluable(sym);
         else

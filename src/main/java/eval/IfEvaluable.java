@@ -1,7 +1,6 @@
 package eval;
 
-import lang.LispExpression;
-import lang.Ops;
+import lang.Constants;
 
 public class IfEvaluable implements Evaluable {
     private Evaluable condition;
@@ -17,10 +16,8 @@ public class IfEvaluable implements Evaluable {
     }
 
     @Override
-    public LispExpression eval(Environment e) {
-        LispExpression check = condition.eval(e);
-        if (!Ops.isNil(check) &&
-            !Ops.isFalse(check)) {
+    public Object eval(Environment e) {
+        if (Utils.isTruthy(condition.eval(e))) {
             return ifPart.eval(e);
         }
         return elsePart.eval(e);

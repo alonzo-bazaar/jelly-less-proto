@@ -5,19 +5,17 @@ import java.util.ArrayList;
 
 import utils.Pair;
 
-import lang.LispExpression;
 import lang.Cons;
 import lang.Constants;
 import lang.LispList;
-import lang.Ops;
 
 public class Utils {
-    public static Pair<LispList, LispExpression> splitLast(Cons c) {
+    public static Pair<LispList, Object> splitLast(Cons c) {
         return new Pair<>(cutLast(c), c.last());
     }
 
     static LispList cutLast(LispList c) {
-        if (Ops.isNil(c) || Ops.isNil(c.getCdr()))
+        if (c == Constants.NIL || c.getCdr() == Constants.NIL)
             return Constants.NIL;
         if (c.getCdr() instanceof LispList ll)
             return new Cons(c.getCar(), cutLast(ll));
@@ -25,9 +23,9 @@ public class Utils {
             return new Cons(c.getCar(), Constants.NIL);
     }
 
-    public static List<LispExpression> toJavaList(LispList l) {
-        ArrayList<LispExpression> al = new ArrayList<>(l.length());
-        while (Ops.isCons(l)) {
+    public static List<Object> toJavaList(LispList l) {
+        ArrayList<Object> al = new ArrayList<>(l.length());
+        while (l instanceof Cons) {
             al.addLast(l.getCar());
             if (l.getCdr() instanceof Cons c) {
                 l = c;
@@ -37,5 +35,13 @@ public class Utils {
             }
         }
         return al;
+    }
+
+    public static boolean isFalsey(Object o) {
+        return o == Constants.NIL || o == Boolean.FALSE;
+    }
+
+    public static boolean isTruthy(Object o) {
+        return !isFalsey(o);
     }
 }

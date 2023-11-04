@@ -1,6 +1,5 @@
 package eval;
 
-import lang.LispExpression;
 import lang.LispSymbol;
 
 public class LookupEvaluable implements Evaluable {
@@ -11,7 +10,7 @@ public class LookupEvaluable implements Evaluable {
     }
 
     @Override
-    public LispExpression eval(Environment e) {
+    public Object eval(Environment e) {
         return e.lookup(sym);
     }
 }

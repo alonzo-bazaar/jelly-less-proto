@@ -3,59 +3,59 @@ package lang;
 import java.security.InvalidParameterException;
 
 public class Cons implements LispList {
-    LispExpression car;
-    LispExpression cdr;
+    Object car;
+    Object cdr;
 
-    public Cons(LispExpression car, LispExpression cdr) {
+    public Cons(Object car, Object cdr) {
         this.car = car;
         this.cdr = cdr;
     }
 
     @Override
-    public LispExpression getCar() {
+    public Object getCar() {
         return this.car;
     }
 
     @Override
-    public LispExpression getCdr() {
+    public Object getCdr() {
         return this.cdr;
     }
 
-    public void setCar(LispExpression newCar) {
+    public void setCar(Object newCar) {
         this.car = newCar;
     }
 
-    public void setCdr(LispExpression newCdr) {
+    public void setCdr(Object newCdr) {
         this.cdr = newCdr;
     }
 
-    public void addLast(LispExpression lv) {
+    public void addLast(Object lv) {
         Cons last = this.last();
         last.setCdr(new Cons(lv, Constants.NIL));
     }
 
     @Override
     public Cons last() {
-        Cons c;
-        for (c = this;
-             !Ops.isNil(c) && c.getCdr() instanceof Cons next;
-             c = next);
+        Cons c = this;
+        while(c.getCdr() instanceof Cons next) {
+            c = next;
+        }
         return c;
     }
 
     @Override
     public int length() {
-        int res = 1;
-        for (Cons c = this;
-             !Ops.isNil(c) && Ops.isCons(c.getCdr());
-                c = (Cons) c.getCdr()) {
-            ++res;
+        int cnt = 1;
+        Cons c = this;
+        while(c.getCdr() instanceof Cons next) {
+            c = next;
+            ++cnt;
         }
-        return res;
+        return cnt;
     }
 
     @Override
-    public LispExpression nthCdr(int n) {
+    public Object nthCdr(int n) {
         /* 0 indexed, che ci mancherebbe altro */
         if (n <= 0)
             return this;
@@ -66,11 +66,11 @@ public class Cons implements LispList {
     }
 
     @Override
-    public LispExpression nth(int n) {
+    public Object nth(int n) {
         /* 0 indexed, che ci mancherebbe altro */
-        LispExpression le = nthCdr(n);
-        if(Ops.isCons(cdr))
-            return ((Cons)le).car;
+        Object cd = nthCdr(n);
+        if(cd instanceof Cons cc)
+            return cc.car;
         return Constants.NIL;
     }
 

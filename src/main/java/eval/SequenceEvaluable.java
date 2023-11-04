@@ -1,7 +1,6 @@
 package eval;
 
 import java.util.List;
-import lang.LispExpression;
 
 public class SequenceEvaluable implements Evaluable {
     // last is treated differently since evaluation of a sequence returns the value
@@ -15,7 +14,7 @@ public class SequenceEvaluable implements Evaluable {
     }
 
     @Override
-    public LispExpression eval(Environment e) {
+    public Object eval(Environment e) {
         for (Evaluable ev : elements) {
             ev.eval(e);
         }

@@ -1,20 +1,22 @@
 package eval;
 
+import java.lang.Runnable;
+import java.util.function.Function;
+
 import java.security.InvalidParameterException;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import java.util.Optional;
 import lang.LispSymbol;
-import lang.LispValue;
 import lang.Constants;
-import lang.LispExpression;
 import lang.LispList;
 import lang.Cons;
-import lang.Ops;
 
 public class BuiltinFuncallEvaluable implements Evaluable {
-    private LispSymbol funSym;
-    private List<Evaluable> uncomputed_args;
+    private final LispSymbol funSym;
+    private final List<Evaluable> uncomputed_args;
 
     public BuiltinFuncallEvaluable(LispSymbol funSym, List<Evaluable> args) {
         this.funSym = funSym;
@@ -22,13 +24,15 @@ public class BuiltinFuncallEvaluable implements Evaluable {
     }
 
     @Override
-    public LispExpression eval(Environment env) {
+    public Object eval(Environment env) {
         return this.call(env);
     }
 
-    private static String[] builtinFunNames = {"cons", "car", "cdr",
-                                               "+", "-", "*", "/", ">", "<", "=", "<=", ">=", "!=",
-                                               "print"};
+    private final static String[] builtinFunNames = {
+            "cons", "car", "cdr",
+            "+", "-", "*", "/", ">", "<", "=", "<=", ">=", "!=",
+            "print"
+    };
     public static boolean isBuiltinFunctionName(LispSymbol sym) {
         for(String s : builtinFunNames) {
             if (sym.getName().equals(s)) {
@@ -38,9 +42,9 @@ public class BuiltinFuncallEvaluable implements Evaluable {
         return false;
     }
 
-    LispExpression call(Environment env) throws InvalidParameterException {
+    Object call(Environment env) throws InvalidParameterException {
         String funName = funSym.getName();
-        List<LispExpression> values = uncomputed_args.stream().map(exp -> exp.eval(env)).toList();
+        List<Object> values = uncomputed_args.stream().map(exp -> exp.eval(env)).toList();
         switch (funName) {
         case "cons":
             if(values.size()!= 2)
@@ -68,22 +72,22 @@ public class BuiltinFuncallEvaluable implements Evaluable {
                 throw new InvalidParameterException
                     ("addition expects numeric arguments");
             if(allIntegers(values))
-                return new LispValue<Integer>(integerSum(values));
-            return new LispValue<Double>(doubleSum(values));
+                return integerSum(values);
+            return doubleSum(values);
         case "-":
             if(!allNumeric(values))
                 throw new InvalidParameterException
                     ("subtraction expects numeric arguments");
             if(allIntegers(values))
-                return new LispValue<Integer>(integerDiff(values));
-            return new LispValue<Double>(doubleDiff(values));
+                return integerDiff(values);
+            return doubleDiff(values);
         case "*":
             if(!allNumeric(values))
                 throw new InvalidParameterException
                     ("multiplication expects numeric arguments");
             if(allIntegers(values))
-                return new LispValue<Integer>(integerProduct(values));
-            return new LispValue<Double>(doubleProduct(values));
+                return integerProduct(values);
+            return doubleProduct(values);
         case "/":
             if(values.size() != 2)
                 throw new InvalidParameterException
@@ -94,68 +98,55 @@ public class BuiltinFuncallEvaluable implements Evaluable {
             if(!allNumeric(values))
                 throw new InvalidParameterException
                     ("division expects numeric arguments");
-            return new LispValue<Double>
-                (getDouble(values.get(0))/getDouble(values.get(0)));
+            return (getDouble(values.get(0))/getDouble(values.get(1)));
         case ">":
             if(values.size() != 2 || !allNumeric(values))
                 throw new InvalidParameterException
                     ("> expects exactly 2 numeric arguments");
             if(allIntegers(values))
-                return new LispValue<Boolean> (getInteger(values.get(0)) >
-                                               getInteger(values.get(1)));
+                return (Integer)values.get(0) > (Integer)values.get(1);
             else
-                return new LispValue<Boolean> (getDouble(values.get(0)) >
-                                               getDouble(values.get(1)));
+                return getDouble(values.get(0)) > getDouble(values.get(1));
         case"<":
             if(values.size() != 2 || !allNumeric(values))
                 throw new InvalidParameterException
-                    ("< expects exactly 2 numeric arguments");
+                        ("> expects exactly 2 numeric arguments");
             if(allIntegers(values))
-                return new LispValue<Boolean> (getInteger(values.get(0)) <
-                                               getInteger(values.get(1)));
+                return (Integer)(values.get(0)) < (Integer)(values.get(1));
             else
-                return new LispValue<Boolean> (getDouble(values.get(0)) <
-                                               getDouble(values.get(1)));
+                return getDouble(values.get(0)) < getDouble(values.get(1));
         case "=":
             if(values.size() != 2 || !allNumeric(values))
                 throw new InvalidParameterException
-                    ("= expects exactly 2 numeric arguments");
+                        ("> expects exactly 2 numeric arguments");
             if(allIntegers(values))
-                return new LispValue<Boolean> (getInteger(values.get(0)) ==
-                                               getInteger(values.get(1)));
+                return (int)(values.get(0)) == (int)(values.get(1));
             else
-                return new LispValue<Boolean> (getDouble(values.get(0)) ==
-                                               getDouble(values.get(1)));
+                return getDouble(values.get(0)) == getDouble(values.get(1));
         case "<=":
             if(values.size() != 2 || !allNumeric(values))
                 throw new InvalidParameterException
-                    ("<= expects exactly 2 numeric arguments");
+                        ("> expects exactly 2 numeric arguments");
             if(allIntegers(values))
-                return new LispValue<Boolean> (getInteger(values.get(0)) <=
-                                               getInteger(values.get(1)));
+                return (Integer)(values.get(0)) <= (Integer)(values.get(1));
             else
-                return new LispValue<Boolean> (getDouble(values.get(0)) <=
-                                               getDouble(values.get(1)));
+                return getDouble(values.get(0)) <= getDouble(values.get(1));
         case ">=":
             if(values.size() != 2 || !allNumeric(values))
                 throw new InvalidParameterException
-                    (">= expects exactly 2 numeric arguments");
+                        ("> expects exactly 2 numeric arguments");
             if(allIntegers(values))
-                return new LispValue<Boolean> (getInteger(values.get(0)) >=
-                                               getInteger(values.get(1)));
+                return (Integer)(values.get(0)) >= (Integer)(values.get(1));
             else
-                return new LispValue<Boolean> (getDouble(values.get(0)) >=
-                                               getDouble(values.get(1)));
+                return getDouble(values.get(0)) >= getDouble(values.get(1));
         case "!=":
             if(values.size() != 2 || !allNumeric(values))
                 throw new InvalidParameterException
-                    ("!= expects exactly 2 numeric arguments");
+                        ("> expects exactly 2 numeric arguments");
             if(allIntegers(values))
-                return new LispValue<Boolean> (getInteger(values.get(0)) !=
-                                               getInteger(values.get(1)));
+                return (int)(values.get(0)) != (int)(values.get(1));
             else
-                return new LispValue<Boolean> (getDouble(values.get(0)) !=
-                                               getDouble(values.get(1)));
+                return getDouble(values.get(0)) != getDouble(values.get(1));
 
         case "print": // fatto principalmente per avere il sistema "subito" in uno stato dove può dare feedback
             int i = 0;
@@ -168,93 +159,67 @@ public class BuiltinFuncallEvaluable implements Evaluable {
         return null;
     }
 
-    double getDouble(LispExpression le) throws InvalidParameterException {
-        if(le instanceof LispValue lv) {
-            if(lv.get() instanceof Double d)
-                return d;
-            if(lv.get() instanceof Integer i)
-                return (double)i;
-        }
-        throw new InvalidParameterException
-            ("cannot get a double from " + le.toString() + " not a lisp number");
-    }
-
-    int getInteger (LispExpression le) throws InvalidParameterException {
-        if(le instanceof LispValue lv) {
-            if(lv.get() instanceof Integer i)
-                return i;
-        }
-
-        throw new InvalidParameterException
-            ("cannot get a integer from " + le.toString() + " not a lisp integer");
-    }
-
-    boolean isZero(LispExpression lv) throws InvalidParameterException {
+    boolean isZero(Object lv) throws InvalidParameterException {
         return getDouble(lv) == 0;
     }
 
-    boolean allNumeric(List<LispExpression> exprs) {
-        return exprs.stream().allMatch(a->Ops.isNumber(a));
+    boolean allNumeric(List<Object> exprs) {
+        return exprs.stream().allMatch(a-> a instanceof Integer || a instanceof Double);
     }
 
-    boolean allIntegers(List<LispExpression> exprs) {
-        return exprs.stream().allMatch(a->Ops.isInteger(a));
+    boolean allIntegers(List<Object> exprs) {
+        return exprs.stream().allMatch(a->a instanceof Integer);
     }
 
-    int integerSum(List<LispExpression> exprs) {
-        Optional<LispExpression> le = exprs.stream().reduce
-            ((LispExpression a, LispExpression b) ->
-             new LispValue<Integer>(getInteger(a) + getInteger(b)));
-
-        if(le.isPresent()) {
-            return getInteger(le.get());
-        }
-        return 0;
+    double getDouble(Object o) {
+        return switch (o) {
+            case Integer i -> (double)((int)i);
+            case Double d -> (double)d;
+            default -> 0;
+        };
     }
 
-    double doubleSum(List<LispExpression> exprs) {
-        Optional<LispExpression> le = exprs.stream().reduce
-            ((LispExpression a, LispExpression b) ->
-             new LispValue<Double>(getDouble(a) + getDouble(b)));
-
-        if(le.isPresent()) {
-            return getDouble(le.get());
-        }
-        return 0;
+    int getInt(Object o) {
+        return switch (o) {
+            case Integer i -> (int)i;
+            case Double d -> (int)((double)d);
+            default -> 0;
+        };
     }
 
-    int integerDiff(List<LispExpression> exprs) {
-        if(exprs.size() == 0) return 0;
-        return getInteger(exprs.get(0)) - integerSum(exprs.subList(1,exprs.size()));
+    Integer integerSum(List<Object> exprs) {
+        if(exprs.isEmpty()) return 0;
+        Optional<Object> sum = exprs.stream().reduce ((Object a, Object b) -> (Integer)a + (Integer)b);
+        return sum.map(this::getInt).orElse(0);
     }
 
-    double doubleDiff(List<LispExpression> exprs) {
-        if(exprs.size() == 0) return 0;
+    Double doubleSum(List<Object> exprs) {
+        if(exprs.isEmpty()) return 0.0;
+        Optional<Object> sum = exprs.stream().reduce ((Object a, Object b) -> getDouble(a) + getDouble(b));
+        return sum.map(this::getDouble).orElse(0.0);
+    }
+
+
+    Integer integerDiff(List<Object> exprs) {
+        if(exprs.isEmpty()) return 0;
+        return (Integer)(exprs.get(0)) - integerSum(exprs.subList(1,exprs.size()));
+    }
+
+    Double doubleDiff(List<Object> exprs) {
+        if(exprs.isEmpty()) return 0.0;
         return getDouble(exprs.get(0)) - doubleSum(exprs.subList(1,exprs.size()));
     }
 
 
-    int integerProduct(List<LispExpression> exprs) {
-        Optional<LispExpression> le = exprs.stream().reduce
-            ((LispExpression a, LispExpression b) ->
-             new LispValue<Integer>(getInteger(a) * getInteger(b)));
-
-        if(le.isPresent()) {
-            return getInteger(le.get());
-        }
-        return 0;
+    Integer integerProduct(List<Object> exprs) {
+        if(exprs.isEmpty()) return 1;
+        Optional<Object> prod = exprs.stream().reduce((Object a, Object b) -> (Integer)(a) * (Integer)(b));
+        return prod.map(this::getInt).orElse(1);
     }
 
-    double doubleProduct(List<LispExpression> exprs) {
-        Optional<LispExpression> le = exprs.stream().reduce
-            ((LispExpression a, LispExpression b) ->
-             new LispValue<Double>(getDouble(a) * getDouble(b)));
-
-        if(le.isPresent()) {
-            return getDouble(le.get());
-        }
-        return 0;
+    double doubleProduct(List<Object> exprs) {
+        if(exprs.isEmpty()) return 1.0;
+        Optional<Object> prod = exprs.stream().reduce((Object a, Object b) -> getDouble(a) * getDouble(b));
+        return prod.map(this::getDouble).orElse(1.0);
     }
 }
-
-    

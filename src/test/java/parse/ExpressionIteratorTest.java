@@ -1,13 +1,14 @@
 package parse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import lang.LispSymbol;
 import lang.Cons;
 import lang.Constants;
 import utils.StringCharIterator;
-
-import static org.junit.Assert.*;
 
 
 public class ExpressionIteratorTest {

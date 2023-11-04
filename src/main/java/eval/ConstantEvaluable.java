@@ -1,15 +1,13 @@
 package eval;
 
-import lang.LispExpression;
-
 public class ConstantEvaluable implements Evaluable {
-    private LispExpression exp;
-    public ConstantEvaluable(LispExpression exp) {
+    private final Object exp;
+    public ConstantEvaluable(Object exp) {
         this.exp = exp;
     }
 
     @Override
-    public LispExpression eval(Environment e) {
+    public Object eval(Environment e) {
         return exp;
     }
 }

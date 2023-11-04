@@ -1,12 +1,12 @@
 package lang;
 
 public class Serializer {
-    public static LispExpression fromToken(String token) {
-        if (token.length() == 0) {
+    public static Object fromToken(String token) {
+        if (token.isEmpty()) {
             // le famo tirare?
             return Constants.NIL;
         }
-        else if (token.toLowerCase().equals("nil")) {
+        else if (token.equalsIgnoreCase("nil")) {
             return Constants.NIL;
         }
         else if (token.startsWith("#\\")) {
@@ -27,34 +27,32 @@ public class Serializer {
     }
     
     static boolean allNumeric(String token) {
-        return token.chars().allMatch(c -> Character.isDigit(c));
+        return token.chars().allMatch(Character::isDigit);
     }
 
     static boolean allNumericOrDot(String token) {
         return token.chars().filter(c -> c == '.').count() == 1 &&
-            token.chars().filter(c -> c != '.').allMatch(c -> Character.isDigit(c));
+            token.chars().filter(c -> c != '.').allMatch(Character::isDigit);
     }
 
-    static LispValue<Integer> intFromToken(String token) {
-        return new LispValue<Integer>(Integer.parseInt(token, 10));
+    static Integer intFromToken(String token) {
+        return Integer.parseInt(token, 10);
     }
 
-    static LispValue<String> stringFromToken(String token) {
+    static String stringFromToken(String token) {
         // token will be "<contents>", we just want <contents>
         // so we remove the first and last characters
-        return new LispValue<String>(token
-                              .subSequence(1, token.length() - 1)
-                              .toString());
+        return token.subSequence(1, token.length() - 1).toString();
     }
 
-    static LispValue<Character> charFromToken(String token) {
+    static Character charFromToken(String token) {
         // token will be #\<char>
         // we just want <char>
         // we're not gonna consider things like #\Space or #\Newline, for now
-        return new LispValue<Character>(token.charAt(2));
+        return token.charAt(2);
     }
 
-    static LispExpression doubleFromToken(String token) {
-        return new LispValue<Double>(Double.parseDouble(token));
+    static Double doubleFromToken(String token) {
+        return Double.parseDouble(token);
     }
 }

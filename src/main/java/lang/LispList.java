@@ -1,13 +1,13 @@
 package lang;
 
-public interface LispList extends LispExpression {
-    public LispExpression getCar();
-    public LispExpression getCdr();
+public interface LispList {
+    public Object getCar();
+    public Object getCdr();
 
     public int length();
 
-    public LispExpression nth(int n);
-    public LispExpression nthCdr(int n);
+    public Object nth(int n);
+    public Object nthCdr(int n);
 
-    public LispExpression last();
+    public Object last();
 }

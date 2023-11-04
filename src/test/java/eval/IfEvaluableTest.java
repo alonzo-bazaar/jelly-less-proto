@@ -1,20 +1,22 @@
 package eval;
 
-import static org.junit.Assert.assertEquals;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.Assert.assertEquals;
 
 import lang.Constants;
 
 public class IfEvaluableTest {
     private Environment env;
-    @Before
+    @BeforeEach
     public void envSetup() {
         env = new Environment();
     }
-    @After
+    @AfterEach
     public void envReset() {
         env.reset();
     }

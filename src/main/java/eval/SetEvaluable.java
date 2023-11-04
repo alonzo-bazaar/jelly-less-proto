@@ -1,22 +1,21 @@
 package eval;
 
-import lang.LispExpression;
 import lang.LispSymbol;
 import lang.Constants;
 
 public class SetEvaluable implements Evaluable {
-    private LispSymbol sym;
-    private Evaluable uncomputed_val;
+    private final LispSymbol sym;
+    private final Evaluable uncomputedVal;
 
     public SetEvaluable(LispSymbol sym, Evaluable val) {
         this.sym = sym;
-        this.uncomputed_val = val;
+        this.uncomputedVal = val;
     }
 
     @Override
-    public LispExpression eval(Environment e) {
+    public Object eval(Environment e) {
         try {
-            LispExpression computed_val = uncomputed_val.eval(e);
+            Object computed_val = uncomputedVal.eval(e);
             e.set(sym, computed_val);
             return computed_val;
         }

@@ -1,10 +1,10 @@
 package eval;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.After;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 
 import parse.ExpressionIterator;
 
@@ -17,12 +17,12 @@ public class EvaluableCreatorTest {
 
     private Environment env = new Environment();
 
-    @Before
+    @BeforeEach
     public void refreshEnv() {
         env = new Environment();
     }
 
-    @After
+    @AfterEach
     public void resetEnvironment() {
         env.reset();
     }

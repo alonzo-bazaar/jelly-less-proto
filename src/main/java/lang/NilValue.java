@@ -9,11 +9,11 @@ public class NilValue implements LispList {
     }
 
     @Override
-    public LispExpression getCar() {
+    public Object getCar() {
         return Constants.NIL;
     }
     @Override
-    public LispExpression getCdr() {
+    public Object getCdr() {
         return Constants.NIL; 
     }
     @Override
@@ -21,15 +21,15 @@ public class NilValue implements LispList {
         return 0;
     }
     @Override
-    public LispExpression nth(int n) {
+    public Object nth(int n) {
         return Constants.NIL; 
     }
     @Override
-    public LispExpression nthCdr(int n) {
+    public Object nthCdr(int n) {
         return Constants.NIL; 
     }
     @Override
-    public LispExpression last() {
+    public Object last() {
         return Constants.NIL;
     }
 
