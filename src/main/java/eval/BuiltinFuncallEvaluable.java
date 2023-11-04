@@ -1,18 +1,15 @@
 package eval;
 
-import java.lang.Runnable;
-import java.util.function.Function;
-
 import java.security.InvalidParameterException;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 import java.util.Optional;
+
 import lang.LispSymbol;
 import lang.Constants;
 import lang.LispList;
 import lang.Cons;
+import lang.Arith;
 
 public class BuiltinFuncallEvaluable implements Evaluable {
     private final LispSymbol funSym;
@@ -42,184 +39,151 @@ public class BuiltinFuncallEvaluable implements Evaluable {
         return false;
     }
 
+
     Object call(Environment env) throws InvalidParameterException {
         String funName = funSym.getName();
-        List<Object> values = uncomputed_args.stream().map(exp -> exp.eval(env)).toList();
+        List<Object> computed_args = uncomputed_args.stream().map(exp -> exp.eval(env)).toList();
         switch (funName) {
         case "cons":
-            if(values.size()!= 2)
-                throw new InvalidParameterException
-                    ("cons must be called with two argument");
-            return new Cons(values.get(0), values.get(1));
+            ArgUtils.throwIfNotExactSize("cons", 2, computed_args);
+            return new Cons(computed_args.get(0), computed_args.get(1));
         case "car":
-            if(values.size()!= 1)
-                throw new InvalidParameterException
-                    ("car must be called with just one argument");
-            if(values.get(0) instanceof LispList ll)
-                return ll.getCar();
-            throw new InvalidParameterException
-                ("cannot call car on " + values.get(0) + "as it is not a list"); 
+            ArgUtils.throwIfNotExactSize("car", 1, computed_args);
+            ArgUtils.throwIfNotLispList("car", computed_args.get(0));
+            return ((LispList)(computed_args.get(0))).getCar();
         case "cdr":
-            if(values.size()!= 1)
-                throw new InvalidParameterException
-                    ("cdr must be called with just one argument");
-            if(values.get(0) instanceof LispList ll)
-                return ll.getCdr();
-            throw new InvalidParameterException
-                ("cannot call cdr on " + values.get(0) + "as it is not a list"); 
+            ArgUtils.throwIfNotExactSize("cdr", 1, computed_args);
+            ArgUtils.throwIfNotLispList("cdr", computed_args.get(0));
+            return ((LispList)(computed_args.get(0))).getCdr();
         case "+":
-            if(!allNumeric(values))
-                throw new InvalidParameterException
-                    ("addition expects numeric arguments");
-            if(allIntegers(values))
-                return integerSum(values);
-            return doubleSum(values);
+            return ArgArith.sum(computed_args);
         case "-":
-            if(!allNumeric(values))
-                throw new InvalidParameterException
-                    ("subtraction expects numeric arguments");
-            if(allIntegers(values))
-                return integerDiff(values);
-            return doubleDiff(values);
+            return ArgArith.diff(computed_args);
         case "*":
-            if(!allNumeric(values))
-                throw new InvalidParameterException
-                    ("multiplication expects numeric arguments");
-            if(allIntegers(values))
-                return integerProduct(values);
-            return doubleProduct(values);
+            return ArgArith.prod(computed_args);
         case "/":
-            if(values.size() != 2)
-                throw new InvalidParameterException
-                    ("division expects exactly 2 arguments");
-            if(isZero(values.get(1)))
-                throw new InvalidParameterException
-                    ("cannot divide by 0");
-            if(!allNumeric(values))
-                throw new InvalidParameterException
-                    ("division expects numeric arguments");
-            return (getDouble(values.get(0))/getDouble(values.get(1)));
+            return ArgArith.ratio(computed_args);
         case ">":
-            if(values.size() != 2 || !allNumeric(values))
-                throw new InvalidParameterException
-                    ("> expects exactly 2 numeric arguments");
-            if(allIntegers(values))
-                return (Integer)values.get(0) > (Integer)values.get(1);
-            else
-                return getDouble(values.get(0)) > getDouble(values.get(1));
+            return ArgArith.greaterThan(computed_args);
         case"<":
-            if(values.size() != 2 || !allNumeric(values))
-                throw new InvalidParameterException
-                        ("> expects exactly 2 numeric arguments");
-            if(allIntegers(values))
-                return (Integer)(values.get(0)) < (Integer)(values.get(1));
-            else
-                return getDouble(values.get(0)) < getDouble(values.get(1));
-        case "=":
-            if(values.size() != 2 || !allNumeric(values))
-                throw new InvalidParameterException
-                        ("> expects exactly 2 numeric arguments");
-            if(allIntegers(values))
-                return (int)(values.get(0)) == (int)(values.get(1));
-            else
-                return getDouble(values.get(0)) == getDouble(values.get(1));
+            return ArgArith.lessThan(computed_args);
         case "<=":
-            if(values.size() != 2 || !allNumeric(values))
-                throw new InvalidParameterException
-                        ("> expects exactly 2 numeric arguments");
-            if(allIntegers(values))
-                return (Integer)(values.get(0)) <= (Integer)(values.get(1));
-            else
-                return getDouble(values.get(0)) <= getDouble(values.get(1));
+            return ArgArith.lessEqual(computed_args);
         case ">=":
-            if(values.size() != 2 || !allNumeric(values))
-                throw new InvalidParameterException
-                        ("> expects exactly 2 numeric arguments");
-            if(allIntegers(values))
-                return (Integer)(values.get(0)) >= (Integer)(values.get(1));
-            else
-                return getDouble(values.get(0)) >= getDouble(values.get(1));
+            return ArgArith.greaterEqual(computed_args);
+        case "=":
+            return ArgArith.equalTo(computed_args);
         case "!=":
-            if(values.size() != 2 || !allNumeric(values))
-                throw new InvalidParameterException
-                        ("> expects exactly 2 numeric arguments");
-            if(allIntegers(values))
-                return (int)(values.get(0)) != (int)(values.get(1));
-            else
-                return getDouble(values.get(0)) != getDouble(values.get(1));
+            return ArgArith.notEqualTo(computed_args);
 
-        case "print": // fatto principalmente per avere il sistema "subito" in uno stato dove può dare feedback
-            int i = 0;
-            for (Object o : values) {
-                System.out.println(i + " : " + o);
-                i++;
+        case "print": // fatto per interagire un po' da ora
+            if(computed_args.size() <= 1) {
+                for (Object o : computed_args)
+                    System.out.println(o + ":" + o.getClass().getSimpleName());
+            }
+            else {
+                System.out.print("[");
+                for (Object o : computed_args)
+                    System.out.print(o + ":" + o.getClass().getSimpleName() + ", ");
+                System.out.println("]");
             }
             return Constants.NIL;
         }
         return null;
     }
+}
 
-    boolean isZero(Object lv) throws InvalidParameterException {
-        return getDouble(lv) == 0;
+class ArgUtils {
+    // these checks are so many times I might as well
+    static void throwIfNonNumeric(String source, List<Object> args)
+            throws InvalidParameterException {
+        if(!args.stream().allMatch(a -> a instanceof Number))
+            throw new InvalidParameterException(source + " expects all arguments to be numeric");
     }
 
-    boolean allNumeric(List<Object> exprs) {
-        return exprs.stream().allMatch(a-> a instanceof Integer || a instanceof Double);
+    static void throwIfNotExactSize(String source, int size, List<Object> args)
+            throws InvalidParameterException {
+        if(!args.stream().allMatch(a -> a instanceof Number))
+            throw new InvalidParameterException(source + " expects exactly " + size + "arguments");
     }
 
-    boolean allIntegers(List<Object> exprs) {
-        return exprs.stream().allMatch(a->a instanceof Integer);
+    static void throwIfNotLispList(String source, Object arg) {
+        if(!(arg instanceof LispList))
+            throw new InvalidParameterException
+                    ("cannot call " + source + "on object " + arg
+                            + "of type" + arg.getClass().getCanonicalName()
+                            + " since it is not a list");
+    }
+}
+
+class ArgArith {
+    // "adapts" the Arith functions to act on arg lists
+    static Number id(Number n) {
+        return n;
+    }
+    static Number defaultSum(List<Object> args) {
+        return args.isEmpty()?0:(Number)args.get(0);
+    }
+    static Number defaultProduct(List<Object> args) {
+        return args.isEmpty()?1:(Number)args.get(0);
+    }
+    static Number sum(List<Object> args) {
+        ArgUtils.throwIfNonNumeric("addition", args);
+        Optional<Number> sum = args.stream().map(a -> (Number)a).reduce(Arith::add);
+        return sum.map(ArgArith::id).orElse(defaultSum(args));
+    }
+    static Number diff(List<Object> args) {
+        ArgUtils.throwIfNonNumeric("subtraction", args);
+        Number zero = defaultSum(args);
+        if(args.isEmpty()) return zero;
+        Number head = (Number)args.get(0);
+        List<Object> tail = args.subList(1,args.size());
+        return Arith.subtract(head,sum(tail));
+    }
+    static Number prod(List<Object> args) {
+        ArgUtils.throwIfNonNumeric("multiplication", args);
+        Optional<Number> sum = args.stream().map(a -> (Number)a).reduce(Arith::multiply);
+        return sum.map(ArgArith::id).orElse(defaultProduct(args));
+    }
+    static Number ratio(List<Object> args) {
+        ArgUtils.throwIfNonNumeric("division", args);
+        ArgUtils.throwIfNotExactSize("division", 2, args);
+        return Arith.divide((Number)args.get(0), (Number)args.get(1));
     }
 
-    double getDouble(Object o) {
-        return switch (o) {
-            case Integer i -> (double)((int)i);
-            case Double d -> (double)d;
-            default -> 0;
-        };
+    // all comparisons perform the same two checks, so why not
+    static void comparisonChecks(String source, List<Object> args) {
+        ArgUtils.throwIfNonNumeric(source, args);
+        ArgUtils.throwIfNotExactSize(source, 2, args);
     }
 
-    int getInt(Object o) {
-        return switch (o) {
-            case Integer i -> (int)i;
-            case Double d -> (int)((double)d);
-            default -> 0;
-        };
+    static boolean lessThan(List<Object> args) {
+        comparisonChecks("'<' comparison", args);
+        return Arith.lessThan((Number)args.get(0), (Number)args.get(1));
     }
 
-    Integer integerSum(List<Object> exprs) {
-        if(exprs.isEmpty()) return 0;
-        Optional<Object> sum = exprs.stream().reduce ((Object a, Object b) -> (Integer)a + (Integer)b);
-        return sum.map(this::getInt).orElse(0);
+    static boolean greaterThan(List<Object> args) {
+        comparisonChecks("'>' comparison", args);
+        return Arith.greaterThan((Number)args.get(0), (Number)args.get(1));
     }
 
-    Double doubleSum(List<Object> exprs) {
-        if(exprs.isEmpty()) return 0.0;
-        Optional<Object> sum = exprs.stream().reduce ((Object a, Object b) -> getDouble(a) + getDouble(b));
-        return sum.map(this::getDouble).orElse(0.0);
+    static boolean equalTo(List<Object> args) {
+        comparisonChecks("'=' comparison", args);
+        return Arith.equalTo((Number)args.get(0), (Number)args.get(1));
     }
 
-
-    Integer integerDiff(List<Object> exprs) {
-        if(exprs.isEmpty()) return 0;
-        return (Integer)(exprs.get(0)) - integerSum(exprs.subList(1,exprs.size()));
+    static boolean notEqualTo(List<Object> args) {
+        comparisonChecks("'!=' comparison", args);
+        return !Arith.equalTo((Number)args.get(0), (Number)args.get(1));
     }
 
-    Double doubleDiff(List<Object> exprs) {
-        if(exprs.isEmpty()) return 0.0;
-        return getDouble(exprs.get(0)) - doubleSum(exprs.subList(1,exprs.size()));
+    static boolean lessEqual(List<Object> args) {
+        comparisonChecks("'<=' comparison", args);
+        return Arith.lessEqual((Number)args.get(0), (Number)args.get(1));
     }
 
-
-    Integer integerProduct(List<Object> exprs) {
-        if(exprs.isEmpty()) return 1;
-        Optional<Object> prod = exprs.stream().reduce((Object a, Object b) -> (Integer)(a) * (Integer)(b));
-        return prod.map(this::getInt).orElse(1);
-    }
-
-    double doubleProduct(List<Object> exprs) {
-        if(exprs.isEmpty()) return 1.0;
-        Optional<Object> prod = exprs.stream().reduce((Object a, Object b) -> getDouble(a) * getDouble(b));
-        return prod.map(this::getDouble).orElse(1.0);
+    static boolean greaterEqual(List<Object> args) {
+        comparisonChecks("'>=' comparison", args);
+        return Arith.lessEqual((Number)args.get(0), (Number)args.get(1));
     }
 }

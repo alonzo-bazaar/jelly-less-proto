@@ -43,6 +43,12 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
       <version>5.10.0</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.jetbrains</groupId>
+          <artifactId>annotations</artifactId>
+          <version>24.0.1</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
 
   <build>
