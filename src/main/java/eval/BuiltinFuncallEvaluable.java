@@ -25,8 +25,10 @@ public class BuiltinFuncallEvaluable implements Evaluable {
         return this.call(env);
     }
 
+    // TODO : this list is overly coupled with the call() function
     private final static String[] builtinFunNames = {
             "cons", "car", "cdr",
+            "not", "null",
             "+", "-", "*", "/", ">", "<", "=", "<=", ">=", "!=",
             "print"
     };
@@ -39,57 +41,71 @@ public class BuiltinFuncallEvaluable implements Evaluable {
         return false;
     }
 
-
     Object call(Environment env) throws InvalidParameterException {
         String funName = funSym.getName();
         List<Object> computed_args = uncomputed_args.stream().map(exp -> exp.eval(env)).toList();
         switch (funName) {
-        case "cons":
-            ArgUtils.throwIfNotExactSize("cons", 2, computed_args);
-            return new Cons(computed_args.get(0), computed_args.get(1));
-        case "car":
-            ArgUtils.throwIfNotExactSize("car", 1, computed_args);
-            ArgUtils.throwIfNotLispList("car", computed_args.get(0));
-            return ((LispList)(computed_args.get(0))).getCar();
-        case "cdr":
-            ArgUtils.throwIfNotExactSize("cdr", 1, computed_args);
-            ArgUtils.throwIfNotLispList("cdr", computed_args.get(0));
-            return ((LispList)(computed_args.get(0))).getCdr();
-        case "+":
-            return ArgArith.sum(computed_args);
-        case "-":
-            return ArgArith.diff(computed_args);
-        case "*":
-            return ArgArith.prod(computed_args);
-        case "/":
-            return ArgArith.ratio(computed_args);
-        case ">":
-            return ArgArith.greaterThan(computed_args);
-        case"<":
-            return ArgArith.lessThan(computed_args);
-        case "<=":
-            return ArgArith.lessEqual(computed_args);
-        case ">=":
-            return ArgArith.greaterEqual(computed_args);
-        case "=":
-            return ArgArith.equalTo(computed_args);
-        case "!=":
-            return ArgArith.notEqualTo(computed_args);
+            case "cons":
+                ArgUtils.throwIfNotExactSize("cons", 2, computed_args);
+                return new Cons(computed_args.get(0), computed_args.get(1));
+            case "car":
+                ArgUtils.throwIfNotExactSize("car", 1, computed_args);
+                ArgUtils.throwIfNotLispList("car", computed_args.get(0));
+                return ((LispList) (computed_args.get(0))).getCar();
+            case "cdr":
+                ArgUtils.throwIfNotExactSize("cdr", 1, computed_args);
+                ArgUtils.throwIfNotLispList("cdr", computed_args.get(0));
+                return ((LispList) (computed_args.get(0))).getCdr();
 
-        case "print": // fatto per interagire un po' da ora
-            if(computed_args.size() <= 1) {
-                for (Object o : computed_args)
-                    System.out.println(o + ":" + o.getClass().getSimpleName());
-            }
-            else {
-                System.out.print("[");
-                for (Object o : computed_args)
-                    System.out.print(o + ":" + o.getClass().getSimpleName() + ", ");
-                System.out.println("]");
-            }
-            return Constants.NIL;
+            case "not":
+                ArgUtils.throwIfNotExactSize("not",1,computed_args);
+                return Utils.isFalsey(computed_args.get(0));
+            case "null":
+                ArgUtils.throwIfNotExactSize("null",1,computed_args);
+                return computed_args.get(0) == Constants.NIL;
+
+            case "+":
+                return ArgArith.sum(computed_args);
+            case "-":
+                return ArgArith.diff(computed_args);
+            case "*":
+                return ArgArith.prod(computed_args);
+            case "/":
+                return ArgArith.ratio(computed_args);
+
+            case ">":
+                return ArgArith.greaterThan(computed_args);
+            case "<":
+                return ArgArith.lessThan(computed_args);
+            case "<=":
+                return ArgArith.lessEqual(computed_args);
+            case ">=":
+                return ArgArith.greaterEqual(computed_args);
+            case "=":
+                return ArgArith.equalTo(computed_args);
+            case "!=":
+                return ArgArith.notEqualTo(computed_args);
+
+            case "print": // fatto per interagire un po' da ora
+                printList(computed_args);
+                return Constants.NIL;
+
+            default:
+                return null;
         }
-        return null;
+    }
+
+    static void printList(List<Object> args) {
+        if(args.size() <= 1) {
+            for (Object o : args)
+                System.out.println(o + ":" + o.getClass().getSimpleName());
+        }
+        else {
+            System.out.print("[");
+            for (Object o : args)
+                System.out.print(o + ":" + o.getClass().getSimpleName() + ", ");
+            System.out.println("]");
+        }
     }
 }
 

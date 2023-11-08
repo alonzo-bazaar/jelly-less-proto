@@ -8,9 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 
 import parse.ExpressionIterator;
+import parse.ParsingException;
 
-public class BuiltinFuncallEvaluableTest {
-    private Evaluable fromString(String s) {
+public class BuiltinFuncallEvaluableTest  {
+    private Evaluable fromString(String s) throws ParsingException {
         ExpressionIterator ei = new ExpressionIterator(s);
         Object o = ei.next();
         return EvaluableCreator.fromExpression(o);
@@ -29,13 +30,13 @@ public class BuiltinFuncallEvaluableTest {
     }
 
     @Test
-    public void testLessThan() {
+    public void testLessThan() throws ParsingException {
         Evaluable less = fromString("(> 10 10.1)");
         assertFalse((boolean)less.eval(env));
     }
 
     @Test
-    public void testMoreThan() {
+    public void testMoreThan() throws ParsingException {
         Evaluable more = fromString("(< 10 10.1)");
         assertTrue((boolean)more.eval(env));
     }

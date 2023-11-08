@@ -2,37 +2,25 @@ package parse;
 
 import java.util.Iterator;
 
+import utils.OsUtils;
 import utils.PrefixIterator;
 
 // public class SignificantCharsIterator implements Iterator<Character>{
 public class SignificantCharsIterator extends PrefixIterator{
     /**
-     * ignora caratteri inutili per la sintassi
-     * si intendono quindi
-     * - commenti
+     * ignora caratteri inultli, vale a dire i commenti nel codice
      */
-    // commenti stile java/c++ per non scazzare troppe abitudini (altrui)
-    private static String inlineCommentStart = "//";
-    private static String multilineCommentStart = "/*";
-    private static String multilineCommentEnd = "*/";
+    // commenti stile java/c++, per adesso
+    private static final String inlineCommentStart = "//";
+    private static final String multilineCommentStart = "/*";
+    private static final String multilineCommentEnd = "*/";
 
-    private static String unixNewline = "\n";
-    private static String dosNewline = "\r\n";
+    private static final String unixNewline = "\n";
+    private static final String dosNewline = "\r\n";
 
-    private String newline;
+    private String newline = OsUtils.isWindows()?dosNewline:unixNewline;
     public SignificantCharsIterator(Iterator<Character> ic) {
         super(ic);
-        if (isWindows())
-            this.newline = dosNewline;
-        else 
-            this.newline = unixNewline;
-    }
-
-    private static boolean isWindows() {
-        /* TODO : this function does not the fuck belong here
-         * copy https://stackoverflow.com/questions/228477
-         * somewhere */
-        return (System.getProperty("os.name").startsWith("Windows"));
     }
 
     // questo per i test, così sappiamo che almeno fa per entrambi i tipi di sistema

@@ -116,20 +116,3 @@ class EnvFrame {
     }
 }
 
-class EnvironmentException extends Exception {
-    public EnvironmentException(String s) {
-        super(s);
-    }
-}
-    
-class VariableDoesNotExistException extends EnvironmentException {
-    public VariableDoesNotExistException(String s) {
-        super(s);
-    }
-}
-
-class VariableAlreadyExistsException extends EnvironmentException {
-    public VariableAlreadyExistsException(String s) {
-        super(s);
-    }
-}

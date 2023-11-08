@@ -11,7 +11,7 @@ import lang.Serializer;
 import utils.StringCharIterator;
 import lang.Constants;
 
-public class ExpressionIterator implements Iterator<Object> {
+public class ExpressionIterator {
     private TokenIterator tokens;
     private Stack<Object> stack = new Stack<Object>();
     private Queue<Object> precomputed = new LinkedList<Object>();
@@ -44,20 +44,13 @@ public class ExpressionIterator implements Iterator<Object> {
              (new StringCharIterator(s)));
     }
 
-    @Override
-    public Object next() {
-        try {
-            precompute();
-            if(!_hasNext()) return null;
-            return precomputed.remove();
-        } catch (Throwable t) {
-            System.out.println("error reading expression : " + t.getClass().getCanonicalName());
-            System.out.println(t.getMessage());
-            return null;
-        }
+    public Object next() throws ParsingException {
+        precompute();
+        if(!hasNext()) return null;
+        return precomputed.remove();
     }
 
-    Object getNext() throws UnbalancedParensException , TokensExhaustedException{
+    Object getNext() throws ParsingException {
         while (tokens.hasNext()) {
             String token = tokens.next();
             if(token == null && !stack.isEmpty()) // TODO quando ristrutturi token qui ci metti un Token.isEOF()
@@ -89,26 +82,15 @@ public class ExpressionIterator implements Iterator<Object> {
         return null;
     }
 
-    void precompute() throws UnbalancedParensException, TokensExhaustedException {
-        Object le;
-        le = getNext();
+    void precompute() throws ParsingException {
+        Object le = getNext();
         while(le != null) {
             precomputed.add(le);
             le = getNext();
         }
     }
 
-    @Override
-    public boolean hasNext() {
-        try {
-            return _hasNext();
-        }
-        catch (Throwable t) {
-            return false;
-        }
-    }
-
-    boolean _hasNext() throws UnbalancedParensException, TokensExhaustedException {
+    public boolean hasNext() throws ParsingException {
         precompute();
         return !precomputed.isEmpty();
     }
@@ -129,14 +111,3 @@ public class ExpressionIterator implements Iterator<Object> {
     }
 }
 
-class TokensExhaustedException extends Exception {
-    public TokensExhaustedException(String s) {
-        super(s);
-    }
-}
-
-class UnbalancedParensException extends Exception {
-    public UnbalancedParensException(String s) {
-        super(s);
-    }
-}

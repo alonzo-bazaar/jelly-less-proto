@@ -1,6 +1,8 @@
 package eval;
 
 import parse.ExpressionIterator;
+import parse.ParsingException;
+import parse.UnbalancedParensException;
 
 public class Machine {
     // interface to the underlying "lisp machine"
@@ -10,7 +12,7 @@ public class Machine {
      */
     private Environment env = new Environment();
 
-    public Object evalString(String s) {
+    public Object evalString(String s) throws ParsingException {
         ExpressionIterator ei = new ExpressionIterator(s);
         while (ei.hasNext()) {
             Object le = ei.next();

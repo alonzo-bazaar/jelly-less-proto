@@ -5,10 +5,10 @@ import java.util.List;
 import lang.LispSymbol;
 
 public class Procedure {
-    private Environment definitionEnvironment;
+    private final Environment definitionEnvironment;
     // TODO to be refined into a lambda list class that also allows optional and/or keyword arguments
-    private List<LispSymbol> formalParameters;
-    private SequenceEvaluable functionBody;
+    private final List<LispSymbol> formalParameters;
+    private final SequenceEvaluable functionBody;
 
     public Procedure(Environment definitionEnvironment,
                      List<LispSymbol> formalParameters,

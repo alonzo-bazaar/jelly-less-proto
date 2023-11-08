@@ -1,14 +1,13 @@
 package parse;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 import lang.LispSymbol;
 import lang.Cons;
 import lang.Constants;
 import utils.StringCharIterator;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ExpressionIteratorTest {
@@ -22,7 +21,7 @@ public class ExpressionIteratorTest {
                                         (new StringCharIterator(s))));
     }
     @Test
-    public void someSymbols() {
+    public void someSymbols() throws ParsingException {
         ExpressionIterator ei = fromString("mamma mia");
         Object o;
         LispSymbol ls;
@@ -37,7 +36,7 @@ public class ExpressionIteratorTest {
     }
 
     @Test
-    public void someNumbers() {
+    public void someNumbers() throws ParsingException {
         ExpressionIterator ei = fromString("20 30 0");
         Object o;
 
@@ -54,14 +53,14 @@ public class ExpressionIteratorTest {
     }
 
     @Test
-    public void consesLength() {
+    public void consesLength() throws ParsingException {
         ExpressionIterator ei = fromString("(ei fu siccome immobile)");
         Object o = ei.next();
         assertEquals(((Cons)o).length(), 4);
     }
 
     @Test
-    public void consesContents() {
+    public void consesContents() throws ParsingException {
         ExpressionIterator ei = fromString("(define x 20)");
         // in cons fa (cons define (cons x (cons 20 nil))),
         // stiamo testando contro questa struttura
@@ -79,7 +78,7 @@ public class ExpressionIteratorTest {
     }
 
     @Test
-    public void someNestedConses() {
+    public void someNestedConses() throws ParsingException {
         ExpressionIterator ei = fromString("((ok))");
         // in cons fa (cons (cons ok nil) nil),
         // stiamo testando contro questa struttura
@@ -92,6 +91,33 @@ public class ExpressionIteratorTest {
 
         Object inner = ((Cons) midder).getCar();
         assertEquals(((LispSymbol) inner).getName(), "ok");
+    }
+
+    @Test
+    public void testUnclosedParentheses () {
+        assertThrows(UnbalancedParensException.class,
+                () -> {
+                    ExpressionIterator ei = fromString(")");
+                    Object o = ei.next();
+                });
+
+        assertThrows(UnbalancedParensException.class,
+                () -> {
+                    ExpressionIterator ei = fromString("))");
+                    Object o = ei.next();
+                });
+
+        assertThrows(UnbalancedParensException.class,
+                () -> {
+                    ExpressionIterator ei = fromString("())");
+                    Object o = ei.next();
+                });
+
+        assertThrows(UnbalancedParensException.class,
+                () -> {
+                    ExpressionIterator ei = fromString("()))");
+                    Object o = ei.next();
+                });
     }
 
     //@Test
