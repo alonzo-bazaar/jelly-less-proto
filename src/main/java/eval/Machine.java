@@ -13,7 +13,7 @@ public class Machine {
     private Environment env = new Environment();
 
     public Object evalString(String s) throws ParsingException {
-        ExpressionIterator ei = new ExpressionIterator(s);
+        ExpressionIterator ei = ExpressionIterator.fromString(s);
         while (ei.hasNext()) {
             Object le = ei.next();
             if (ei.hasNext())

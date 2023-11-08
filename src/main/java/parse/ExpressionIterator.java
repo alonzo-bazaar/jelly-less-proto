@@ -27,10 +27,8 @@ public class ExpressionIterator {
             (new SignificantCharsIterator(chars));
     }
 
-    public ExpressionIterator (String s) {
-        this.tokens = new TokenIterator
-        (new SignificantCharsIterator
-         (new StringCharIterator(s)));
+    public static ExpressionIterator fromString(String s) {
+        return new ExpressionIterator(TokenIterator.fromString(s));
     }
 
     public void setString(String s) {

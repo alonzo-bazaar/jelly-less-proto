@@ -48,7 +48,7 @@ public class App
         Machine m = new Machine();
         Scanner scan = new Scanner(System.in);
         String str = "";
-        ExpressionIterator ei = new ExpressionIterator(str);
+        ExpressionIterator ei = ExpressionIterator.fromString(str);
 
         while (true) {
             try {

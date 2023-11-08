@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import utils.OsUtils;
 import utils.PrefixIterator;
+import utils.StringCharIterator;
 
 // public class SignificantCharsIterator implements Iterator<Character>{
 public class SignificantCharsIterator extends PrefixIterator{
@@ -21,6 +22,10 @@ public class SignificantCharsIterator extends PrefixIterator{
     private String newline = OsUtils.isWindows()?dosNewline:unixNewline;
     public SignificantCharsIterator(Iterator<Character> ic) {
         super(ic);
+    }
+
+    public static SignificantCharsIterator fromString(String s) {
+        return new SignificantCharsIterator(new StringCharIterator(s));
     }
 
     // questo per i test, così sappiamo che almeno fa per entrambi i tipi di sistema

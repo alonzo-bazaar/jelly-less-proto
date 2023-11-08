@@ -12,7 +12,7 @@ import parse.ParsingException;
 
 public class BuiltinFuncallEvaluableTest  {
     private Evaluable fromString(String s) throws ParsingException {
-        ExpressionIterator ei = new ExpressionIterator(s);
+        ExpressionIterator ei = ExpressionIterator.fromString(s);
         Object o = ei.next();
         return EvaluableCreator.fromExpression(o);
     }

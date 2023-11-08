@@ -10,13 +10,10 @@ import utils.StringCharIterator;
 
 public class SignificantCharsIteratorTest 
 {
-    private SignificantCharsIterator fromString(String s) {
-        return new SignificantCharsIterator(new StringCharIterator(s));
-    }
     @Test
     public void baseIgnoraMultiline()
     {
-        SignificantCharsIterator sci = fromString("/* ok */a");
+        SignificantCharsIterator sci = SignificantCharsIterator.fromString("/* ok */a");
         char c = sci.next();
         assertEquals(c, 'a');
     }
@@ -24,7 +21,7 @@ public class SignificantCharsIteratorTest
     @Test
     public void baseNonIgnoraTutto()
     {
-        SignificantCharsIterator sci = fromString("a/* ok */b");
+        SignificantCharsIterator sci = SignificantCharsIterator.fromString("a/* ok */b");
         char c = sci.next();
         assertEquals(c, 'a');
         c = sci.next();
@@ -34,20 +31,20 @@ public class SignificantCharsIteratorTest
 
     @Test
     public void inlineDosIgnoresDos() {
-        SignificantCharsIterator sci = fromString("// this is mazzo\r\njuuj").emulateDos();
+        SignificantCharsIterator sci = SignificantCharsIterator.fromString("// this is mazzo\r\njuuj").emulateDos();
         char c = sci.next();
         assertEquals(c, 'j');
     }
 
     @Test
     public void inlineDosDoesntIgnoreUnix() {
-        SignificantCharsIterator sci = fromString("// o\njk").emulateDos();
+        SignificantCharsIterator sci = SignificantCharsIterator.fromString("// o\njk").emulateDos();
         assertFalse(sci.hasNext());
     }
 
     @Test
     public void inlineUnixIgnoresUnix() {
-        SignificantCharsIterator sci = fromString("// o\njk").emulateUnix();
+        SignificantCharsIterator sci = SignificantCharsIterator.fromString("// o\njk").emulateUnix();
         assertTrue(sci.hasNext());
         char c = sci.next();
         assertEquals(c,'j');
@@ -62,7 +59,7 @@ public class SignificantCharsIteratorTest
      */
     @Test
     public void testAllaCazzo() {
-        SignificantCharsIterator sci = fromString("// o\r\njk").emulateUnix();
+        SignificantCharsIterator sci = SignificantCharsIterator.fromString("// o\r\njk").emulateUnix();
         assertTrue(sci.hasNext());
         char c = sci.next();
         assertEquals(c,'j');

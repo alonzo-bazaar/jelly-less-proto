@@ -8,4 +8,8 @@ public class Pair<A, B> {
         this.first = first;
         this.second = second;
     }
+
+    public static <A,B> Pair<A,B> of(A first, B second) {
+        return new Pair<A,B>(first, second);
+    }
 }

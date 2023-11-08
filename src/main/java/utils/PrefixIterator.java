@@ -122,16 +122,8 @@ class LinkedCharBuffer extends CharQueue {
 
     @Override
     String getPrefix(int len) {
-        if (list.size() < len) {
-            /* TODO : ok, e che cazzo faccio qui?
-             * tiro un'eccezione che poi catcha l'iterator?
-             * o cosa?
-             * di certo non ritorno null, ma qualcosa devo farla
-             */
-            System.out.println("serviva un prefisso lungo " + len +
-                               " ma ho solo " + list.size() +
-                               "(poi grazialcazzo risistemi st'errore, cazzo di print)");
-        }
+        // might return a string shorter than len when it's impossible to get len chars
+        pushUntilSize(len);
         StringBuffer st = new StringBuffer(len);
         int left = len;
         for (Character c : list) {

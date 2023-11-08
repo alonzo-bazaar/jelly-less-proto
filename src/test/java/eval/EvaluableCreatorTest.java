@@ -11,7 +11,7 @@ import parse.ParsingException;
 
 public class EvaluableCreatorTest {
     private Evaluable fromString(String s) throws ParsingException {
-        ExpressionIterator ei = new ExpressionIterator(s);
+        ExpressionIterator ei = ExpressionIterator.fromString(s);
         Object le = ei.next();
         return EvaluableCreator.fromExpression(le);
     }

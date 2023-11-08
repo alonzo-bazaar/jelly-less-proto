@@ -11,18 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ExpressionIteratorTest {
-    ExpressionIterator fromString(String s) {
-        // and this, my friends, is what lisp does to a mf
-        // TODO move this(and other) fromString methods to the non test classes
-        // it's a bit shit here, and it doesn't make sense for this to be test logic
-        // it's just logic
-        return new ExpressionIterator (new TokenIterator
-                                       (new SignificantCharsIterator
-                                        (new StringCharIterator(s))));
-    }
     @Test
     public void someSymbols() throws ParsingException {
-        ExpressionIterator ei = fromString("mamma mia");
+        ExpressionIterator ei = ExpressionIterator.fromString("mamma mia");
         Object o;
         LispSymbol ls;
 
@@ -37,7 +28,7 @@ public class ExpressionIteratorTest {
 
     @Test
     public void someNumbers() throws ParsingException {
-        ExpressionIterator ei = fromString("20 30 0");
+        ExpressionIterator ei = ExpressionIterator.fromString("20 30 0");
         Object o;
 
         o = ei.next();
@@ -54,14 +45,14 @@ public class ExpressionIteratorTest {
 
     @Test
     public void consesLength() throws ParsingException {
-        ExpressionIterator ei = fromString("(ei fu siccome immobile)");
+        ExpressionIterator ei = ExpressionIterator.fromString("(ei fu siccome immobile)");
         Object o = ei.next();
         assertEquals(((Cons)o).length(), 4);
     }
 
     @Test
     public void consesContents() throws ParsingException {
-        ExpressionIterator ei = fromString("(define x 20)");
+        ExpressionIterator ei = ExpressionIterator.fromString("(define x 20)");
         // in cons fa (cons define (cons x (cons 20 nil))),
         // stiamo testando contro questa struttura
         Object o = ei.next();
@@ -79,7 +70,7 @@ public class ExpressionIteratorTest {
 
     @Test
     public void someNestedConses() throws ParsingException {
-        ExpressionIterator ei = fromString("((ok))");
+        ExpressionIterator ei = ExpressionIterator.fromString("((ok))");
         // in cons fa (cons (cons ok nil) nil),
         // stiamo testando contro questa struttura
         Object outer = ei.next();
@@ -97,25 +88,25 @@ public class ExpressionIteratorTest {
     public void testUnclosedParentheses () {
         assertThrows(UnbalancedParensException.class,
                 () -> {
-                    ExpressionIterator ei = fromString(")");
+                    ExpressionIterator ei = ExpressionIterator.fromString(")");
                     Object o = ei.next();
                 });
 
         assertThrows(UnbalancedParensException.class,
                 () -> {
-                    ExpressionIterator ei = fromString("))");
+                    ExpressionIterator ei = ExpressionIterator.fromString("))");
                     Object o = ei.next();
                 });
 
         assertThrows(UnbalancedParensException.class,
                 () -> {
-                    ExpressionIterator ei = fromString("())");
+                    ExpressionIterator ei = ExpressionIterator.fromString("())");
                     Object o = ei.next();
                 });
 
         assertThrows(UnbalancedParensException.class,
                 () -> {
-                    ExpressionIterator ei = fromString("()))");
+                    ExpressionIterator ei = ExpressionIterator.fromString("()))");
                     Object o = ei.next();
                 });
     }

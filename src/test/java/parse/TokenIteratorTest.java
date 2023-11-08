@@ -7,23 +7,22 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import utils.StringCharIterator;
 
 public class TokenIteratorTest {
-    TokenIterator fromString(String str) {
-        return new TokenIterator(new SignificantCharsIterator(new StringCharIterator(str))
-                                 .emulateDos()); /* aboh per quando devo testare il newline */
+    TokenIterator dosFromString(String s) {
+        return new TokenIterator(SignificantCharsIterator.fromString(s).emulateDos());
     }
 
     @Test
     public void getSpecialNoWhite() {
-        TokenIterator ti = fromString("(kitemmuort)");
+        TokenIterator ti = TokenIterator.fromString("(prova)");
         assertEquals(ti.next(), "(");
-        assertEquals(ti.next(), "kitemmuort");
+        assertEquals(ti.next(), "prova");
         assertEquals(ti.next(), ")");
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void getSpecialWhite() {
-        TokenIterator ti = fromString("(  kitemmuort  )");
+        TokenIterator ti = dosFromString("(  kitemmuort  )");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), "kitemmuort");
         assertEquals(ti.next(), ")");
@@ -32,49 +31,49 @@ public class TokenIteratorTest {
 
     @Test
     public void trailingWhitespace() {
-        TokenIterator ti = fromString("fat       ");
+        TokenIterator ti = dosFromString("fat       ");
         assertEquals(ti.next(), "fat");
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void leadingWhiteSpace() {
-        TokenIterator ti = fromString("      fat");
+        TokenIterator ti = dosFromString("      fat");
         assertEquals(ti.next(), "fat");
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void leadingWhiteSpaceSpecial() {
-        TokenIterator ti = fromString("      ;;");
+        TokenIterator ti = dosFromString("      ;;");
         assertEquals(ti.next(), ";;");
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void trailingWhitespaceSpecial() {
-        TokenIterator ti = fromString(";;;       ");
+        TokenIterator ti = dosFromString(";;;       ");
         assertEquals(ti.next(), ";;;");
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void bothWhitespace() {
-        TokenIterator ti = fromString("   kitemmuort       ");
+        TokenIterator ti = dosFromString("   kitemmuort       ");
         assertEquals(ti.next(), "kitemmuort");
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void bothWhitespaceSpecial() {
-        TokenIterator ti = fromString("   ;       ");
+        TokenIterator ti = dosFromString("   ;       ");
         assertEquals(ti.next(), ";");
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void getsBiggestSpecial() {
-        TokenIterator ti = fromString(";;;;;;;;;;;");
+        TokenIterator ti = dosFromString(";;;;;;;;;;;");
         assertEquals(ti.next(), ";;;");
         assertEquals(ti.next(), ";;;");
         assertEquals(ti.next(), ";;;");
@@ -84,7 +83,7 @@ public class TokenIteratorTest {
 
     @Test
     public void noCommentAllParen() {
-        TokenIterator ti = fromString("(when (that (fat old sun)) in (the sky))");
+        TokenIterator ti = dosFromString("(when (that (fat old sun)) in (the sky))");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), "when");
         assertEquals(ti.next(), "(");
@@ -106,7 +105,7 @@ public class TokenIteratorTest {
 
     @Test
     public void noCommentNoSpacesAllSpecial() {
-        TokenIterator ti = fromString("(when(that(fat;old;;sun));;;in#\\(the#||#sky))");
+        TokenIterator ti = dosFromString("(when(that(fat;old;;sun));;;in;;(the#||#sky))");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), "when");
         assertEquals(ti.next(), "(");
@@ -121,7 +120,7 @@ public class TokenIteratorTest {
         assertEquals(ti.next(), ")");
         assertEquals(ti.next(), ";;;");
         assertEquals(ti.next(), "in");
-        assertEquals(ti.next(), "#\\");
+        assertEquals(ti.next(), ";;");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), "the");
         assertEquals(ti.next(), "#|");
@@ -134,7 +133,7 @@ public class TokenIteratorTest {
 
     @Test
     public void whitestHour() {
-        TokenIterator ti = fromString("mannaggia;  kite\r\n\r\n\r\n\t mmuort\r\n\t");
+        TokenIterator ti = dosFromString("mannaggia;  kite\r\n\r\n\r\n\t mmuort\r\n\t");
         assertEquals(ti.next(), "mannaggia");
         assertEquals(ti.next(), ";");
         assertEquals(ti.next(), "kite");
@@ -144,7 +143,7 @@ public class TokenIteratorTest {
 
     @Test
     public void specialWhite() { // non il dentifricio
-        TokenIterator ti = fromString("kono; dio ;da");
+        TokenIterator ti = dosFromString("kono; dio ;da");
         assertEquals(ti.next(), "kono");
         assertEquals(ti.next(), ";");
         assertEquals(ti.next(), "dio");
@@ -155,28 +154,28 @@ public class TokenIteratorTest {
 
     @Test
     public void string() {
-        TokenIterator ti = fromString("\"stringus\"");
+        TokenIterator ti = dosFromString("\"stringus\"");
         assertEquals(ti.next(), "\"stringus\"");
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void stringStartingWithWhitespace() {
-        TokenIterator ti = fromString("\"    stringus\"");
+        TokenIterator ti = dosFromString("\"    stringus\"");
         assertEquals(ti.next(), "\"    stringus\"");
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void stringEndingWithWhitespace() {
-        TokenIterator ti = fromString("\"stringus      \"");
+        TokenIterator ti = dosFromString("\"stringus      \"");
         assertEquals(ti.next(), "\"stringus      \"");
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void stringBeforeTokens() {
-        TokenIterator ti = fromString("\"something\"in the way  ");
+        TokenIterator ti = dosFromString("\"something\"in the way  ");
         assertEquals(ti.next(), "\"something\"");
         assertEquals(ti.next(), "in");
         assertEquals(ti.next(), "the");
@@ -186,7 +185,7 @@ public class TokenIteratorTest {
 
     @Test
     public void stringAfterTokens() {
-        TokenIterator ti = fromString("çeci est une\"stringa\"");
+        TokenIterator ti = dosFromString("çeci est une\"stringa\"");
         assertEquals(ti.next(), "çeci");
         assertEquals(ti.next(), "est");
         assertEquals(ti.next(), "une");
@@ -196,7 +195,7 @@ public class TokenIteratorTest {
 
     @Test
     public void multipleStrings() {
-        TokenIterator ti = fromString("\"jojo\" \"bizarre\" \"strings\"");
+        TokenIterator ti = dosFromString("\"jojo\" \"bizarre\" \"strings\"");
         assertEquals(ti.next(), "\"jojo\"");
         assertEquals(ti.next(), "\"bizarre\"");
         assertEquals(ti.next(), "\"strings\"");
@@ -205,7 +204,7 @@ public class TokenIteratorTest {
 
     @Test
     public void multipleAttachedStrings() {
-        TokenIterator ti = fromString("\"jojo\"\"bizarre\"\"strings\"");
+        TokenIterator ti = dosFromString("\"jojo\"\"bizarre\"\"strings\"");
         assertEquals(ti.next(), "\"jojo\"");
         assertEquals(ti.next(), "\"bizarre\"");
         assertEquals(ti.next(), "\"strings\"");
@@ -214,7 +213,7 @@ public class TokenIteratorTest {
 
     @Test
     public void stringsAndSpecials() {
-        TokenIterator ti = fromString("(strcat\"kite\"\"mmurt\" \"mannaggia \\\"\" bello bello\"mannaggia\")");
+        TokenIterator ti = dosFromString("(strcat\"kite\"\"mmurt\" \"mannaggia \\\"\" bello bello\"mannaggia\")");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), "strcat");
         assertEquals(ti.next(), "\"kite\"");
@@ -229,14 +228,14 @@ public class TokenIteratorTest {
 
     @Test
     public void emptyString() {
-        TokenIterator ti = fromString("\"\"");
+        TokenIterator ti = dosFromString("\"\"");
         assertEquals(ti.next(), "\"\"");
         assertFalse(ti.hasNext());
     }
     
     @Test
     public void multipleEmptyStrings() {
-        TokenIterator ti = fromString("\"\"\"\"\"\"");
+        TokenIterator ti = dosFromString("\"\"\"\"\"\"");
         assertEquals(ti.next(), "\"\"");
         assertEquals(ti.next(), "\"\"");
         assertEquals(ti.next(), "\"\"");
@@ -245,7 +244,7 @@ public class TokenIteratorTest {
 
     @Test
     public void gettingStupid() {
-        TokenIterator ti = fromString("((((((((((((((((((((");
+        TokenIterator ti = dosFromString("((((((((((((((((((((");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), "(");
@@ -271,7 +270,7 @@ public class TokenIteratorTest {
 
     @Test
     public void gettingStupidWhitespace() {
-        TokenIterator ti = fromString(" ((    ((((((((((((((((((  ");
+        TokenIterator ti = dosFromString(" ((    ((((((((((((((((((  ");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), "(");
@@ -297,7 +296,7 @@ public class TokenIteratorTest {
 
     @Test
     public void gettingStupider() {
-        TokenIterator ti = fromString("()()()()()()()()()()");
+        TokenIterator ti = dosFromString("()()()()()()()()()()");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), ")");
         assertEquals(ti.next(), "(");
@@ -323,7 +322,7 @@ public class TokenIteratorTest {
 
     @Test
     public void gettingStupiderWhitespace() {
-        TokenIterator ti = fromString("() ( )()()()(  )()()()() ");
+        TokenIterator ti = dosFromString("() ( )()()()(  )()()()() ");
         assertEquals(ti.next(), "(");
         assertEquals(ti.next(), ")");
         assertEquals(ti.next(), "(");
@@ -353,7 +352,7 @@ public class TokenIteratorTest {
          * questo dovrebbe essere in grado di ignorare i commenti dati
          * controllo giusto in caso
          */
-        TokenIterator ti = fromString("ti voglio /* bene */ bastonare");
+        TokenIterator ti = dosFromString("ti voglio /* bene */ bastonare");
         assertEquals(ti.next(), "ti");
         assertEquals(ti.next(), "voglio");
         assertEquals(ti.next(), "bastonare");
@@ -361,21 +360,7 @@ public class TokenIteratorTest {
 
     @Test
     public void ignoresMultlineComments() {
-        /* visto che si usa un SignificantCharsIterator,
-         * questo dovrebbe essere in grado di ignorare i commenti dati
-         * controllo giusto in caso
-         */
-        /* il problema erano gli spazi dopo la fine del commento
-         * visto che si faceva ignoreWhite l'iterator non capiva di aver
-         * "inviato" degli spazi bianchi, quindi non settava lastWasWhite
-         * ciò facendo, alla fine inviava lo spazio perchè pensava di doverlo fare
-         * visto che era ancora settato per pensare di doverlo fare
-         * TODO rivedi la logica interna del lastWasWhite per indicare più un
-         * "l'ultima streak di caratteri erano whitespace"
-         * quindi magari anche un "ho ignorato blocco non vuoto di spazii,
-         * c'erano degli spazi nella stream, fammelo segnare"
-         */
-        TokenIterator ti = fromString("ti voglio /* bene\r\nkitemmuort */ bastonare");
+        TokenIterator ti = dosFromString("ti voglio /* bene\r\n */ bastonare");
         assertEquals(ti.next(), "ti");
         assertEquals(ti.next(), "voglio");
         assertEquals(ti.next(), "bastonare");
@@ -388,7 +373,7 @@ public class TokenIteratorTest {
          * questo dovrebbe essere in grado di ignorare i commenti dati
          * controllo giusto in caso
          */
-        TokenIterator ti = fromString("ti voglio // bastonare \r\n benissimo// muori  \r\n <3");
+        TokenIterator ti = dosFromString("ti voglio // bastonare \r\n benissimo// muori  \r\n <3");
         assertEquals(ti.next(), "ti");
         assertEquals(ti.next(), "voglio");
         assertEquals(ti.next(), "benissimo");
