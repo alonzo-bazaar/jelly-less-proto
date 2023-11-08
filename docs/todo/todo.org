@@ -1,0 +1,112 @@
+* TODO , fa i TODO nel codice
+ - [X] crea una classe a parte per le util di sistema operativo
+ - [ ] 
+
+** 100% test coverage
+quando arrivi a poterlo fare, il che sarebbe adesso (hai migrato a junit5 per un motivo) rifai/aggiugni sti test, grazie mille
+
+* TODO Basi
+rivedi un po' di sicp e crafting interpreters per farti una mezza idea su come fare per ripulire il codice e le idee che hai creato
+
+** Idee da crafting interpreters
+** Idee da sicp
+
+* TODO Package
+certi package VANNO RINOMINATI CAZZO
+ - ~lang~ mettilo tipo ~jelly.lang~, e da lì puoi anche togliere nomi come ~LispExpression~ o ~LispSymbol~, avrai qualcosa di molto più chiaro come ~jelly.lang.Expression~ e ~jelly.lang.Symbol~
+   (oppure ~org.jelly.lang~, per stile, o per fare il pirla)
+   
+* TODO Parser
+** TODO Characters
+invece di limitarci a caratteri e basta potrebbe aiutare ristruttrare certe parti del codice con un'architettura più "a scanner" che permetta sia un ~nextChar~ che un ~nextLine~
+
+questo sarebbe da farsi facendo in modo che lo "scanner" in questione non diventi un ammassone di merda
+
+magari fai una classe ~Characters~ (poi le trovi un nome migliore) che abbia sia ~nextChar~ che ~nextLine~
+classe generabile sia da una stringa che da un file, così niente /"construction work with a toothpick for a tool"/
+
+** TODO Tokens
+end of file deve essere un token secondo me
+
+** TODO Iteration
+è probabile che un ~getLine~ e ~tokenizeLine~ porterebbe a del codice più gestibile (vale a dire non richiedere ~prefixIterator~, che è un aborto)
+
+ai fini di usare il ~hasNext()~ più come check di "posso prendere?" sarebbe utile costruire internamente la rappresentazione, mandarla, e continuare
+questo permetterebbe, vale a dire, il poter mandare stringhe di codice multiline nel repl (non stringhe multiline, proprio codice multline)
+
+*** ~hasNext~ con lista di valori precalcolati
+costruire i valori sul momento porta a problemi per quanto riguarda il "ok, i caratteri/token/... in arrivo non mi permettono di costruire un token/espressione/... completi"
+sarebbe da fare un
+ - esaurisci i dati in input, costruendo tutti gli enti che puoi
+   - per ~hasNext~ vedi se la lista e vuota
+   - per ~next~ consuma l'elemento più vecchio della lista
+
+poi per quando vuoi continuare si farà solo che al capo dei capi (vale a dire l'iteratore di caratteri, o righe, o cazzo capita) verrà data nuova roba, e da lì potrai continuare
+
+questo sistemerebbe anche la semantica dell' ~hasNext~ di expressionIterator, la cosa si può ovviamente generalizzare con vettori/liste di oggetti "prefetched" che vengono costruiti, consumati/mandati, contorollati in modo tale da permettere casi in cui i dati in arrivo costituiscano solo una rappresentazione parziale dell'ente che stai mandando
+
+sarebbe da vedere se sia o meno il caso di rievocare la bestia di satana che era fare il "send token, send tree, etc..."
+
+** TODO Intermediate Form
+*** TODO Abstract Synthax tree
+ - una classe a parte per l'abstract synthax tree
+ - magari anche una "sealed interface" che ha sia token (con un tipo) che cons
+ - vedi poi se conviene ancora avere cons come struttura per l'ast
+   (tanto non useresti i cons normali, visto che l'ast avrà anche informazioni per error reporting e sarà palesemente codice senza troppo di dati)
+ - come/se mantenere il mantra "code is data" con una cosa del genere?, alcune idee potrebbero essere
+   - fare reporting solo di errori a compile time (e a runtime usare cons normali)
+   - lascia stare il "code is data"
+   - l'~AST~  implementa ~LispList~ (o, perlomeno, ~AstCons~, ~AstToken~ magari anche no, ma un eventuale ~AstNil~ ci sta, anche se forse basterebbe usare ~NIL~, ma potrebbe dare dei problemi coi tipi (~NIL~ non implementerebbe ~AST~))
+     - anche se poi cosa ci farei con queste informazioni?
+
+si potrebbe avere che ~AST~ viene utilizzato finchè non produci gli ~Evaluable~, poi gli ~Evaluable~ avranno qualche funzione di error reporting (~getRow()~, ~getCol()~, ...), ma i dati presenti non ce l'avranno, quindi amen
+
+l'idea "finale" sarebbe, quindi
+ - ~AST~ fino alla produzione degli ~Evaluable~
+ - l'~Evaluable~ prende le informazioni di debug dall'~AST~ (per fare eventuale reporting di errori a runtime)(la cosa potrebbe richiedere l'implementazione un po' più esplicita di un call stack per essere fatta meglio, pensaci dopo?)
+ - i dati (CONSY BOIS) non prendono le informazioni di debug
+
+** DONE Repl Specifics
+multiline and dandelion wine
+
+* TODO Evaluator
+** TODO Type System
+sarebbe gradito se si potesse fare un ~LispExpression.type~ da qualche parte
+le due/tre idee al momento sono
+ - non avere un type system
+ - avere un type system e
+   - avere tipi ~LispType~ per builtin e struct
+   - avere tipi a parte(di java) per i builtin, e usare un ~LispType~ a parte per gli struct
+
+il tipo di un'espressione sarebbe immutabile e abbastanza ~final~ anche per le classi (tipo un ~public static final LispType type~)
+vedere poi se aiuta con boh, leggibilità&Co.
+
+classe cast?
+
+** TODO Functions
+*** TODO Builtin Functions
+**** TODO Lambda
+mettere nuove funzioni builtin porterà a probelmi GROSSI per quanto riguarda la pulizia, più di altro, della loro chiamata
+
+al momento è un simile switchone orrendo sul nome che yanderedev si bagna a letto
+
+*** TODO Lambda list
+ - creare una qualche classe ~LambdaList~ che permetta di avere parametri keyword/optional/rest?
+ - modi per chiamare questa
+   - ~*args~ e ~**kwargs~ stile python
+   - tutti i parametri sono "kwarg"?
+   - mettere ~&optional~ e ~&rest~ insieme potrebbe portare a problemi, magari mettere solo ~&key~ e ~&rest~? (che equivalrebbe ad ~*args~ e ~**kwargs~)
+
+se vuoi crearla da codice java, rendere facile (fattibile in giornata) la costruzione della lambda list da java.
+
+come fare i binding dalla lambda list?
+
+*** TODO Call stack
+utilizzabile per error a runtime, sarebbe un ~java.util.Stack<Procedure>~
+
+**** TODO Da li non so se implementare le eccezioni
+evitiamo che stai già proiettando anche troppo che non ha manco fatto un ast o una struct
+
+*** TODO Error Seporting
+ - mettere informazioni di debug nel synthax tree e forse anche nei token
+ - (tanto probabile il synthax tree lo faccio con un composite e le leaf sono token)
