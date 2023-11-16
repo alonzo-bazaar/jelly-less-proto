@@ -48,6 +48,7 @@ public class EvaluableCreator {
                 }
                 else
                     throw new InvalidParameterException("let form is malformed");
+
             case "lambda":
                 Object formalParameters = c.nth(1);
                 Object lambdaBody = c.nthCdr(2);
@@ -63,6 +64,7 @@ public class EvaluableCreator {
                 else
                     throw new InvalidParameterException
                         ("lambda expression is malformed");
+
             case "define":
                 if(c.nth(1) instanceof LispSymbol definedVarName)
                     return new DefinitionEvaluable(definedVarName,
@@ -70,6 +72,7 @@ public class EvaluableCreator {
                 else
                     throw new InvalidParameterException
                         ("define form expects a symbol as its first argument");
+
             case "set":
                 if(c.nth(1) instanceof LispSymbol setVarName)
                     return new SetEvaluable(setVarName,
@@ -77,27 +80,12 @@ public class EvaluableCreator {
                 else
                     throw new InvalidParameterException
                         ("set form expects a symbol as its first argument");
+
             case "begin":
                 return sequenceFromConsList(c);
             }
-
-            // is it a builtin function, then?
-            /*
-            // builtinFuncallEvaluable is to be removed
-            // in favour of binding the functions in an intial environment
-            // and just using normal funcall evaluables
-            if (BuiltinFuncallEvaluable.isBuiltinFunctionName(sym))
-                return new BuiltinFuncallEvaluable
-                    (sym,
-                     Utils.toJavaList((LispList)c.getCdr())
-                     .stream()
-                     .map(EvaluableCreator::fromExpression)
-                     .toList());
-
-             */
-
-
         }
+
         // and if all else fails, it is a normal function call
         return new FuncallEvaluable(fromExpression(c.getCar()),
                                     Utils.toJavaList((LispList)c.getCdr()));
