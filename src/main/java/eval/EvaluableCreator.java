@@ -57,7 +57,7 @@ public class EvaluableCreator {
                         .stream()
                         .map(a -> (LispSymbol)a)
                         .toList();
-                    return new LambdaEvaluable(paramsList,
+                    return new UserDefinedLambdaEvaluable(paramsList,
                                                sequenceFromConsList(lamdaBod));
                 }
                 else
@@ -82,6 +82,10 @@ public class EvaluableCreator {
             }
 
             // is it a builtin function, then?
+            /*
+            // builtinFuncallEvaluable is to be removed
+            // in favour of binding the functions in an intial environment
+            // and just using normal funcall evaluables
             if (BuiltinFuncallEvaluable.isBuiltinFunctionName(sym))
                 return new BuiltinFuncallEvaluable
                     (sym,
@@ -89,6 +93,8 @@ public class EvaluableCreator {
                      .stream()
                      .map(EvaluableCreator::fromExpression)
                      .toList());
+
+             */
 
 
         }

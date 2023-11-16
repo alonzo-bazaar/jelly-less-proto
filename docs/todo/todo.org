@@ -1,6 +1,10 @@
 * TODO , fa i TODO nel codice
  - [X] crea una classe a parte per le util di sistema operativo
- - [ ] 
+ - [X] ripulisci le condizioni di arresto dell'estrazione di tokenizer
+ - [ ] crea(e inserisci nella struttura del codice) una classe per la lambda list
+ - [ ] crea(e inserisci nella struttura del codice) una classe per i token
+ - [ ] ristruttura la pipeline di parsing per permettere un'interazione più naturale con un repl
+ - [ ] disaccoppia la lista di nomi builtin con i nomi delle funzioni builtin considerate (vale a dire, toglila)
 
 ** 100% test coverage
 quando arrivi a poterlo fare, il che sarebbe adesso (hai migrato a junit5 per un motivo) rifai/aggiugni sti test, grazie mille

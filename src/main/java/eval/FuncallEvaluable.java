@@ -4,8 +4,8 @@ import java.security.InvalidParameterException;
 import java.util.List;
 
 public class FuncallEvaluable implements Evaluable {
-    private Evaluable proc;
-    private List<Object> args;
+    private final Evaluable proc;
+    private final List<Object> args;
 
     public FuncallEvaluable(Evaluable proc, List<Object> args) {
         this.proc = proc;

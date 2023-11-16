@@ -1,30 +1,16 @@
 package eval;
 
-import java.util.List;
-
-import lang.LispSymbol;
-
-public class LambdaEvaluable implements Evaluable {
+public interface LambdaEvaluable extends Evaluable {
     /* evaluating a lambda expression
      * (aka "running" a lambda evaluable)
      * returns a procedure
      *
      * lambda and let are somewhat similar constructs
      * this code looks a lot like that for LetEvaluable,
-     * save for the fact computing the values is left to the returned procedure
+     * save for the fact that here the job of computing the values is left
+     * to the returned procedure
      */
 
-    private final List<LispSymbol> formalParameters;
-    private final SequenceEvaluable body;
-
-    public LambdaEvaluable(List<LispSymbol> formalParameters,
-                           SequenceEvaluable body) {
-        this.formalParameters = formalParameters;
-        this.body = body;
-    }
-
     @Override
-    public Procedure eval(Environment e) {
-        return new Procedure(e, formalParameters, body);
-    }
+    public Procedure eval(Environment e);
 }

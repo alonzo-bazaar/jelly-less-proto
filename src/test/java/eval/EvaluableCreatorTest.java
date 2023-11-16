@@ -1,5 +1,6 @@
 package eval;
 
+import lang.LispSymbol;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -20,7 +21,7 @@ public class EvaluableCreatorTest {
 
     @BeforeEach
     public void refreshEnv() {
-        env = new Environment();
+        env = Machine.buildInitialEnvironment();
     }
 
     @AfterEach
@@ -63,6 +64,36 @@ public class EvaluableCreatorTest {
         Object no = fromString("(str nil)").eval(env);
         assertEquals(yes, "yes");
         assertEquals(no, "no");
+    }
+
+    @Test
+    public void testArithCall() throws ParsingException {
+        Object o = fromString("(+ 2 3)").eval(env);
+        assertEquals((int) o, 5);
+    }
+
+    @Test
+    public void testArithCallSymbols() throws ParsingException {
+        Object o = fromString("(let ((a 2)) (+ a 3))").eval(env);
+        assertEquals((int) o, 5);
+    }
+
+    @Test
+    public void testArithCallSubexpressions() throws ParsingException {
+        Object o = fromString("(let ((a 2)) (+ a (+ a 3)))").eval(env);
+        assertEquals((int) o, 7);
+    }
+
+    @Test
+    public void testJustLambda() throws ParsingException {
+        Object o = fromString("((lambda (x) x) 3)").eval(env);
+        assertEquals((int) o, 3);
+    }
+
+    @Test
+    public void testLetLambda() throws ParsingException {
+        Object o = fromString("(let ((a (lambda (x) x))) (a 3))").eval(env);
+        assertEquals((int) o, 3);
     }
 
     @Test

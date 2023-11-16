@@ -21,7 +21,7 @@ public class BuiltinFuncallEvaluableTest  {
 
     @BeforeEach
     public void refreshEnv() {
-        env = new Environment();
+        env = Machine.buildInitialEnvironment();
     }
 
     @AfterEach
