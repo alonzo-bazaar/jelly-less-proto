@@ -1,8 +1,12 @@
 package eval;
 
 import lang.LispSymbol;
+import lang.LispList;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
@@ -30,8 +34,64 @@ public class EvaluableCreatorTest {
     }
 
     @Test
+    public void testQuoteSymbol() throws ParsingException {
+        Evaluable ev = fromString("(quote a)");
+        Object o = ev.eval(env);
+        assertEquals(((LispSymbol)o).getName(), "a");
+    }
+
+    @Test
+    public void testQuoteSymbolDoesNotLookup() throws ParsingException {
+        Evaluable ev = fromString("(let ((a 10)) (quote a))");
+        Object o = ev.eval(env);
+        assertEquals(((LispSymbol)o).getName(), "a");
+    }
+
+    @Test
+    public void testQuoteNumber() throws ParsingException {
+        Evaluable ev = fromString("(+ (quote 3) (quote 4))");
+        Object o = ev.eval(env);
+        assertEquals((int)o, 7);
+    }
+
+    @Test
+    public void testQuoteString() throws ParsingException {
+        Evaluable ev = fromString("(quote \"waluigi\")");
+        Object o = ev.eval(env);
+        assertEquals((String)o, "waluigi");
+    }
+
+    @Test
+    public void testQuoteList() throws ParsingException {
+        Evaluable ev = fromString("(quote (1 2 3))");
+        Object o = ev.eval(env);
+        assertEquals((int)((LispList)o).nth(0), 1);
+        assertEquals((int)((LispList)o).nth(1), 2);
+        assertEquals((int)((LispList)o).nth(2), 3);
+    }
+
+    @Test
+    public void testQuoteListDynamicallyTypedThing() throws ParsingException {
+        Evaluable ev = fromString("(quote (1 \"test\" yee))");
+        Object o = ev.eval(env);
+        assertEquals((int)((LispList)o).nth(0), 1);
+        assertEquals((String)((LispList)o).nth(1), "test");
+        assertEquals(((LispSymbol)(((LispList)o).nth(2))).getName(), "yee");
+    }
+
+    @Test
     public void testIf() throws ParsingException {
         Evaluable ev = fromString("(if nil 10 20)");
+        Object o = ev.eval(env);
+        assertEquals((int) o, 20);
+    }
+
+    @Test
+    public void testWhile() throws ParsingException {
+        Evaluable ev = fromString
+            ("(let ((a 0) (b 0))" +
+             "(while (< a 10) (set a (+ a 1)) (set b (+ 2 b)))" +
+             "b)");
         Object o = ev.eval(env);
         assertEquals((int) o, 20);
     }
@@ -103,12 +163,24 @@ public class EvaluableCreatorTest {
     }
 
     @Test
-    public void testWhile() throws ParsingException {
-        Evaluable ev = fromString
-            ("(let ((a 0) (b 0))" +
-             "(while (< a 10) (set a (+ a 1)) (set b (+ 2 b)))" +
-             "b)");
-        Object o = ev.eval(env);
-        assertEquals((int) o, 20);
+    public void testLessThan() throws ParsingException {
+        Evaluable less = fromString("(> 10 10.1)");
+        assertFalse((boolean)less.eval(env));
+    }
+
+    @Test
+    public void testMoreThan() throws ParsingException {
+        Evaluable more = fromString("(< 10 10.1)");
+        assertTrue((boolean)more.eval(env));
+    }
+
+    @Test
+    public void testCarCons() throws ParsingException {
+        assertEquals((int)(fromString("(car (cons 1 2))").eval(env)), 1);
+    }
+
+    @Test
+    public void testCdrCons() throws ParsingException {
+        assertEquals((int)(fromString("(cdr (cons 1 2))").eval(env)), 2);
     }
 }

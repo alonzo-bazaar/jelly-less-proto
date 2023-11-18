@@ -20,8 +20,8 @@ public class UserDefinedProcedure implements Procedure {
     }
 
     @Override
-    public Object call(List<Object> arguments) {
-        return functionBody.eval(definitionEnvironment.extend
-                                 (formalParameters, arguments));
+    public Object call(List<Object> values) {
+        Object res = functionBody.eval(definitionEnvironment.extend(formalParameters, values));
+        return res;
     }
 }

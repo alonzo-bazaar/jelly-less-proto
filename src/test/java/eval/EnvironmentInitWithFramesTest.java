@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 
-import java.util.LinkedList;
 import java.util.HashMap;
 
 import lang.LispSymbol;
@@ -16,8 +15,6 @@ public class EnvironmentInitWithFramesTest {
     private Environment env;
     @BeforeEach
     public void initializeWithFrames() {
-        LinkedList<EnvFrame> envLst = new LinkedList<>();
-
         HashMap<String, Object> m0 = new HashMap<>();
         m0.put("nope", Constants.NIL);
         EnvFrame env0 = new EnvFrame(m0);
@@ -30,10 +27,7 @@ public class EnvironmentInitWithFramesTest {
         m2.put("yoo", 42);
         EnvFrame env2 = new EnvFrame(m2);
 
-        envLst.addLast(env0);
-        envLst.addLast(env1);
-        envLst.addLast(env2);
-        env = new Environment(envLst);
+        env = new Environment(env2, new Environment(env1, new Environment(env0)));
     }
 
     @Test

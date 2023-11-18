@@ -75,72 +75,62 @@ public class Machine {
              * per quanto l'assunzione sia abbastanza sensata
              * (al momento non ci sono environment multipli)
              * mi preme di specificarla, in caso esploda qualcosa a causa di questa
+             *
+             * ora che funcall evaluable chiama evlist di suo non c'è bisogno di farlo qui
+             * le funzioni saranno chiamte sui valori, e non sugli argomenti (simboli et al)
              */
 
-            env.define(new LispSymbol("car"), (Procedure) args -> {
-                List<Object> vals = ArgUtils.evlist(args, env);
-
-                ArgUtils.throwIfNotExactSize("car", 1, vals);
-                ArgUtils.throwIfNotLispList("car", vals.get(0));
-                return ((LispList) (vals.get(0))).getCar();
+            env.define(new LispSymbol("car"), (Procedure) values -> {
+                ArgUtils.throwIfNotExactSize("car", 1, values);
+                ArgUtils.throwIfNotLispList("car", values.get(0));
+                return ((LispList) (values.get(0))).getCar();
             });
 
-            env.define(new LispSymbol("cdr"), (Procedure) args -> {
-                List<Object> vals = ArgUtils.evlist(args, env);
-
-                ArgUtils.throwIfNotExactSize("cdr", 1, vals);
-                ArgUtils.throwIfNotLispList("cdr", vals.get(0));
-                return ((LispList) (vals.get(0))).getCdr();
+            env.define(new LispSymbol("cdr"), (Procedure) values -> {
+                ArgUtils.throwIfNotExactSize("cdr", 1, values);
+                ArgUtils.throwIfNotLispList("cdr", values.get(0));
+                return ((LispList) (values.get(0))).getCdr();
             });
 
-            env.define(new LispSymbol("cons"), (Procedure) args -> {
-                ArgUtils.throwIfNotExactSize("cons", 2, args);
-
-                List<Object> vals = ArgUtils.evlist(args, env);
-                return new Cons(vals.get(0), vals.get(1));
+            env.define(new LispSymbol("cons"), (Procedure) values -> {
+                ArgUtils.throwIfNotExactSize("cons", 2, values);
+                return new Cons(values.get(0), values.get(1));
             });
 
 
-            env.define(new LispSymbol("not"), (Procedure) args -> {
-                    ArgUtils.throwIfNotExactSize("not",1,args);
-                    return Utils.isFalsey(ArgUtils.evlist(args,env).get(0));
+            env.define(new LispSymbol("not"), (Procedure) values -> {
+                    ArgUtils.throwIfNotExactSize("not",1,values);
+                    return Utils.isFalsey(values.get(0));
                 });
 
-            env.define(new LispSymbol("null"), (Procedure) args -> {
-                    ArgUtils.throwIfNotExactSize("null",1,args);
-                    return ArgUtils.evlist(args,env).get(0) == Constants.NIL;
+            env.define(new LispSymbol("null"), (Procedure) values -> {
+                    ArgUtils.throwIfNotExactSize("null",1,values);
+                    return values.get(0) == Constants.NIL;
                 });
 
-            env.define(new LispSymbol("+"), (Procedure) args ->
-                    ArgArith.sum(ArgUtils.evlist(args,env)));
+            env.define(new LispSymbol("+"), (Procedure) ArgArith::sum);
 
-            env.define(new LispSymbol("*"), (Procedure) args ->
-                    ArgArith.prod(ArgUtils.evlist(args,env)));
+            env.define(new LispSymbol("-"), (Procedure) ArgArith::diff);
 
-            env.define(new LispSymbol("/"),(Procedure) args ->
-                       ArgArith.ratio(ArgUtils.evlist(args,env)));
+            env.define(new LispSymbol("*"), (Procedure) ArgArith::prod);
 
-            env.define(new LispSymbol(">"),(Procedure) args ->
-                       ArgArith.greaterThan(ArgUtils.evlist(args,env)));
+            env.define(new LispSymbol("/"),(Procedure) ArgArith::ratio);
 
-            env.define(new LispSymbol("<"),(Procedure) args ->
-                       ArgArith.lessThan(ArgUtils.evlist(args,env)));
+            env.define(new LispSymbol(">"),(Procedure) ArgArith::greaterThan);
 
-            env.define(new LispSymbol("<="),(Procedure) args ->
-                       ArgArith.lessEqual(ArgUtils.evlist(args,env)));
+            env.define(new LispSymbol("<"),(Procedure) ArgArith::lessThan);
 
-            env.define(new LispSymbol(">="),(Procedure) args ->
-                       ArgArith.greaterEqual(ArgUtils.evlist(args,env)));
+            env.define(new LispSymbol("<="),(Procedure) ArgArith::lessEqual);
+
+            env.define(new LispSymbol(">="),(Procedure) ArgArith::greaterEqual);
             
-            env.define(new LispSymbol("="),(Procedure) args ->
-                       ArgArith.equalTo(ArgUtils.evlist(args,env)));
+            env.define(new LispSymbol("="),(Procedure) ArgArith::equalTo);
 
-            env.define(new LispSymbol("!="),(Procedure) args ->
-                       ArgArith.notEqualTo(ArgUtils.evlist(args,env)));
+            env.define(new LispSymbol("!="),(Procedure) ArgArith::notEqualTo);
 
-            env.define(new LispSymbol("print"), (Procedure) args -> {
+            env.define(new LispSymbol("print"), (Procedure) values -> {
                     // fatto per interagire un po' da subito
-                    ArgUtils.printList(ArgUtils.evlist(args,env));
+                    ArgUtils.printList(values);
                     return Constants.NIL;
                 });
 

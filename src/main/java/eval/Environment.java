@@ -7,40 +7,45 @@ import java.util.List;
 import lang.LispSymbol;
 
 public class Environment {
-    private LinkedList<EnvFrame> frames;
+    // definizione abbastanza poco implicita come lista concatenata
+    // terminata da null perchè sì
+    private EnvFrame head;
+    private Environment tail = null;
 
     public Environment() {
-        this.frames = new LinkedList<EnvFrame>();
-        this.frames.addLast(new EnvFrame());
+        this.head = new EnvFrame();
+        this.tail = null;
     }
 
-    // rendere pubblico questo imbratterebbe abbastanza l'interfaccia
-    Environment(LinkedList<EnvFrame> frames) {
-        this.frames = frames;
+    public Environment(EnvFrame frame) {
+        this.head = frame;
+        this.tail = null;
     }
-    
+
+    public Environment(EnvFrame head, Environment tail) {
+        this.head = head;
+        this.tail = tail;
+    }
+
     public Object lookup(LispSymbol name) {
         // mi spiace per il null ma non vedo come altro esprimere
         // "hai cercato un valore che non esisteva"
-        // non ha troppo senso tirare un'eccezione qui, è un comportamento previsto
-        for (EnvFrame frame : frames) {
-            Object le = frame.lookup(name);
-            if(le!=null)
-                return le;
+        // non ha troppo senso tirare un'eccezione qui, è un comportamento previsto(?)
+        Object h = head.lookup(name);
+        if (h == null) {
+            if (tail == null)
+                return null;
+            return tail.lookup(name);
         }
-        return null;
+        return h;
     }
 
     public Environment extend() {
-        LinkedList<EnvFrame> newFrames = frames;
-        newFrames.addFirst(new EnvFrame());
-        return new Environment(newFrames);
+        return new Environment(new EnvFrame(), this);
     }
 
     public Environment extend(EnvFrame frame) {
-        LinkedList<EnvFrame> newFrames = frames;
-        newFrames.addFirst(frame);
-        return new Environment(newFrames);
+        return new Environment(frame, this);
     }
 
     public Environment extend(List<LispSymbol> ls, List<Object> le) {
@@ -56,7 +61,7 @@ public class Environment {
                  + " as there is no variable " + sym.getName() +
                  " in the environment");
         else
-            frames.get(0).set(sym, val);
+            head.set(sym, val);
     }
 
     public void define(LispSymbol sym, Object val)
@@ -68,15 +73,16 @@ public class Environment {
                  " as there already is a " + sym.getName() +
                  " variable in the environment");
         else
-            frames.get(0).set(sym, val);
+            head.set(sym, val);
     }
 
     public void reset() {
-        this.frames = new LinkedList<>();
+        this.head = new EnvFrame();
+        this.tail = null;
     }
 
     boolean hasSymbol(LispSymbol sym) {
-        return frames.stream().anyMatch(f -> f.hasSymbol(sym));
+        return head.hasSymbol(sym) || (tail != null && tail.hasSymbol(sym));
     }
 }
 

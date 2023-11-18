@@ -1,0 +1,97 @@
+* Generale
+la struttura a pipeline ha lo scopo di far si che mi si rompa meno il cazzo visto che gli interpreter sono complicati
+
+abbiamo l'idea generale, trasformare il testo in rappresentazione eseguibile, questo è complicato
+ai fini di renderlo meno compilicato si divide la trasformazione in più passaggi, dalla sequenza di caratteri agli "struct eseguibili".
+
+questa si divide in 
+
+ - trasformare la sequenza di caratteri in una sequenza di token
+ - trasformare la sequenza di token in una sequenza di alberi di sintassi
+ - trasformare ogni albero della sintassi in un oggetto eseguibile
+
+poi ci sarà la parte dell'eseguire questi struct ma dammi del tempo
+
+la struttura generale della pipeline sarà quindi
+
+#+begin_src
+  ??? -> caratteri -> token -> alberi -> eseguibili
+#+end_src
+
+** Caratteri
+partiamo da adamo ed eva, ci sono parecchie possibili fonti per una sequenza di caratteri
+e con paracchie intendo 2
+ - un file (runnare uno script)
+ - una stringa (codice lisp inserito dentro java)
+
+ai fini di non sdoppiare il codice da subito si è deciso di portare entrambe queste sorgenti a un'interfaccia comune (~Iterator<Character>~) che verrà utilizzata dal resto della pipeline
+
+questa traduzione implementa la prima freccia della pipeline
+
+#+begin_src
+  ??? -> caratteri -> token -> alberi -> eseguibili
+      ^^-------- siamo qui
+#+end_src
+
+** Caratteri -> Token
+*** VOLEEEEEVI (ci sono i commenti)
+#+begin_src
+  ??? -> {{{ caratteri }}} -> token -> alberi -> eseguibili
+  ??? -> {{{ tutti i caratteri del codice -> i caratteri di cui ce frega }}} -> token -> alberi -> eseguibili
+                                          ^^-------- siamo qui
+#+end_src
+
+è un passo mediamente stupido, ma che ci serve comunque sapere che esiste
+
+*** ok adesso i token
+effettuata dal caro veccho (bastardo) ~TokenIterator~
+questa classe ha lo scopo di implementare la seconda freccia della pipeline
+#+begin_src src
+  ??? -> caratteri -> token -> alberi -> eseguibili
+                   ^^-------- siamo qui
+#+end_src
+
+** Token -> Alberi
+al momento il ruolo è ricoperto da ~ExpressionIterator~
+questa classe ha lo scopo di implementare la terza freccia della pipeline
+#+begin_src
+  ??? -> caratteri -> token -> alberi -> eseguibili
+                            ^^-------- siamo qui
+#+end_src
+
+si pianifica (sto pianificando di) creare una classe un pochino più esplicita sul fatto di essere un'albero della sintassi
+però questa cosa ritorna comunque alberi della sintassi (codificati come ~java.lang.Object~ perchè
+ 1. sono un coglione
+ 2. e basta, a dire il vero
+
+*** Cose che dovrei mettere tra gli alberi e il dopo
+**** ~Reader~
+idea (o concetto, almeno) fottuto malamente da clojure
+
+non so cosa cazzo ci faccia clojure, tutto quello che so è che io ci faccio +il coglione+ passi di "preprocessing"
+è un qualcosa che prende gli alberi dell'~ExpressionIterator~ e poi boh, ci fa roba extra in caso serva
+
+**** Desugaring
+una cosa che ho deciso troppo tardi di implementare è un passo di "desugaring"
+vale a dire il permettere la presenza di "zuccherino sintattico", che verrà poi processato ed ELIMINATO prima di trasformare l'albero in codice
+
+visto che parecchi (uno) di questi zuccherini sintattici (trasformare ~'roba~ in ~(quote roba)~) viola la "struttura" di =un'espressione <-> un albero= che ho assunto su tutto il cazzo di codice
+
+il che vuol dire che pooabilmente dovrò tirare un paio di meccanismi (di merda) per ovviare alla cosa
+
+**** Macro(?)
+un'idea che andrebbe molto male se iniziata, ma tremendamente bene se finita, sarebbe utilizzare l'impalcatura offerta da questo reader per permettere l'espansoine di macro durante il processamentodel codice
+
+**** TODO per macro
+ - vedi come le fa scheme che magari è più gestibile da implementare
+ - prima magari fai il resto del reader, capisci come fa clojure i reader, e boh
+
+** Alberi -> Eseguibili    
+visto che sono una testa di cazzo che non sa mantenere un design decente, questa parte non è implementata con un iterator
+perchè sono UN COGLIONE
+
+questa è implementata da ~EvaluableCreator~ (non un iterator) perchè sono stronzo in culo
+#+begin_src
+  ??? -> caratteri -> token -> alberi -> eseguibili
+                                       ^^-------- siamo qui
+#+end_src

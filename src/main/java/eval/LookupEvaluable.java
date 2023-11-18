@@ -13,4 +13,9 @@ public class LookupEvaluable implements Evaluable {
     public Object eval(Environment e) {
         return e.lookup(sym);
     }
+
+    @Override
+    public String toString() {
+        return "Lookup of symbol (" + sym + ")";
+    }
 }

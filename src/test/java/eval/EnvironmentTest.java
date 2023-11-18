@@ -2,6 +2,10 @@ package eval;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import lang.LispSymbol;
@@ -9,6 +13,17 @@ import lang.LispSymbol;
 public class EnvironmentTest {
     private void hcf(String s) {
         throw new AssertionError(s);
+    }
+
+    private Environment e;
+    @BeforeEach
+    public void initEmptyEnv() {
+        e = new Environment();
+    }
+
+    @AfterEach
+    public void resetEnv() {
+        e.reset();
     }
 
     @Test
@@ -58,5 +73,4 @@ public class EnvironmentTest {
         assertEquals(e.lookup(new LispSymbol("mamma")), "antonio");
     }
 }
-
     

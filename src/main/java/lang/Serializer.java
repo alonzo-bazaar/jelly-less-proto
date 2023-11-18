@@ -12,10 +12,10 @@ public class Serializer {
         else if (token.startsWith("#\\")) {
             return charFromToken(token);
         }
-        else if (allNumeric(token)) {
+        else if (isIntegerString(token)) {
             return intFromToken(token);
         }
-        else if (allNumericOrDot(token)) {
+        else if (isFloatingString(token)) {
             return doubleFromToken(token);
         }
         else if (token.startsWith("\"")) {
@@ -26,13 +26,27 @@ public class Serializer {
         }
     }
     
-    static boolean allNumeric(String token) {
-        return token.chars().allMatch(Character::isDigit);
+    static boolean isIntegerString(String token) {
+        if(token.charAt(0)=='-' && token.length() > 1) {
+            return allDigits(token.substring(1));
+        }
+        return allDigits(token);
     }
 
-    static boolean allNumericOrDot(String token) {
-        return token.chars().filter(c -> c == '.').count() == 1 &&
-            token.chars().filter(c -> c != '.').allMatch(Character::isDigit);
+    static boolean allDigits(String s) {
+        return s.chars().allMatch(Character::isDigit);
+    }
+
+    static boolean isFloatingString(String token) {
+        if(token.charAt(0)=='-') {
+            return allNumericAndOneDot(token.substring(1));
+        }
+        return allNumericAndOneDot(token);
+    }
+    static boolean allNumericAndOneDot(String s) {
+        return s.chars().filter(c -> c == '.').count() == 1 &&
+                s.chars().filter(c -> c == '.').findFirst().isPresent() &&
+                s.chars().filter(c -> c != '.').allMatch(Character::isDigit);
     }
 
     static Integer intFromToken(String token) {

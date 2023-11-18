@@ -24,6 +24,7 @@ public class LetEvaluation implements Evaluable {
             .stream()
             .map(exp -> exp.eval(e))
             .toList();
-        return body.eval(e.extend(new EnvFrame(names, computed_vals)));
+        Object res = body.eval(e.extend(new EnvFrame(names, computed_vals)));
+        return res;
     }
 }

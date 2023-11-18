@@ -114,3 +114,7 @@ evitiamo che stai già proiettando anche troppo che non ha manco fatto un ast o 
 *** TODO Error Seporting
  - mettere informazioni di debug nel synthax tree e forse anche nei token
  - (tanto probabile il synthax tree lo faccio con un composite e le leaf sono token)
+
+* Environment
+ - [ ] fai funzionare ~mapcar~
+   - [ ] capire come mai non funziona ~mapcar~

@@ -16,12 +16,12 @@ public class EvaluableCreator {
 
     // crea i sotto-evaluable necessari e ci costruisce l'Evaluable composto
     public static Evaluable fromList(Cons c) {
-        if(!c.isProperList())
-            throw new InvalidParameterException
-                ("cannot evaluate an improper cons list");
         if (c.getCar() instanceof LispSymbol sym) {
             // is it a special form?
             switch(sym.getName()) {
+            case "quote":
+                return new ConstantEvaluable(c.nth(1));
+
             case "if":
                 return new IfEvaluable(fromExpression(c.nth(1)),
                                        fromExpression(c.nth(2)), 
@@ -52,7 +52,7 @@ public class EvaluableCreator {
             case "lambda":
                 Object formalParameters = c.nth(1);
                 Object lambdaBody = c.nthCdr(2);
-                if (formalParameters instanceof Cons params &&
+                if (formalParameters instanceof LispList params &&
                     lambdaBody instanceof Cons lamdaBod) {
                     List<LispSymbol> paramsList = Utils.toJavaList(params)
                         .stream()
