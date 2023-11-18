@@ -46,6 +46,12 @@ public class ArgArith {
         return Arith.divide((Number) args.get(0), (Number) args.get(1));
     }
 
+    static Integer modulo(List<Object> args) {
+        ArgUtils.throwIfNonInteger("modulo", args);
+        ArgUtils.throwIfNotExactSize("modulo", 2, args);
+        return Arith.modulo((Integer) args.get(0), (Integer) args.get(1));
+    }
+
     // all comparisons perform the same two checks, so why not
     static void comparisonChecks(String source, List<Object> args) {
         ArgUtils.throwIfNonNumeric(source, args);

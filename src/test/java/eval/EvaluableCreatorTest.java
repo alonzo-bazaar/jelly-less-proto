@@ -25,7 +25,7 @@ public class EvaluableCreatorTest {
 
     @BeforeEach
     public void refreshEnv() {
-        env = Machine.buildInitialEnvironment();
+        env = Runtime.buildInitialEnvironment();
     }
 
     @AfterEach

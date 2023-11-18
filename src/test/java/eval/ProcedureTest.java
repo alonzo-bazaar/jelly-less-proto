@@ -27,7 +27,7 @@ public class ProcedureTest {
 
     @BeforeEach
     public void refreshEnv() {
-        env = Machine.buildInitialEnvironment();
+        env = Runtime.buildInitialEnvironment();
     }
 
     @AfterEach

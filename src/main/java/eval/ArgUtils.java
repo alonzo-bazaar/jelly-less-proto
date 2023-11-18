@@ -18,6 +18,16 @@ public class ArgUtils {
         }
     }
 
+    static void throwIfNonInteger(String source, List<Object> args)
+            throws InvalidParameterException {
+        Optional<Object> guilty = args.stream().filter(a -> !(a instanceof Integer)).findFirst();
+        if (guilty.isPresent()) {
+        throw new InvalidParameterException(source + " expects all arguments to be integers, argument " +
+                guilty.orElse("<bruh what happened here>") +
+                " is not an integer");
+        }
+    }
+
     static void throwIfNotExactSize(String source, int size, List<Object> args)
             throws InvalidParameterException {
         if (args.size() != size)

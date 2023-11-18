@@ -22,7 +22,7 @@ public class ArithEvaluableTest {
 
     @BeforeEach
     public void refreshEnv() {
-        env = Machine.buildInitialEnvironment();
+        env = Runtime.buildInitialEnvironment();
     }
 
     @AfterEach

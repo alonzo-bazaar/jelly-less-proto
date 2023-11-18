@@ -7,11 +7,16 @@ import lang.Constants;
 
 import parse.ExpressionIterator;
 import parse.ParsingException;
+import parse.SignificantCharsIterator;
+import parse.TokenIterator;
 import parse.UnbalancedParensException;
+import utils.FileCharIterator;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
-public class Machine {
+public class Runtime {
     // interface to the underlying "lisp machine"
     /*
      * java code will use the a Machine object to call lisp code
@@ -37,7 +42,22 @@ public class Machine {
         return ev.eval(env);
     }
 
-    public Object evalFile(String s) {
+    public Object evalFile(File f)
+        throws ParsingException, FileNotFoundException {
+
+        ExpressionIterator ei = new ExpressionIterator
+            (new TokenIterator
+             (new SignificantCharsIterator
+              (new FileCharIterator(f))));
+
+        while (ei.hasNext()) {
+            Object le = ei.next();
+            if (ei.hasNext())
+                this.evalExpr(le);
+            else
+                return this.evalExpr(le);
+        }
+        // si spera unreachable
         return null;
     }
 
@@ -116,6 +136,8 @@ public class Machine {
 
             env.define(new LispSymbol("/"),(Procedure) ArgArith::ratio);
 
+            env.define(new LispSymbol("mod"),(Procedure) ArgArith::modulo);
+
             env.define(new LispSymbol(">"),(Procedure) ArgArith::greaterThan);
 
             env.define(new LispSymbol("<"),(Procedure) ArgArith::lessThan);
@@ -131,6 +153,15 @@ public class Machine {
             env.define(new LispSymbol("print"), (Procedure) values -> {
                     // fatto per interagire un po' da subito
                     ArgUtils.printList(values);
+                    return Constants.NIL;
+                });
+
+            // principalmente per debugging
+            // al momento lo stato del runtime non è molto ispezionabile
+            // quindi per debuggare un po' meglio eh... eccolo
+            env.define(new LispSymbol("dumpenv"), (Procedure) values -> {
+                    env.dump();
+                    // env.dump() non ha effetti sullo stato dell'environment
                     return Constants.NIL;
                 });
 

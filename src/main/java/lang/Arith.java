@@ -28,6 +28,10 @@ public class Arith {
         return (Double)(a.doubleValue() / b.doubleValue());
     }
 
+    public static Integer modulo(Integer a, Integer b) {
+        return a % b;
+    }
+
     public static boolean lessThan(Number a, Number b) {
         if(a instanceof Integer ai && b instanceof Integer bi)
             return ai < bi;

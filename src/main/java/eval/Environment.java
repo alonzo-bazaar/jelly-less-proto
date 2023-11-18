@@ -1,6 +1,6 @@
 package eval;
 
-import java.util.LinkedList;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
@@ -67,11 +67,15 @@ public class Environment {
     public void define(LispSymbol sym, Object val)
         throws VariableAlreadyExistsException
     {
-        if(hasSymbol(sym))
+        /* allow shadowing, but forbid defining the same thing twice
+         * in the same lexical scope
+         * I don't know
+         */
+        if(head.hasSymbol(sym))
             throw new VariableAlreadyExistsException
                 ("cannot re define symbol " + sym.getName() +
                  " as there already is a " + sym.getName() +
-                 " variable in the environment");
+                 " variable in the current scope");
         else
             head.set(sym, val);
     }
@@ -84,10 +88,19 @@ public class Environment {
     boolean hasSymbol(LispSymbol sym) {
         return head.hasSymbol(sym) || (tail != null && tail.hasSymbol(sym));
     }
+
+    void dump() {
+        head.dump();
+        System.out.println("---------");
+        if (tail != null)
+            tail.dump();
+        else
+            System.out.println("-THE END-");
+    }
 }
 
 class EnvFrame {
-    private HashMap<String, Object> nameToExpr;
+    private Map<String, Object> nameToExpr;
 
     EnvFrame() {
         this.nameToExpr = new HashMap<>();
@@ -119,6 +132,13 @@ class EnvFrame {
 
     void set(LispSymbol sym, Object val) {
         nameToExpr.put(sym.getName(), val);
+    }
+
+    void dump() {
+        // prints the entire state of the frame
+        for (String s : nameToExpr.keySet()) {
+            System.out.println(s.toString() + " : " + nameToExpr.get(s));
+        }
     }
 }
 
