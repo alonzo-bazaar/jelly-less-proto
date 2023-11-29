@@ -6,5 +6,7 @@ public class Constants {
      * e non sapevo dove metterle nel package
      */
     public static final NilValue NIL = new NilValue();
-    public static final Boolean T = Boolean.TRUE;
+    public static final UndefinedValue UNDEFINED = new UndefinedValue();
+    public static final Boolean TRUE = Boolean.TRUE;
+    public static final Boolean FALSE = Boolean.FALSE;
 }

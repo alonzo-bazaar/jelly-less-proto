@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 import eval.Runtime;
 import parse.ExpressionIterator;
-import parse.ParsingException;
+import lang.errors.ParsingException;
 
 /**
  * the jellyt package contains some sort of package level façade

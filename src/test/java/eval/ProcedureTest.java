@@ -14,7 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import lang.LispSymbol;
 import lang.Constants;
 import parse.ExpressionIterator;
-import parse.ParsingException;
+import lang.errors.ParsingException;
 
 public class ProcedureTest {
     private Environment env = new Environment();
@@ -129,7 +129,7 @@ public class ProcedureTest {
     public void testHigherOrderRecursiveProcedure() throws ParsingException {
         fromString("(define map " +
                    "(lambda (fn lst) " +
-                   "(if (null lst) nil " +
+                   "(if (null? lst) nil " +
                    "(cons (fn (car lst)) (map fn (cdr lst))))))").eval(env);
         fromString("(define square (lambda (x) (* x x)))").eval(env);
 

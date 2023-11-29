@@ -1,0 +1,13 @@
+* per sierpinsky
+- [X] display
+  - [X] newline escape for strings
+- [X] if strani
+  - [X] when
+  - [X] unless
+- [X] do
+- [X] scheme comments
+  - [X] #| |#
+  - [X] ;
+
+* test
+ - [ ] sequenza vuota

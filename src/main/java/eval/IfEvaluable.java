@@ -17,7 +17,7 @@ public class IfEvaluable implements Evaluable {
 
     @Override
     public Object eval(Environment e) {
-        if (Utils.isTruthy(condition.eval(e))) {
+        if (Utils.isTrue(condition.eval(e))) {
             return ifPart.eval(e);
         }
         return elsePart.eval(e);

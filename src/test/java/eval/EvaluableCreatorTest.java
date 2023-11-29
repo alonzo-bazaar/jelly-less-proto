@@ -7,12 +7,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 
 import parse.ExpressionIterator;
-import parse.ParsingException;
+import lang.errors.ParsingException;
 
 public class EvaluableCreatorTest {
     private Evaluable fromString(String s) throws ParsingException {
@@ -81,7 +82,7 @@ public class EvaluableCreatorTest {
 
     @Test
     public void testIf() throws ParsingException {
-        Evaluable ev = fromString("(if nil 10 20)");
+        Evaluable ev = fromString("(if #f 10 20)");
         Object o = ev.eval(env);
         assertEquals((int) o, 20);
     }
@@ -90,7 +91,7 @@ public class EvaluableCreatorTest {
     public void testWhile() throws ParsingException {
         Evaluable ev = fromString
             ("(let ((a 0) (b 0))" +
-             "(while (< a 10) (set a (+ a 1)) (set b (+ 2 b)))" +
+             "(while (< a 10) (set! a (+ a 1)) (set! b (+ 2 b)))" +
              "b)");
         Object o = ev.eval(env);
         assertEquals((int) o, 20);
@@ -105,7 +106,7 @@ public class EvaluableCreatorTest {
 
     @Test
     public void testSequenceSideEffect() throws ParsingException {
-        Evaluable ev = fromString("(let ((a 1)) (begin (set a 2) a))");
+        Evaluable ev = fromString("(let ((a 1)) (begin (set! a 2) a))");
         Object o = ev.eval(env);
         assertEquals((int) o, 2);
     }
@@ -118,11 +119,30 @@ public class EvaluableCreatorTest {
     }
 
     @Test
-    public void testDefineFunction() throws ParsingException {
+    public void testDefineFunctionLambda() throws ParsingException {
         fromString("(define str (lambda (x) (if x \"yes\" \"no\")))").eval(env);
         Object yes = fromString("(str 10)").eval(env);
-        Object no = fromString("(str nil)").eval(env);
+        Object yesT = fromString("(str #t)").eval(env);
+        Object yesNil = fromString("(str nil)").eval(env);
+        Object no = fromString("(str #f)").eval(env);
+
         assertEquals(yes, "yes");
+        assertEquals(yesT, "yes");
+        assertEquals(yesNil, "yes");
+        assertEquals(no, "no");
+    }
+
+    @Test
+    public void testDefineFunction() throws ParsingException {
+        fromString("(define (str x) (if x \"yes\" \"no\"))").eval(env);
+        Object yes = fromString("(str 10)").eval(env);
+        Object yesT = fromString("(str #t)").eval(env);
+        Object yesNil = fromString("(str nil)").eval(env);
+        Object no = fromString("(str #f)").eval(env);
+
+        assertEquals(yes, "yes");
+        assertEquals(yesT, "yes");
+        assertEquals(yesNil, "yes");
         assertEquals(no, "no");
     }
 
@@ -182,5 +202,17 @@ public class EvaluableCreatorTest {
     @Test
     public void testCdrCons() throws ParsingException {
         assertEquals((int)(fromString("(cdr (cons 1 2))").eval(env)), 2);
+    }
+
+    @Test
+    public void testAnd() throws ParsingException {
+        assertEquals((int)(fromString("(and 1 2)").eval(env)), 2);
+        assertInstanceOf(AndEvaluable.class, fromString("(and 1 2)"));
+    }
+
+    @Test
+    public void testOr() throws ParsingException {
+        assertEquals((int)(fromString("(or 2 3)").eval(env)), 2);
+        assertInstanceOf(OrEvaluable.class, fromString("(or 2 3)"));
     }
 }

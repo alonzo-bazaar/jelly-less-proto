@@ -20,7 +20,7 @@ public class EnvironmentInitWithFramesTest {
         EnvFrame env0 = new EnvFrame(m0);
 
         HashMap<String, Object> m1 = new HashMap<>();
-        m1.put("yee", Constants.T);
+        m1.put("yee", Constants.TRUE);
         EnvFrame env1 = new EnvFrame(m1);
 
         HashMap<String, Object> m2 = new HashMap<>();

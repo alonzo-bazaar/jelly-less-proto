@@ -1,13 +1,9 @@
 package lang;
 
-
 public class NilValue implements LispList {
-
     public NilValue() {
-
-        // na sega
+        // niente
     }
-
     @Override
     public Object getCar() {
         return Constants.NIL;
@@ -32,7 +28,6 @@ public class NilValue implements LispList {
     public Object last() {
         return Constants.NIL;
     }
-
     @Override
     public String toString() {
         return "nil";

@@ -9,6 +9,13 @@
 ** 100% test coverage
 quando arrivi a poterlo fare, il che sarebbe adesso (hai migrato a junit5 per un motivo) rifai/aggiugni sti test, grazie mille
 
+* TODO Per testabilità
+a fini di (far funzionare la cosa) potrebbe essere un'idea rendere la semantica di jelly un sottoinsieme di una semantica di un lisp che funzioni, come common lisp, scheme, o clojure
+
+common lisp è quello con cui sono più familiare, scheme è quello più semplice, clojure è quello che gli va di più java
+
+al momento la semnatica è decisamente common lispiana, quindi mi sa che finirò su quello (vedere allora come cazzo faccio con SETQ SPONGEBOBU)
+
 * TODO Basi
 rivedi un po' di sicp e crafting interpreters per farti una mezza idea su come fare per ripulire il codice e le idee che hai creato
 

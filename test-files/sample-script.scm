@@ -12,4 +12,4 @@
 (let ((divides 0))
   (while (< divides 30)
          (print (fizzbuzz divides))
-         (set divides (+ 1 divides))))
+         (set! divides (+ 1 divides))))

@@ -11,6 +11,10 @@ import lang.Serializer;
 import utils.StringCharIterator;
 import lang.Constants;
 
+import lang.errors.TokenParsingException;
+import parse.errors.TokensExhaustedException;
+import parse.errors.UnbalancedParenthesesException;
+
 public class ExpressionIterator {
     private TokenIterator tokens;
     private Stack<Object> stack = new Stack<Object>();
@@ -42,13 +46,13 @@ public class ExpressionIterator {
              (new StringCharIterator(s)));
     }
 
-    public Object next() throws ParsingException {
+    public Object next() throws TokenParsingException {
         precompute();
         if(!hasNext()) return null;
         return precomputed.remove();
     }
 
-    Object getNext() throws ParsingException {
+    Object getNext() throws TokenParsingException {
         while (tokens.hasNext()) {
             String token = tokens.next();
             if(token == null && !stack.isEmpty()) // TODO quando ristrutturi token qui ci metti un Token.isEOF()
@@ -59,7 +63,7 @@ public class ExpressionIterator {
             }
             else if (token.equals(")")) {
                 if (stack.isEmpty()) {
-                    throw new UnbalancedParensException("end of file before parsing, closing parentheses does not match any previously open parenthesis");
+                    throw new UnbalancedParenthesesException("end of file before parsing, closing parentheses does not match any previously open parenthesis");
                 }
                 Object expr = stack.pop();
                 if (stack.isEmpty()) {
@@ -80,7 +84,7 @@ public class ExpressionIterator {
         return null;
     }
 
-    void precompute() throws ParsingException {
+    void precompute() throws TokenParsingException {
         Object le = getNext();
         while(le != null) {
             precomputed.add(le);
@@ -88,7 +92,7 @@ public class ExpressionIterator {
         }
     }
 
-    public boolean hasNext() throws ParsingException {
+    public boolean hasNext() throws TokenParsingException {
         precompute();
         return !precomputed.isEmpty();
     }

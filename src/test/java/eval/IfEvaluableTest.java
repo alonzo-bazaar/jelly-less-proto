@@ -22,25 +22,41 @@ public class IfEvaluableTest {
     }
     @Test
     public void testIfT() {
-        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(Constants.T),
+        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(Constants.TRUE),
                                             new ConstantEvaluable((1)),
                                             new ConstantEvaluable((2)));
         assertEquals((int)(iffer.eval(env)), 1);
     }
 
     @Test
-    public void testIfNonNil() {
-        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable("cristo"),
+    public void testIfNonNilString() {
+        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable("stringa"),
                                             new ConstantEvaluable(1),
                                             new ConstantEvaluable(2));
         assertEquals((int)(iffer.eval(env)), 1);
     }
 
     @Test
-    public void testElse() {
+    public void testIfNonNilInt() {
+        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(0),
+                                            new ConstantEvaluable(1),
+                                            new ConstantEvaluable(2));
+        assertEquals((int)(iffer.eval(env)), 1);
+    }
+
+    @Test
+    public void testIfFalse() {
+        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(Constants.FALSE),
+                                            new ConstantEvaluable((1)),
+                                            new ConstantEvaluable((2)));
+        assertEquals((int)(iffer.eval(env)), 2);
+    }
+
+    @Test
+    public void testIfNil() {
         IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(Constants.NIL),
                                             new ConstantEvaluable(1),
                                             new ConstantEvaluable(2));
-        assertEquals((int)(iffer.eval(env)), 2);
+        assertEquals((int)(iffer.eval(env)), 1);
     }
 }

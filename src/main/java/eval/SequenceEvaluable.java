@@ -1,6 +1,8 @@
 package eval;
 
 import java.util.List;
+import java.util.ArrayList;
+import lang.Constants;
 
 public class SequenceEvaluable implements Evaluable {
     // last is treated differently since evaluation of a sequence returns the value
@@ -9,8 +11,14 @@ public class SequenceEvaluable implements Evaluable {
     private Evaluable last;
 
     public SequenceEvaluable(List<Evaluable> lst) {
-        this.elements = lst.subList(0, lst.size() - 1);
-        this.last = lst.get(lst.size() - 1);
+        if (lst.isEmpty()) {
+            this.last = new ConstantEvaluable(Constants.UNDEFINED);
+            this.elements = new ArrayList<Evaluable>(0);
+        }
+        else {
+            this.elements = lst.subList(0, lst.size() - 1);
+            this.last = lst.get(lst.size() - 1);
+        }
     }
 
     @Override

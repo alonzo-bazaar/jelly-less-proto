@@ -1,22 +1,25 @@
 package parse;
 
-import utils.Pair;
-import utils.StringCharIterator;
-
-import java.util.Arrays;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class TokenIterator implements Iterator<String>{
+public class TokenIterator implements Iterator<String> {
     private static final String[] specialTokens = {
         "(", ")", "'",
-        ";", ";;", ";;;", // aggiuti così solo per fare lo stronzo
-        "#|", "|#",
-        "#\\",
+        "#'",
+        ":", "::", ":::",
     };
+
+    Map<String, String> escapes = new HashMap<String, String>();
     private final SignificantCharsIterator chars;
+
     public TokenIterator(SignificantCharsIterator chars) {
         this.chars = chars;
+        this.escapes.put("\\\\", "\\");
+        this.escapes.put("\\\"", "\"");
+        this.escapes.put("\\t", "\t");
+        this.escapes.put("\\n", "\n");
     }
 
     public static TokenIterator fromString(String s) {
@@ -55,6 +58,7 @@ public class TokenIterator implements Iterator<String>{
         StringBuilder sb = new StringBuilder();
         while (chars.hasNext()
                 && !chars.startsWithWhitespace()
+                && !chars.startsWithComment()
                 && !this.startsWithLiteral()
                 && !this.startsWithSpecial()) {
             sb.append(chars.next());
@@ -66,14 +70,14 @@ public class TokenIterator implements Iterator<String>{
         StringBuilder sb = new StringBuilder();
         // opening '"'
         sb.append(chars.next());
-        String[] escapes = {"\\\\", "\\\"", "\\\t", "\\\n"}; // escape explosion incoming
         while (chars.hasNext() && !chars.startsWith("\"")) {
-            String startingEscape = Arrays.stream(escapes) // di tutte le sequenze di escape
-                    .filter(chars::startsWith) // prendi quelle con cui inizia chars (se inizia con \t, o con \n)
-                    .findFirst() // se ce n'è una la prendi
-                    .orElse(null); // altrimenti null
-            if(startingEscape != null) { // ce n'era una?
-                sb.append(startingEscape);
+            String startingEscape = escapes.keySet()
+                .stream()
+                .filter(chars::startsWith)
+                .findFirst()
+                .orElse(null);
+            if(startingEscape != null) {
+                sb.append(escapes.get(startingEscape));
                 chars.ignorePastPrefix(startingEscape);
             }
             else {
@@ -89,6 +93,7 @@ public class TokenIterator implements Iterator<String>{
         StringBuilder sb = new StringBuilder();
         while (chars.hasNext()
                 && !chars.startsWithWhitespace()
+                && !chars.startsWithComment()
                 && !this.startsWithLiteral()
                 && this.specialStartsWith(sb.toString().concat(chars.getPrefix(1)))) {
             sb.append(chars.next());

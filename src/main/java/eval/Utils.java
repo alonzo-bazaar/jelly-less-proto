@@ -4,6 +4,7 @@ import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import lang.Arith;
 import utils.Pair;
@@ -40,13 +41,16 @@ public class Utils {
         return al;
     }
 
-    public static boolean isFalsey(Object o) {
-        return o == Constants.NIL || o == Boolean.FALSE;
+    public static Stream<Object> toStream(LispList l) {
+        return toJavaList(l).stream();
     }
 
-    public static boolean isTruthy(Object o) {
-        return !isFalsey(o);
+    public static boolean isFalse(Object o) {
+        return o == Boolean.FALSE;
     }
 
+    public static boolean isTrue(Object o) {
+        return !isFalse(o);
+    }
 }
 

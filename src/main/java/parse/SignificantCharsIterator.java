@@ -9,12 +9,15 @@ import utils.StringCharIterator;
 // public class SignificantCharsIterator implements Iterator<Character>{
 public class SignificantCharsIterator extends PrefixIterator{
     /**
-     * ignora caratteri inultli, vale a dire i commenti nel codice
+     * ignora i commenti nel codice
+     * vengono inseriti spazi virtuali al posto dei commenti per preservare
+     * il fatto che i commenti possano effettivamente separare token
+     * non ha la responsabilità di ignorare spazi superflui
+     * quella è gestita meglio al livello del TokenIterator
      */
-    // commenti stile java/c++, per adesso
-    private static final String inlineCommentStart = "//";
-    private static final String multilineCommentStart = "/*";
-    private static final String multilineCommentEnd = "*/";
+    private static final String inlineCommentStart = ";";
+    private static final String multilineCommentStart = "#|";
+    private static final String multilineCommentEnd = "|#";
 
     private static final String unixNewline = "\n";
     private static final String dosNewline = "\r\n";
@@ -46,12 +49,14 @@ public class SignificantCharsIterator extends PrefixIterator{
 
     @Override
     public boolean hasNext() {
-        ignoreComments();
         return super.hasNext();
     }
 
     Character noCommentNext() {
-        this.ignoreComments();
+        if (this.ignoreComments()) {
+            // virtual whitespace between comments to avoid a/*  */b becoming ab
+            return ' ';
+        }
         return super.next();
     }
 
@@ -68,7 +73,8 @@ public class SignificantCharsIterator extends PrefixIterator{
             super.startsWith(multilineCommentStart);
     }
 
-    void ignoreComments() {
+    boolean ignoreComments() {
+        boolean res = false;
         boolean ignored = true;
         while(ignored && super.hasNext()) {
             // loop in caso ci siamo più commenti diversi di fila
@@ -76,12 +82,15 @@ public class SignificantCharsIterator extends PrefixIterator{
             if (super.startsWith(inlineCommentStart)) {
                 ignorePastPrefix(newline);
                 ignored = true;
+                res = true;
             } 
             else if (super.startsWith(multilineCommentStart)) {
                 ignorePastPrefix(multilineCommentEnd);
                 ignored = true;
+                res = true;
             }
         }
+        return res;
     }
 
     boolean startsWithWhitespace() {

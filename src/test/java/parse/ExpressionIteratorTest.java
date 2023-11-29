@@ -8,6 +8,8 @@ import lang.Constants;
 import utils.StringCharIterator;
 
 import static org.junit.jupiter.api.Assertions.*;
+import lang.errors.ParsingException;
+import parse.errors.UnbalancedParenthesesException;
 
 
 public class ExpressionIteratorTest {
@@ -86,25 +88,25 @@ public class ExpressionIteratorTest {
 
     @Test
     public void testUnclosedParentheses () {
-        assertThrows(UnbalancedParensException.class,
+        assertThrows(UnbalancedParenthesesException.class,
                 () -> {
                     ExpressionIterator ei = ExpressionIterator.fromString(")");
                     Object o = ei.next();
                 });
 
-        assertThrows(UnbalancedParensException.class,
+        assertThrows(UnbalancedParenthesesException.class,
                 () -> {
                     ExpressionIterator ei = ExpressionIterator.fromString("))");
                     Object o = ei.next();
                 });
 
-        assertThrows(UnbalancedParensException.class,
+        assertThrows(UnbalancedParenthesesException.class,
                 () -> {
                     ExpressionIterator ei = ExpressionIterator.fromString("())");
                     Object o = ei.next();
                 });
 
-        assertThrows(UnbalancedParensException.class,
+        assertThrows(UnbalancedParenthesesException.class,
                 () -> {
                     ExpressionIterator ei = ExpressionIterator.fromString("()))");
                     Object o = ei.next();

@@ -16,7 +16,7 @@ public class EnvironmentInitAndExtendTest {
         env = new Environment();
         env.define(new LispSymbol("nope"), Constants.NIL);
         env.extend();
-        env.define(new LispSymbol("yee"), Constants.T);
+        env.define(new LispSymbol("yee"), Constants.TRUE);
         env.extend();
         env.define(new LispSymbol("yoo"), 42);
     }

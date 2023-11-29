@@ -16,7 +16,7 @@ public class WhileLoopEvaluable implements Evaluable {
     public Object eval(Environment e) {
         Object runningValue = Constants.NIL;
         Object check = cond.eval(e);
-        while(Utils.isTruthy(check)) {
+        while(Utils.isTrue(check)) {
             runningValue = body.eval(e);
             check = cond.eval(e);
         }
