@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+grep --no-filename --recursive --line-number --ignore-case\
+	--before-context 1 --after-context 1\
+	'failure!'\
+	target/surefire-reports/

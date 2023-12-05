@@ -1,5 +1,7 @@
 package eval;
 
+import eval.runtime.Environment;
+import eval.runtime.errors.EnvironmentException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -13,12 +15,16 @@ public class EnvironmentInitAndExtendTest {
     private Environment env;
     @BeforeEach
     public void initializeAndExtend() throws EnvironmentException {
-        env = new Environment();
-        env.define(new LispSymbol("nope"), Constants.NIL);
-        env.extend();
-        env.define(new LispSymbol("yee"), Constants.TRUE);
-        env.extend();
-        env.define(new LispSymbol("yoo"), 42);
+        Environment env0 = new Environment();
+        env0.define(new LispSymbol("nope"), Constants.NIL);
+
+        Environment env1 = env0.extend();
+        env1.define(new LispSymbol("yee"), Constants.TRUE);
+
+        Environment env2 = env1.extend();
+        env2.define(new LispSymbol("yoo"), 42);
+
+        env = env2;
     }
 
     @Test

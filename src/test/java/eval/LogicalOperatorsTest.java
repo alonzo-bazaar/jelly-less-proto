@@ -1,9 +1,10 @@
 package eval;
 
+import eval.evaluable.Evaluable;
+import eval.evaluable.EvaluableCreator;
+import eval.runtime.Environment;
+import eval.runtime.Runtime;
 import org.junit.jupiter.api.Test;
-
-import eval.errors.IncorrectArgumentListException;
-import eval.errors.IncorrectTypeException;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;

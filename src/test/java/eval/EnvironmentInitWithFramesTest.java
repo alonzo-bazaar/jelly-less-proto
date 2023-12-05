@@ -1,5 +1,8 @@
 package eval;
 
+import eval.runtime.EnvFrame;
+import eval.runtime.Environment;
+import eval.runtime.errors.EnvironmentException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -15,16 +18,16 @@ public class EnvironmentInitWithFramesTest {
     private Environment env;
     @BeforeEach
     public void initializeWithFrames() {
-        HashMap<String, Object> m0 = new HashMap<>();
-        m0.put("nope", Constants.NIL);
+        HashMap<LispSymbol, Object> m0 = new HashMap<>();
+        m0.put(new LispSymbol("nope"), Constants.NIL);
         EnvFrame env0 = new EnvFrame(m0);
 
-        HashMap<String, Object> m1 = new HashMap<>();
-        m1.put("yee", Constants.TRUE);
+        HashMap<LispSymbol, Object> m1 = new HashMap<>();
+        m1.put(new LispSymbol("yee"), Constants.TRUE);
         EnvFrame env1 = new EnvFrame(m1);
 
-        HashMap<String, Object> m2 = new HashMap<>();
-        m2.put("yoo", 42);
+        HashMap<LispSymbol, Object> m2 = new HashMap<>();
+        m2.put(new LispSymbol("yoo"), 42);
         EnvFrame env2 = new EnvFrame(m2);
 
         env = new Environment(env2, new Environment(env1, new Environment(env0)));

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import eval.Runtime;
+import eval.runtime.Runtime;
 import parse.ExpressionIterator;
 import lang.errors.ParsingException;
 

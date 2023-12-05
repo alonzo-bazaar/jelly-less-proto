@@ -1,0 +1,94 @@
+questo file serve a ospitare una vista ridotta sulla todo list
+ai fini di non dovermi smadonnare sulle 30 pagine di todo list che ho fatto sopra
+
+* COMMENT Parameter List
+#+begin_quote
+DISREGARD THAT
+I SUCK COCKS
+#+end_quote
+crea la classe
+inseriscila dove stanno le liste normali
+crea i metodi per 
+
+** "Definizione"
+abbiamo sti tipi di parametri
+ - posizionali
+ - opzionali
+ - keyword
+ - ~&rest~
+
+ai fini di non rompermi il cazzo
+ - opzionali e ~&rest~ non possono stare insieme
+ - opzionali e keyword possono stare insieme
+ - keyword e ~&rest~ possono stare insieme
+** Responsabilità
+*** Nella funzione
+
+*** Nella chiamata/assegnamento parametri
+nella chiamata c'è da
+ - essere sicuri matchano i parametri
+ - matchare i parametri
+ - costruire un ~EnvFrame~ dai match
+
+
+* Parameter List, Scheme style? 
+scheme ha tre tipo di parameter list
+ - normale :: ~((lambda (a b c) (+ a b c)) 1 2 3)~
+   - ~a~ : ~1~
+   - ~b~ : ~2~
+   - ~c~ : ~3~
+
+ - ~&rest~ e basta :: ~((lambda lst (reverse lst)) 1 2 3)~
+   - ~lst~ : ~list 1 2 3~
+
+ - ~&rest~ et al :: ~((lambda (a b . lst) (cons (+ a b) (reverse lst))) 1 2 3 4)~
+   - ~a~ : ~1~
+   - ~b~ : ~2~
+   - ~lst~ : ~(list 3 4)~
+
+al momento intendo fare che la terza fa ~(a b &rest c)~ e non ~(a b . c)~
+per non interferire troppo l'eventuale reader che dovrebbe fare
+\[ (a\ .\ b) \to (cons\ a\ b) \]
+
+visto che il suddetto userebbe quei ~( . )~, e non voglio distruggere la param list appena implemento il reader
+
+al momento implemento ~&rest~
+poi forse implemento ~(lambda x (do shit with all args))~
+** Responsabilità
+ - ~EnvFrame match(ParameterList pl, ArgumentList a) throws ParametersDoNotMatchException~
+
+questa funzione sta meglio dentro ~ParameterList~ visto che deve accedere abbastanza alla rappresentazoine interna della suddetta
+
+la ~ParameterList~ probabile sarà
+#+begin_src java
+  class ParameterList {
+      List<LispSymbol> positional = null;
+      LispSymbol tail = null;
+
+      /* ... */
+  }
+#+end_src
+
+il match può tranquillamnete essere fatto con una ~List<Object> givenValues~[fn::o ~passedValues~? Boh]
+
+     
+* Per dopo
+io farei un sottopackage ~eval.procedure~, ce sta troppa roba di funzioni qui
+ 
+ - ~eval.procedure~
+   - ~Procedure~
+   - ~UserDefinedProcedure~
+   - ~ParameterList~
+   - lambda? (qui o evaluable?)
+ - ~eval.evaluable~
+   - ~Evaluable~
+   - ~<costrutto>Evaluable for costrutto in (if do while let lambda ...)~
+ - ~eval.runtime~
+   - ~Runtime~
+   - ~Environment~
+ - ~eval.client~
+   - ~Client~ (magari ~org.jelly.client.Client~ invece di ~org.jelly.lang.eval.client.Client~?)
+
+renaming livello pacchetto sono cazzi di intellij
+
+quando hai messo che ~eval~ richiede un runtime poi rimetti buildInitialEnvironment come privato

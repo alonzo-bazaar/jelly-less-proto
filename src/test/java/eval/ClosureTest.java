@@ -1,5 +1,9 @@
 package eval;
 
+import eval.evaluable.Evaluable;
+import eval.evaluable.EvaluableCreator;
+import eval.runtime.Environment;
+import eval.runtime.Runtime;
 import parse.ExpressionIterator;
 import lang.errors.ParsingException;
 
