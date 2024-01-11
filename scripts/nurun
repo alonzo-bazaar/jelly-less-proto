@@ -1,7 +1,10 @@
 #!/usr/bin/bash
-cfonts "CLEAN"
-mvn clean
-cfonts "COMPILE"
-mvn compile
-cfonts "RUN"
-./run "$*"
+announce() {
+	echo "----------------------------"
+	echo "----- [ $1 ] -----"
+	echo "----------------------------"
+}
+
+announce "CLEANING" && mvn clean &&\
+ announce "COMPILING" &&  mvn compile &&\
+ announce "RUNNING" && ./run "$*"

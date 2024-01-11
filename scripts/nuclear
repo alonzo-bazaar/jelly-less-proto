@@ -1,4 +1,10 @@
 #!/usr/bin/bash
-cfonts "CLEAN..." && mvn clean &&\
- cfonts "COMPILe..." &&  mvn compile &&\
- cfonts "TEST..." && mvn test
+announce() {
+	echo "----------------------------"
+	echo "----- [ $1 ] -----"
+	echo "----------------------------"
+}
+
+announce "CLEANING" && mvn clean &&\
+ announce "COMPILING" &&  mvn compile &&\
+ announce "TESTING" && mvn test

@@ -1,0 +1,82 @@
+* API della reflection
+** Desiderata
+#+begin_src scheme
+  ;;; call java methods
+  (call object method . args)
+  (callStatic class method . args)
+
+  ;;; create java objects
+  (newInstance class . args)
+
+  ;;; access members of java objects/classes
+  (ref object member-name)
+  (refStatic class member-name)
+
+  ;;; modify members of java objects/classes
+  (setMember object member-name value)
+  (setMemberStatic class member-name value)
+#+end_src
+
+** Data da java
+*** Funzioni
+nella sezione =Invoking Methods by Name= in [[https://www.oracle.com/technical-resources/articles/java/javareflection.html][doc sulla reflection]] abbiamo che per farlo servono
+ - classe dell'oggetto (ez, abbiamo l'oggetto, fai =getClass=)
+ - tipi dei parametri (ez, abbiamo i parametri, fai =getClass=)
+ - nome del metodo (che ce lo passano)
+ - valori dei paramtri (che ce lo passano)
+
+ottenuti questi bisogna
+ 1. ottenere l'oggetto ~Method~ da chiamare utilizzando
+    - il nome del metodo
+    - la classe a cui appartiene il metodo
+    - i tipi dei paramtri (visto che overloading dei metodi)
+ 2. lo chiami coi parametri passati
+ 3. profit
+
+detta in codice
+#+begin_src java
+  Object callerObj = boh;
+  Class callerObjClass = callerObj.getClass();
+  Class parameterTypes[] = boh[];
+  Object parameters[] = boh[];
+  String methodName = "boh";
+
+  Method meth = callerObjClass.getMethod(methodName, parameterTypes);
+  return result = meth.invoke(callerObj, parameters);
+#+end_src
+
+l'unica differenza tra i metodi statici e non è che quando invochi un metodo statico ~callerObj~ dovrebbe essere ~null~
+
+*** Costruttori
+i costruttori sono abbastanza delle funzioni, quindi l'api è simile e servono gli stessi dati
+
+onde risparmiarci i dettagli ecco il codice per i costruttori
+
+*** Accesso Membri
+*** Modifica Membri
+
+** Come adattare?
+*** Funzioni
+*** Costruttori
+*** Accesso Membri
+*** Modifica Membri
+
+* Funcall
+** De novo l'api di java
+
+** Gestione delle eccezioni
+visto che jelly non ha un meccanismo di gestione delle eccezioni (e non intendo implementarlo perchè già ci ho messo una settimana a rifare il lexer, cristo) per gestire le eccezzioni si è deciso di presentate all'utente due opzioni
+
+ 1. =Rawdogging=, chiami senza fregartene un cazzo e preghi, se il metodo sottostante tira un'eccezione l'intera applicazione va in palla e ti fotti, bello eh?
+ 2. =Result Values=, si ritorna un valore di tipo =Result=, si può controllare dal =Result= qualora questo sia buono o no, qualora non sia buono, questo conterrà tutte le informazioni di debug date dall'eccezione tirata, e sarà utilizzabile dal codice jelly per gestire gli errori generati dalla chiamata
+
+per quanto permettere l'opzione per il =Rawdogging= potrebbe non sembrare ideale, permettere unicamente la gestione tramite =Result Values= renderebbe l'utilizzo di foreign call molto macchinoso.
+
+** Roba in mezzo
+*** InteropLayer
+
+* Costruttore
+
+* Accesso Membri
+
+* Modifica Membri

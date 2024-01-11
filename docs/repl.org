@@ -1,0 +1,66 @@
+* Interfaccia ~Source~ 
+avere un'interfaccia quale
+#+begin_src java
+  public interface Source<T> {
+      public boolean isOpen();
+      public boolean hasNext();
+      public T next();
+  }
+
+  // o se vogliamo fare i fighi
+
+  public interface Source<T> extends Iterator<T> {
+      public boolean isOpen();
+  }
+#+end_src
+
+semplificherebbe le capriole casuate dall'utilizzo di ~Iterator~ per una "fonte" di dati non sufficientemente descritta da ~hasNext()~
+
+** Semantica dell'interfaccia
+una fonte di ~T~ è una classe che, finchè resta aperta, potrebbe produrre nuove istanze di ~T~, ma che potrebbe non poter produrre istanze di ~T~ in questo momento.
+
+Esempio (unico e) banale è quello di una ~Source<String> lines~ utilizzata per rappresentare la shell di un repl, infatti una tale shell può avere possibilità di fornire altri dati (non aver ricevuto ~Ctrl-D~ dall'utente), ma non avere dati da rendere a ~.next()~.
+Visto che queste due condizioni si evolvono come due condizioni e non come una sola, usare solo ~hasNext()~ porterebbe a un'interfaccia non sufficientemente espressiva per le applicazioni richieste agli oggetti che la implementano
+
+*** "contratto"
+per qualsiasi ~Source<?> s~
+ - se ~s.hasNext()~ allora ~s.isOpen()~
+   - quindi se ~!s.isOpen()~ si ha che necessariamente ~!s.hasNext()~
+ - se ~!s.hasNext()~ allora ~s.next()~ ritorna ~null~
+ - quando ~s.isOpen()~, ~s.hasNext()~ può essere sia vero che falso
+ - se ~s.hasNext()~ allora ~s.next()~ deve avere un cazzo di senso
+   (non posso dire che ~s.next()~ è necessariamente non nullo perchè se poi usi un ~Source~ per iterare una qualche fonte che può restituire anche ~null~ cazzo fo?)
+
+** Motivazione
+*** Repl
+come detto prima, il repl è l'unico esempio di perchè usare questa cosa e non un ~Iterator~ come le persone normali
+ci sono infatti molte condizioni in cui
+ - fra non ho più roba, e non ne arriva altra
+ - fra non ho più roba, ma poi ne arriva altra
+
+sono da gestire in modo completamente diverso
+
+si prenda come esempio l'input di una stringa multiline, se sono alla fine di una riga che apre la stringa e non la chiude
+ - caso ="e non ne arriva altra"= :: eccezione, sta sintassi non va bene
+ - caso ="ma poi ne arriva altra"= :: aspetto la prossima riga per popolare il resto della stringa
+
+non potrei usare solo ~hasNext()~ per dire se ="ne arriva altra?"=? In teoria sì, è solo che poi mi aspetto che se ~s.hasNext()~ allora posso chiamare ~s.next()~
+ma se ho solo una shell aperta a cui non ho dato nessun cazzo di input, poi chiamo ~s.next()~, ecco che ritorna 'no stocazzo di niente (~null~)
+
+dover controllare sia ~hasNext()~ che ~next() == null~ è un'api abbastanza scomoda, qualcosa del genere
+#+begin_src java
+  if(s.hasNext()) {
+      n = s.next();
+      if(n == null) {
+          // è aperta ma per adesso non ha altri dati
+      }
+      else {
+          // è aperta ma e n sono i prossimi dati
+      }
+  }
+  else {
+      // non è aperta
+  }
+#+end_src
+
+ha un po' troppo ~null~ per i miei gusti, e se sto ~n == null~ diventa de facto un check da usare con l'interfaccia, meglio a sto punto vale "formalizzarlo" e aggiungere ~s.isOpen()~

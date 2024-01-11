@@ -141,7 +141,7 @@ come fare i binding dalla lambda list?
 
 *** TODO Call stack
 utilizzabile per error a runtime, sarebbe un ~java.util.Stack<Procedure>~
-il call stack sarebbe parte del ~eval.runtime.Runtime~, per quanto questo porterebbe a dover vedre come accoppiare la function call al runtime
+il call stack sarebbe parte del ~runtime.org.jelly.eval.Runtime~, per quanto questo porterebbe a dover vedre come accoppiare la function call al runtime
 come cosa sarebbe fattibile se il ~Runtime~ fosse un singleton, ma al momento voglio lasciare la possibilità di più lisp machine (ergo ~Runtime~) attivi contemporaneamente
 
 quindi
@@ -175,7 +175,7 @@ evitiamo che stai già proiettando anche troppo che non ha manco fatto un ast o 
 
 * TODO Frontend
 serve un package di frontend per riadattare la struttura interna di jelly all'esterno
-importare un ~org.jelly.lang.eval.runtime.Runtime~ sembra un pochino uno stupro di astrazione
+importare un ~org.jelly.lang.runtime.org.jelly.eval.Runtime~ sembra un pochino uno stupro di astrazione
 
 e poi mi sa che il nome ~Runtime~ da un po' un'idea sbagliata su cosa dovrebbe essere
 magari rinominarlo a qualcosa tipo ~Client~, o qualcos'altro che faccia intuire il suo utilizzo come
