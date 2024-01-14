@@ -13,7 +13,9 @@ public class TokenParsingException extends RuntimeException {
     }
 
     public TokenParsingException(String s, int row, int col, String filename) {
-        super(s + (row!=-1?" at row" + row : "") + (col!=-1? "at column " + col:"") + (filename!=null?"in file " + filename:""));
+        super(s + (row!=-1?" at row <" + row + ">" : "")
+                + (col!=-1? " at column <" + col + ">" : "")
+                + (filename!=null?" in file <" + filename + ">" : ""));
         this.row = row;
         this.col = col;
         this.filename = filename;

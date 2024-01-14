@@ -1,20 +1,27 @@
 package org.jelly.parse.token;
 
+import org.jelly.parse.token.errors.TokenLineParsingException;
 import org.jelly.parse.token.errors.TokenParsingException;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Queue;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * shitty class I'm making just to jave something to replace TokenIterator with, someday
+ * the code is currently a fucking assfest
+ * please rework into something like
+ * String s = currentLine(); buffer = tokenizeRow(s, eventualOtherLines); // eventualOtherLines for multiline strings or comments
  */
 public class NewTokenIterator implements Iterator<Token> {
-    private final Iterator<String> sourceLines;
-    private final Queue<Token> precomputed = new LinkedList<Token>();
+    private Iterator<String> sourceLines;
+    // private final Queue<Token> precomputed = new LinkedList<Token>();
     private int lineNumber = 0;
     private int indexInLine = 0;
     private String currentLine;
+
+    private List<Token> buffer = new ArrayList<>(0);
 
     // should be sorted from longest to shortest for implementation reasons
     private static final String[] punctuationTokens = {":::", "::", ":", "(", ")", ",", "`", "'"};
@@ -27,91 +34,60 @@ public class NewTokenIterator implements Iterator<Token> {
     @Override
     public Token next() {
         if(hasNext()) {
-            precompute();
-            return precomputed.remove();
+            return bufferNext();
         }
         return new EOFToken();
     }
 
     @Override
     public boolean hasNext() {
-        if(precomputed.isEmpty())
-            precompute();
-
-        return !precomputed.isEmpty();
+        tryPopulateBuffer();
+        return !(buffer.isEmpty());
     }
 
-    void precompute() {
-        int startingLineNumber = lineNumber;
-        while(skipToNextSignificant() && lineNumber == startingLineNumber) {
-            // particulary tellable tokens
-            if (startsWithPunctuation())
-                precomputed.add(extractPunctuation());
-            else if (startsWithStringLiteral())
-                precomputed.add(extractStringLiteral());
-            else if (startsWithCharLiteral())
-                precomputed.add(extractCharLiteral());
+    private void tryPopulateBuffer() {
+        try {
+            while (buffer.isEmpty()) {
+                /* fa un po' schifo,
+                 * ma per funzionare con un repl bisogna essere lazy sul souurceLines.next();
+                 * visto che se si chiama next() a caso, questo next potrebbe richiedere user interaction
+                 * e bloccare l'applicazione in momenti poco desiderabili
+                 * va wrappato in qualche modo, ma intanto vediamo se funziona
+                 */
+                if(currentLine == null)
+                    if(sourceLines.hasNext())
+                        currentLine = sourceLines.next();
+                    else
+                        return;
 
-            // symbols, integers, floats &Co. have the same rules, easier this way
-            else {
-                String lex = extractNormalString();
-                if (stringIsInteger(lex))
-                    precomputed.add(new LiteralToken<Long>(lex, Long.parseLong(lex)));
-                else if (stringIsFloat(lex))
-                    precomputed.add(new LiteralToken<Double>(lex, Double.parseDouble(lex)));
-                else
-                    precomputed.add(new NormalToken(lex));
-            }
-        }
-    }
-
-    // integers and floats
-    boolean stringIsInteger(String s) {
-        int i = 0;
-        if(s.charAt(0) == '-')
-            i = 1;
-        while(i != s.length()) {
-            if(!charIsDigit(s.charAt(i)))
-                return false;
-            i++;
-        }
-        return true;
-    }
-
-    boolean stringIsFloat(String s) {
-        int i = 0;
-        boolean dot = false;
-        if(s.charAt(0) == '-')
-            i = 1;
-        while(i != s.length()) {
-            if(charIsDigit(s.charAt(i)))
-                i++;
-            else {
-                if(!dot && s.charAt(i) == '.') {
-                    dot = true;
-                    i++;
+                LineTokenizer lt = new LineTokenizer(indexInLine, currentLine, sourceLines);
+                buffer = lt.tokenizeLine();
+                if(lt.lineWasExhausted()) {
+                    currentLine = null;
+                    indexInLine = 0;
+                    sourceLines = lt.getRemainingLines();
                 }
-                else
-                    return false;
+                else {
+                    currentLine = lt.getCurrentLine();
+                    indexInLine = lt.getIndex();
+                    sourceLines = lt.getRemainingLines();
+                }
             }
         }
-        return dot;
+        catch(TokenLineParsingException lineEx) {
+            throw new TokenParsingException(lineEx.getMessage(), lineNumber, lineEx.getColumnNumber(), TokenParsingException.noFile);
+        }
     }
 
-    boolean charIsDigit(char c) {
-        return c >= '0' && c<='9';
+    private Token bufferNext() {
+        return buffer.removeFirst();
     }
 
-    // skipping
-    boolean advance(int n) {
+    boolean rectify() {
         /*
-         * advances iterator by n characters
-         * returns false if characters are exhausted, this is not handled as an exception as character exhaustion
-         * is expected behaviour
-         * return value is often checked in situations where character exhaustion is not expected
-         * , for example while closing a multiline comment
+         * ensures indexInLine is consistent with the length of currentLine
+         * to be called after using unsafeAdvance() to ensure the iterator advanced correctly
          */
-        indexInLine += n;
         while(indexInLine >= currentLine.length()) {
             if(sourceLines.hasNext()) {
                 // consume the line, love isn't always on time
@@ -126,35 +102,36 @@ public class NewTokenIterator implements Iterator<Token> {
         return true;
     }
 
-    char consumeChar() {
-        char res = currentLine.charAt(indexInLine);
-        advance(1);
-        return res;
+    void unsafeAdvance(int n) {
+        /*
+         * normal advance() might call sourceLines.next(),
+         * which will lead to undesirable effects when sourceLines comes from user input
+         * to fix this we provide an unsafe option that does not call sourceLines.next()
+         * this is to be used with care, and one must make sure to call rectify()
+         * by the next time indexInLine and currentLine are expected to work together
+         */
+        /*
+         * the only reason why this beast was introduced was the fact that the current logic will want
+         * the current line as the line that next() is from
+         * if a token contains the last character of a line then we'll need to wait for the input to get nextLine()
+         * as it will want nextLine()
+         * but nextLine() is user input so guess what? if a token ends a line we'll need to wait for the next line
+         */
+        indexInLine+=n;
     }
 
-    char peekChar() {
+    boolean advance(int n) {
+        unsafeAdvance(n);
+        return rectify();
+    }
+
+    char currChar() {
         return currentLine.charAt(indexInLine);
-    }
-
-    String consumePrefix(int n) {
-        try {
-            String res = currentLine.substring(indexInLine, indexInLine+n);
-            advance(n);
-            return res;
-        } catch(Throwable t) {
-            throw new RuntimeException
-                (String.format
-                 ("failed to extract prefix from line of length %d starting from index %d up to index %d (%d + %d)",
-                  currentLine.length(), indexInLine, n, indexInLine, n),
-                 t);
-
-        }
     }
 
     boolean hasNextChar() {
         return indexInLine < currentLine.length() || sourceLines.hasNext();
     }
-
 
     // prefixes and prefix discriminators
     boolean startsWithPrefix(String prefix) {
@@ -203,7 +180,14 @@ public class NewTokenIterator implements Iterator<Token> {
 
     // comment and whitespace skipping
     boolean skipToNextSignificant() {
-        // boolean status return bad?
+        /*
+         * skips until the next significant
+         * (signifcant menaning not inter-token whitespace and not inside a comment)
+         * signaling whether `lines` was exhausted during the skip
+         *
+         * @returns whether the skip caused characters to be exhasuted
+         */
+        // is a boolean status return bad?
         while(skipToNonWhite()) {
             if (startsWithInlineComment()) {
                 if(!skipInlineComment())
@@ -220,24 +204,27 @@ public class NewTokenIterator implements Iterator<Token> {
     }
 
     boolean skipToNonWhite() {
-        // advances looking for non whitespace chars
-        // assumes failure (thus false) if advance fails
+        /*
+         * advances skipping characters until the indexInLine points to
+         * a char in currentLine that is not whitespace
+         * @returns false if no next whitespace character exists in `lines`
+         */
         while(hasNextChar() && startsWithWhitespace()) {
             if(!advance(1))
                 return false;
         }
-        // if no next char then no next significant char
+        // if no next char then no next nonwhite char
         return hasNextChar();
     }
 
     boolean skipMultilineComment() {
         while(!startsWithPrefix("|#")) {
-            if (!advance(1)) {
+            if(!advance(1)) {
                 throw new TokenParsingException("multiline comment not closed ", lineNumber, TokenParsingException.noRow, TokenParsingException.noFile);
             }
         }
 
-        return advance(2); // also skip the comment delimiter
+        return advance(2);
     }
 
     boolean skipInlineComment() {
@@ -263,10 +250,12 @@ public class NewTokenIterator implements Iterator<Token> {
               && !startsWithPunctuation()
               && !startsWithLiteral()) {
             if(isLastInLine()) {
-                sb.append(consumeChar());
+                sb.append(currChar());
+                unsafeAdvance(1);
                 break;
             }
-            sb.append(consumeChar());
+            sb.append(currChar());
+            unsafeAdvance(1);
         }
         return sb.toString();
     }
@@ -279,16 +268,16 @@ public class NewTokenIterator implements Iterator<Token> {
         for(String s : punctuationTokens) {
             if(startsWithPrefix(s)) {
                 PunctuationToken res = new PunctuationToken(s);
-                advance(s.length());
+                unsafeAdvance(s.length());
                 return res;
             }
         }
-        throw new RuntimeException("extractPunctuation() was called while the character stream wasn't starting with an iterator, this state was not supposed to be reachable");
+        throw new RuntimeException("extractPunctuation() was called while the character stream wasn't starting with a lisp recognized punctuation, this state was not supposed to be reachable");
     }
 
     LiteralToken<String> extractStringLiteral() {
         StringBuilder lexBuild = new StringBuilder();
-        // opening '"'
+        // opening '"' (currChar() is assumed to be '"' by contract)
         appendNormalStringChar(lexBuild);
 
         while (hasNextChar() && !startsWithPrefix("\"")) {
@@ -299,13 +288,18 @@ public class NewTokenIterator implements Iterator<Token> {
             else {
                 lexBuild.append(escape);
                 if(!advance(2)) {
-                    throw new TokenParsingException("error while reading string ", lineNumber, TokenParsingException.noRow, TokenParsingException.noFile);
+                    // all escape sequences so far have length 2
+                    // FIXME rework code if you introduce new escape sequences that have different length
+                    throw new TokenParsingException("error while reading string ", lineNumber, indexInLine, TokenParsingException.noFile);
                 }
             }
         }
 
         // closing '"'
-        lexBuild.append(consumeChar());
+        if(hasNextChar()) { // must have exited loop on the closing '"'
+            lexBuild.append(currChar());
+            unsafeAdvance(1);
+        }
 
         String lex = lexBuild.toString();
         return new LiteralToken<String>(lex, lex.substring(1, lex.length()-1));
@@ -315,7 +309,7 @@ public class NewTokenIterator implements Iterator<Token> {
         // check for newline before advancing
         // (advancing changes position in line, so we need to know before advancing)
         boolean wasLast = isLastInLine();
-        char c = peekChar();
+        char c = currChar();
         if(!advance(1))
             throw new TokenParsingException("string not closed ", lineNumber, TokenParsingException.noRow, TokenParsingException.noFile);
         sb.append(c);

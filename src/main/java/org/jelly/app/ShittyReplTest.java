@@ -18,12 +18,10 @@ public class ShittyReplTest {
         SomeFuckingExpressionIterator exprs = new SomeFuckingExpressionIterator(tokens);
 
         while(exprs.hasNext()) {
-            Debug.println("expression iterator has next, getting next");
             Expression e = exprs.next();
-            Debug.println("in app main loop: expression is");
+            System.out.println("result!!");
             e.get().stream().forEach(a -> System.out.print(a + ": "));
-            Debug.println();
-            Debug.println("on the loop again, oh I can't wait to get on the loop again");
+            System.out.println("\nresult!!");
         }
 
         System.out.println("end of execution");
@@ -74,12 +72,10 @@ final class SomeFuckingExpressionIterator implements Iterator<Expression> {
         List<Token> expressionTokens = new ArrayList<>();
         int open = 0;
 
-        Debug.println("getting that next expression"); 
         expressionTokens.stream().forEach(a -> Debug.print(a + ", "));
         Debug.println();
 
         while(!(open == 0 && !expressionTokens.isEmpty())) {
-            Debug.println("start of loop");
             Debug.println("getting next token");
             Token t = tokens.next();
             Debug.println("token: #t<" + t +
@@ -103,17 +99,11 @@ final class SomeFuckingExpressionIterator implements Iterator<Expression> {
             }
             default -> expressionTokens.addLast(t);
             }
-            Debug.println("handled token <" + t + ">, openness is now " + open);
-            Debug.println("expression is currently");
-            expressionTokens.stream().forEach(a -> Debug.print(a + ", "));
-            Debug.println();
         }
         Debug.println("got that next expression"); 
-        Debug.println("==== THAT NEXT EXPRESSION ===="); 
+        Debug.println("==== THAT EXPRESSION ===="); 
         expressionTokens.stream().forEach(a -> Debug.print(a + ", "));
-        Debug.println("==== THAT NEXT EXPRESSION ===="); 
-        Debug.println();
-        Debug.println();
+        Debug.println("\n==== THAT EXPRESSION ===="); 
         return new Expression(expressionTokens);
     }
 

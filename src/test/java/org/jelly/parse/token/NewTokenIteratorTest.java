@@ -14,30 +14,33 @@ public class NewTokenIteratorTest {
         return new NewTokenIterator(new StringArrIterator(args));
     }
 
-    // some types are weird to render for error messages, so
-    String debugRender(String s) {
+    String renderDebugString(String s) {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i<s.length(); ++i) {
             char c = s.charAt(i);
             switch (c) {
-                case '\n':
-                    sb.append("<\\n>");
-                    break;
-                case '\t':
-                    sb.append("<\\t>");
-                    break;
-                case '\r':
-                    sb.append("<\\r>");
-                    break;
-                default:
-                    sb.append(c);
+            case '\n':
+                sb.append("<\\n>");
+                break;
+            case '\t':
+                sb.append("<\\t>");
+                break;
+            case '\r':
+                sb.append("<\\r>");
+                break;
+            default:
+                sb.append(c);
             }
         }
         return sb.toString();
     }
 
+    // some types are weird to render for error messages, so
     String debugRender(Object o) {
-        return o.toString();
+        return switch(o) {
+        case String s -> renderDebugString(s);
+        default -> o.toString();
+        };
     }
 
     <T> boolean literalEquals(Token t, T target) {
@@ -50,11 +53,18 @@ public class NewTokenIteratorTest {
     <T> void assertEqualsLiteral(Token t, T target) {
         if(t instanceof LiteralToken<?> lt) {
             if(!literalEquals(lt, target)) {
-                throw new AssertionError("token " + lt + " is literal of type " + target.getClass().getCanonicalName() + " but its value \n<" + debugRender(lt.getVal()) + "> =\n<" + debugRender(target) + "> of type " + target.getClass().getCanonicalName());
+                throw new AssertionError("token " + lt + " is literal of type "
+                                         + target.getClass().getCanonicalName() +
+                                         " but its value \n<" + debugRender(lt.getVal())
+                                         + "> is not equal to\n<" + debugRender(target) +
+                                         "> of type " + target.getClass().getCanonicalName());
             }
         }
         else
-            throw new AssertionError("token " + t + " is not a literal token of type, " + target.getClass().getCanonicalName() + "  it is instead of type " + t.getClass().getCanonicalName());
+            throw new AssertionError("token " + t + " is not a literal token of type, "
+                                     + target.getClass().getCanonicalName() +
+                                     "  it is instead of type "
+                                     + t.getClass().getCanonicalName());
     }
 
     void assertEqualsFloatLiteral(Token t, Double target, double eps) {
@@ -88,12 +98,28 @@ public class NewTokenIteratorTest {
         }
     }
 
+
+    @Test
+    public void justOneChar() {
+        NewTokenIterator nti = fromStrings("a");
+        assertEqualsNormal(nti.next(), "a");
+        assertFalse(nti.hasNext());
+    }
+
+    @Test
+    public void justOneCharMultiline() {
+        NewTokenIterator nti = fromStrings("a", "b");
+        assertEqualsNormal(nti.next(), "a");
+        assertEqualsNormal(nti.next(), "b");
+        assertFalse(nti.hasNext());
+    }
     @Test
     public void getSpecialNonWhite() {
         NewTokenIterator nti = fromStrings("(prova)");
         assertEqualsPunctuation(nti.next(), "(");
         assertEqualsNormal(nti.next(), "prova");
         assertEqualsPunctuation(nti.next(), ")");
+        assertFalse(nti.hasNext());
     }
 
     @Test
@@ -180,7 +206,7 @@ public class NewTokenIteratorTest {
     }
 
     @Test
-    public void noCommentNoSpacesAllSpecial() {
+    public void CommentNoSpacesAllSpecial() {
         NewTokenIterator ti = fromStrings("(when(that(fat:old::sun)):::in::(the#||#sky))");
         assertEqualsPunctuation(ti.next(), "(");
         assertEqualsNormal(ti.next(), "when");
@@ -500,6 +526,49 @@ public class NewTokenIteratorTest {
         assertFalse(ti.hasNext());
     }
 
+
+    @Test
+    public void justInlineComment() {
+        NewTokenIterator ti = fromStrings(" ;; comment");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void justInlineCommentBarebone() {
+        NewTokenIterator ti = fromStrings(";");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void justInlineComments() {
+        NewTokenIterator ti = fromStrings(" ;; comment", "; and another comment", ";;; now for no comment", ";");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void justMultilineComment() {
+        NewTokenIterator ti = fromStrings(" #| comment", " and comment still |#");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void justMultilineCommentBarebone() {
+        NewTokenIterator ti = fromStrings(" #||#");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void justMultilineCommentBareboneNewlineHugger() {
+        NewTokenIterator ti = fromStrings(" #|","","|#");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void justMultilineComments() {
+        NewTokenIterator ti = fromStrings(" #| comment", " still another |#", "#| now for no comment|#", "#||#", "");
+        assertFalse(ti.hasNext());
+    }
+
     @Test
     public void multilineCommentFinisher() {
         NewTokenIterator ti = fromStrings ("lovely #| rita |#");
@@ -586,7 +655,7 @@ public class NewTokenIteratorTest {
     @Test
     public void testThrowsOnUnclosedComment() {
         NewTokenIterator ti = fromStrings("beginning #|  ", "and no end");
-        TokenParsingException tpe = assertThrows(TokenParsingException.class, () -> {Token a = ti.next();});
+        TokenParsingException tpe = assertThrows(TokenParsingException.class, () -> {ti.next(); ti.next();});
         assertTrue(tpe.getMessage().contains("comment"));
     }
 

@@ -64,3 +64,11 @@ dover controllare sia ~hasNext()~ che ~next() == null~ è un'api abbastanza scom
 #+end_src
 
 ha un po' troppo ~null~ per i miei gusti, e se sto ~n == null~ diventa de facto un check da usare con l'interfaccia, meglio a sto punto vale "formalizzarlo" e aggiungere ~s.isOpen()~
+
+
+* Responsibilities nel lexing in relazione anche al repl
+ - tokenizzare la riga :: ~LineTokenizer~
+ - gestire token o commenti multiline :: ~LineTokenizer~ 
+ - gestire "ho finito con questa riga" :: ~NewTokenIterator~, il fatto che la riga sia finita gli viene comunicato da ~LineTokenizer~
+   
+
