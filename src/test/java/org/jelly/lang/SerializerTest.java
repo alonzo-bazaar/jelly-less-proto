@@ -7,41 +7,41 @@ public class SerializerTest {
     @Test
     public void somethingInteger() {
         Object o = Serializer.fromToken("20");
-        assertEquals((int)((Integer)o), 20);
+        assertEquals(20, (int)((Integer)o));
     }
 
     @Test
     public void somethingNil() {
-        assertEquals(Serializer.fromToken("nil"), Constants.NIL);
+        assertEquals(Constants.NIL, Serializer.fromToken("nil"));
     }
 
     @Test
     public void somethingString() {
         Object o = Serializer.fromToken("\"waluigi\"");
-        assertEquals((String)o, "waluigi");
+        assertEquals("waluigi", (String)o);
     }
 
     @Test
     public void somethingStringWithSpaces() {
         Object o = Serializer.fromToken("\"waluigi time cheater\"");
-        assertEquals((String)o, "waluigi time cheater");
+        assertEquals("waluigi time cheater", (String)o);
     }
 
     @Test
     public void somethingCharacter() {
         Object o = Serializer.fromToken("#\\x");
-        assertEquals((char)((Character)o), 'x');
+        assertEquals('x', (char)((Character)o));
     }
 
     @Test
     public void somethingFloat() {
         Object o = Serializer.fromToken("3.1415");
-        assertEquals((double)((Double)o), 3.1415, 0.01);
+        assertEquals(3.1415, (double)((Double)o),  0.01);
     }
 
     @Test
     public void somethingSymbol() {
         Object o = Serializer.fromToken("kee");
-        assertEquals(((LispSymbol)o).getName(), "kee");
+        assertEquals("kee", ((LispSymbol)o).getName());
     }
 }

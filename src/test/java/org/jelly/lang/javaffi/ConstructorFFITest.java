@@ -14,19 +14,19 @@ public class ConstructorFFITest {
     @Test
     public void testLabRatIntConstructor() {
         LabRat lr = (LabRat) ForeignMethodCaller.construct(LabRat.class, new Object[]{10});
-        assertEquals(lr.get(), 10);
+        assertEquals(10, lr.get());
     }
 
     @Test
     public void testLabRatStringConstructor() {
         LabRat lr = (LabRat) ForeignMethodCaller.construct(LabRat.class, new Object[]{"mamma"});
-        assertEquals(lr.get(), 5);
+        assertEquals(5, lr.get());
     }
 
     @Test
     public void testLabRatConstructorMultipleParameters() {
         LabRat lr = (LabRat) ForeignMethodCaller.construct(LabRat.class, new Object[]{10, 20});
-        assertEquals(lr.get(), 10);
-        assertEquals(LabRat.getCounter(), 20);
+        assertEquals(10, lr.get());
+        assertEquals(20, LabRat.getCounter());
     }
 }

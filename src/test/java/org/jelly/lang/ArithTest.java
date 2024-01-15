@@ -7,39 +7,39 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ArithTest {
     @Test
     public void testAdd() {
-        assertEquals((int)Arith.add(1,1), 2);
-        assertEquals((int)Arith.add(1,-1), 0);
-        assertEquals((double)Arith.add(1.0,1.0), 2, 0.00001);
-        assertEquals((double)Arith.add(1.0,-1.0), 0, 0.00001);
+        assertEquals(2, (int)Arith.add(1,1));
+        assertEquals(0, (int)Arith.add(1,-1));
+        assertEquals(2.000, (double)Arith.add(1.0,1.0), 0.00001);
+        assertEquals(0.000, (double)Arith.add(1.0,-1.0), 0.00001);
     }
 
     @Test
     public void testSub() {
         assertEquals((int)Arith.subtract(1,1), 0);
         assertEquals((int)Arith.subtract(1,-1), 2);
-        assertEquals((double)Arith.subtract(1.0,1.0), 0, 0.00001);
-        assertEquals((double)Arith.subtract(1.0,-1.0), 2, 0.00001);
+        assertEquals(0, (double)Arith.subtract(1.0,1.0), 0.00001);
+        assertEquals(2, (double)Arith.subtract(1.0,-1.0), 0.00001);
     }
 
     @Test
     public void testMul() {
-        assertEquals((int)Arith.multiply(1,3), 3);
-        assertEquals((int)Arith.multiply(1,1), 1);
-        assertEquals((int)Arith.multiply(3,-1), -3);
-        assertEquals((int)Arith.multiply(1,-3), -3);
-        assertEquals((double)Arith.multiply(1.0,2.0), 2.0, 0.00001);
-        assertEquals((double)Arith.multiply(-1,2.0), -2.0, 0.00001);
-        assertEquals((double)Arith.multiply(1.0,-1.0), -1.0, 0.00001);
+        assertEquals(3, (int)Arith.multiply(1,3));
+        assertEquals(1, (int)Arith.multiply(1,1));
+        assertEquals(-3, (int)Arith.multiply(3,-1));
+        assertEquals(-3, (int)Arith.multiply(1,-3));
+        assertEquals(2.0, (double)Arith.multiply(1.0,2.0), 0.00001);
+        assertEquals(-2.0, (double)Arith.multiply(-1,2.0), 0.00001);
+        assertEquals(-1.0, (double)Arith.multiply(1.0,-1.0), 0.00001);
     }
 
     @Test
     public void testDiv() {
-        assertEquals((double)Arith.divide(1,3), 0.3333333, 0.000001);
-        assertEquals((double)Arith.divide(3,1), 3);
-        assertEquals((double)Arith.divide(-1,3), -0.3333333, 0.000001);
-        assertEquals((double)Arith.divide(1,-3), -0.3333333, 0.000001);
-        assertEquals((double)Arith.divide(1.0,2.0), 0.5, 0.00001);
-        assertEquals((double)Arith.divide(1.0,-1.0), -1.0, 0.00001);
+        assertEquals(0.333333, (double)Arith.divide(1,3), 0.00001);
+        assertEquals(3.000000, (double)Arith.divide(3,1), 0.00001);
+        assertEquals(-0.33333, (double)Arith.divide(-1,3), 0.00001);
+        assertEquals(-0.33333, (double)Arith.divide(1,-3), 0.00001);
+        assertEquals(0.500000, (double)Arith.divide(1.0,2.0), 0.00001);
+        assertEquals(-1.00000, (double)Arith.divide(1.0,-1.0), 0.00001);
     }
 
     @Test
