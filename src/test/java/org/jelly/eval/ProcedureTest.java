@@ -40,24 +40,24 @@ public class ProcedureTest {
         fromString("(define bigger-than-10" +
                    "(lambda (x) (if (> x 10) \"yes\" \"no\")))").eval(env);
 
-        assertEquals((String)fromString("(bigger-than-10 9)").eval(env), "no");
-        assertEquals((String)fromString("(bigger-than-10 10)").eval(env), "no");
-        assertEquals((String)fromString("(bigger-than-10 11)").eval(env), "yes");
+        assertEquals("no", (String)fromString("(bigger-than-10 9)").eval(env));
+        assertEquals("no", (String)fromString("(bigger-than-10 10)").eval(env));
+        assertEquals("yes", (String)fromString("(bigger-than-10 11)").eval(env));
     }
 
     @Test
     public void testLambdaImmediateBuiltins() throws ParsingException {
-        assertEquals((String)fromString
+        assertEquals("no", (String)fromString
                      ("((lambda (x) (if (> x 10) \"yes\" \"no\")) 9)")
-                     .eval(env), "no");
+                     .eval(env));
 
-        assertEquals((String)fromString
+        assertEquals("no", (String)fromString
                      ("((lambda (x) (if (> x 10) \"yes\" \"no\")) 10)")
-                     .eval(env), "no");
+                     .eval(env));
 
-        assertEquals((String)fromString
+        assertEquals("yes", (String)fromString
                      ("((lambda (x) (if (> x 10) \"yes\" \"no\")) 11)")
-                     .eval(env), "yes");
+                     .eval(env));
     }
 
     @Test
@@ -67,14 +67,14 @@ public class ProcedureTest {
                 "(+ (fib (- x 1)) (fib (- x 2))))))").eval(env);
 
 
-        assertEquals((int)fromString("(fib -1)").eval(env), 1);
-        assertEquals((int)fromString("(fib 0)").eval(env), 1);
-        assertEquals((int)fromString("(fib 1)").eval(env), 1);
-        assertEquals((int)fromString("(fib 2)").eval(env), 2);
-        assertEquals((int)fromString("(fib 3)").eval(env), 3);
-        assertEquals((int)fromString("(fib 4)").eval(env), 5);
-        assertEquals((int)fromString("(fib 5)").eval(env), 8);
-        assertEquals((int)fromString("(fib 6)").eval(env), 13);
+        assertEquals(1, (int)fromString("(fib -1)").eval(env));
+        assertEquals(1, (int)fromString("(fib 0)").eval(env));
+        assertEquals(1, (int)fromString("(fib 1)").eval(env));
+        assertEquals(2, (int)fromString("(fib 2)").eval(env));
+        assertEquals(3, (int)fromString("(fib 3)").eval(env));
+        assertEquals(5, (int)fromString("(fib 4)").eval(env));
+        assertEquals(8, (int)fromString("(fib 5)").eval(env));
+        assertEquals(13, (int)fromString("(fib 6)").eval(env));
     }
 
     @Test
@@ -82,14 +82,12 @@ public class ProcedureTest {
         fromString("(define twice (lambda (fn x) (fn (fn x))))").eval(env);
         fromString("(define square (lambda (x) (* x x)))").eval(env);
 
-        assertEquals((int)fromString("(square (square 2))").eval(env), 16);
-        assertEquals((int)fromString("(twice square 2)").eval(env), 16);
-        assertEquals
-                ((String)fromString("(cdr (cdr (cons 1 (cons 2 \"ok\"))))").eval(env),
-                        "ok");
-        assertEquals
-            ((String)fromString("(twice cdr (cons 1 (cons 2 \"ok\")))").eval(env),
-             "ok");
+        assertEquals(16, (int)fromString("(square (square 2))").eval(env));
+        assertEquals(16, (int)fromString("(twice square 2)").eval(env));
+        assertEquals("ok", 
+                     ((String)fromString("(cdr (cdr (cons 1 (cons 2 \"ok\"))))").eval(env)));
+        assertEquals("ok", 
+                     ((String)fromString("(twice cdr (cons 1 (cons 2 \"ok\")))").eval(env)));
     }
 
     @Test
@@ -97,10 +95,9 @@ public class ProcedureTest {
         fromString("(define square (lambda (x) (* x x)))").eval(env);
         fromString("(define twice (lambda (fn x) (fn (fn x))))").eval(env);
 
-        assertEquals((int)fromString("(twice square 2)").eval(env), 16);
-        assertEquals
-                ((String)fromString("(twice cdr (cons 1 (cons 2 \"ok\")))").eval(env),
-                        "ok");
+        assertEquals(16, (int)fromString("(twice square 2)").eval(env));
+        assertEquals("ok", 
+                     ((String)fromString("(twice cdr (cons 1 (cons 2 \"ok\")))").eval(env)));
     }
 
 
@@ -109,20 +106,18 @@ public class ProcedureTest {
         fromString("(define square (lambda (x) (* x x)))").eval(env);
         fromString("(define twice (lambda (fn) (lambda (x) (fn (fn x)))))").eval(env);
 
-        assertEquals((int)fromString("((twice square) 2)").eval(env), 16);
-        assertEquals
-            ((String)fromString("((twice cdr) (cons 1 (cons 2 \"ok\")))").eval(env),
-             "ok");
+        assertEquals(16, (int)fromString("((twice square) 2)").eval(env));
+        assertEquals("ok",
+                     (String)fromString("((twice cdr) (cons 1 (cons 2 \"ok\")))").eval(env));
     }
     @Test
     public void testHigherOrderProcedureLambdaDefinedAfter() throws ParsingException {
         fromString("(define twice (lambda (fn) (lambda (x) (fn (fn x)))))").eval(env);
         fromString("(define square (lambda (x) (* x x)))").eval(env);
 
-        assertEquals((int)fromString("((twice square) 2)").eval(env), 16);
-        assertEquals
-            ((String)fromString("((twice cdr) (cons 1 (cons 2 \"ok\")))").eval(env),
-             "ok");
+        assertEquals(16, (int)fromString("((twice square) 2)").eval(env));
+        assertEquals("ok",
+                     (String)fromString("((twice cdr) (cons 1 (cons 2 \"ok\")))").eval(env));
     }
 
     @Test
@@ -134,8 +129,8 @@ public class ProcedureTest {
         fromString("(define square (lambda (x) (* x x)))").eval(env);
 
         Object lst = fromString("(map square (quote (1 2 3)))").eval(env);
-        assertEquals((int)((LispList)lst).nth(0), 1);
-        assertEquals((int)((LispList)lst).nth(1), 4);
-        assertEquals((int)((LispList)lst).nth(2), 9);
+        assertEquals(1, (int)((LispList)lst).nth(0));
+        assertEquals(4, (int)((LispList)lst).nth(1));
+        assertEquals(9, (int)((LispList)lst).nth(2));
     }
 }

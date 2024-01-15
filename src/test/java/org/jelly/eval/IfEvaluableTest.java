@@ -28,7 +28,7 @@ public class IfEvaluableTest {
         IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(Constants.TRUE),
                                             new ConstantEvaluable((1)),
                                             new ConstantEvaluable((2)));
-        assertEquals((int)(iffer.eval(env)), 1);
+        assertEquals(1, (int)(iffer.eval(env)));
     }
 
     @Test
@@ -36,7 +36,7 @@ public class IfEvaluableTest {
         IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable("stringa"),
                                             new ConstantEvaluable(1),
                                             new ConstantEvaluable(2));
-        assertEquals((int)(iffer.eval(env)), 1);
+        assertEquals(1, (int)(iffer.eval(env)));
     }
 
     @Test
@@ -44,7 +44,7 @@ public class IfEvaluableTest {
         IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(0),
                                             new ConstantEvaluable(1),
                                             new ConstantEvaluable(2));
-        assertEquals((int)(iffer.eval(env)), 1);
+        assertEquals(1, (int)(iffer.eval(env)));
     }
 
     @Test
@@ -52,7 +52,7 @@ public class IfEvaluableTest {
         IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(Constants.FALSE),
                                             new ConstantEvaluable((1)),
                                             new ConstantEvaluable((2)));
-        assertEquals((int)(iffer.eval(env)), 2);
+        assertEquals(2, (int)(iffer.eval(env)));
     }
 
     @Test
@@ -60,6 +60,6 @@ public class IfEvaluableTest {
         IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(Constants.NIL),
                                             new ConstantEvaluable(1),
                                             new ConstantEvaluable(2));
-        assertEquals((int)(iffer.eval(env)), 1);
+        assertEquals(1, (int)(iffer.eval(env)));
     }
 }

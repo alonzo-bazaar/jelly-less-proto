@@ -57,8 +57,8 @@ public class EnvironmentTest {
         } catch(Throwable t) {
             hcf("bruh");
         }
-        assertEquals(e.lookup(new LispSymbol("mamma")), "gianluca");
-        assertEquals(e.lookup(new LispSymbol("mia")), "gianpiero");
+        assertEquals("gianluca", e.lookup(new LispSymbol("mamma")));
+        assertEquals("gianpiero", e.lookup(new LispSymbol("mia")));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class EnvironmentTest {
             hcf("bruh");
         }
 
-        assertEquals(e.lookup(new LispSymbol("mamma")), "antonio");
+        assertEquals("antonio", e.lookup(new LispSymbol("mamma")));
     }
 }
     

@@ -36,7 +36,7 @@ public class EnvironmentInitWithFramesTest {
     @Test
     public void testLookup() {
         Object le = env.lookup(new LispSymbol("nope"));
-        assertEquals(le, Constants.NIL);
+        assertEquals(Constants.NIL, le);
     }
 
     @Test
@@ -44,14 +44,14 @@ public class EnvironmentInitWithFramesTest {
         env.define(new LispSymbol("waluigi"), 1);
        
         Object o = env.lookup(new LispSymbol("waluigi"));
-        assertEquals((int)o, 1);
+        assertEquals(1, (int)o);
     }
 
     @Test
     public void testSet() throws EnvironmentException {
         env.set(new LispSymbol("nope"), 20);
         Object o = env.lookup(new LispSymbol("nope"));
-        assertEquals((int)o, 20);
+        assertEquals(20, (int)o);
     }
 
     @AfterEach

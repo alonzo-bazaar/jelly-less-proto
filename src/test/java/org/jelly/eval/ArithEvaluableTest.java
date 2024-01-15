@@ -42,22 +42,22 @@ public class ArithEvaluableTest {
 
     @Test
     public void testAdd() throws ParsingException {
-        assertEquals((int)fromString("(+ 1 2)").eval(env), 3);
+        assertEquals(3, (int)fromString("(+ 1 2)").eval(env));
     }
 
     @Test
     public void testSub() throws ParsingException {
-        assertEquals((int)fromString("(- 1 2)").eval(env), -1);
+        assertEquals(-1, (int)fromString("(- 1 2)").eval(env));
     }
 
     @Test
     public void testMul() throws ParsingException {
-        assertEquals((int)fromString("(* 1 2)").eval(env), 2);
+        assertEquals(2, (int)fromString("(* 1 2)").eval(env));
     }
 
     @Test
     public void testDiv() throws ParsingException {
-        assertEquals((double)fromString("(/ 1 2)").eval(env), 0.5, 0.00001);
+        assertEquals(0.5, (double)fromString("(/ 1 2)").eval(env), 0.00001);
     }
 
     @Test

@@ -41,24 +41,23 @@ public class DoEvaluableTest {
                    "        ((= i exp)) " +
                    "      (set! res (* res base))) " +
                    "    res)) ").eval(env);
-        assertEquals((int) fromString("(powah-iter 2 10)").eval(env), 1024);
-        assertEquals((int) fromString("(powah-iter 10 2)").eval(env), 100);
-        assertEquals((int) fromString("(powah-iter 10 0)").eval(env), 1);
-        assertEquals((int) fromString("(powah-iter 0 10)").eval(env), 0);
-        assertEquals((int) fromString("(powah-iter 1 10)").eval(env), 1);
+        assertEquals(1024, (int) fromString("(powah-iter 2 10)").eval(env));
+        assertEquals(100, (int) fromString("(powah-iter 10 2)").eval(env));
+        assertEquals(1, (int) fromString("(powah-iter 10 0)").eval(env));
+        assertEquals(0, (int) fromString("(powah-iter 0 10)").eval(env));
+        assertEquals(1, (int) fromString("(powah-iter 1 10)").eval(env));
     }
 
     @Test
     public void testNormalLoopOneVarReturn() {
-        assertEquals((int)fromString
-                     ("(do ((i 0 (+ i 1))) " +
-                      "((= i 10) (+ i 10)))").eval(env), 20);
+        assertEquals(20, (int)fromString ("(do ((i 0 (+ i 1))) " +
+                                          "((= i 10) (+ i 10)))").eval(env));
     }
 
     @Test
     public void testVariablesParallelUpdate() {
-        assertEquals((int)fromString("(do ((a 10 (+ a 10)) " +
-                                     "     (b 0 (+ a 10))) " +
-                                     "    ((> a 40) b)) ").eval(env), 50);
+        assertEquals(50, (int)fromString("(do ((a 10 (+ a 10)) " +
+                                         "     (b 0 (+ a 10))) " +
+                                         "    ((> a 40) b)) ").eval(env));
     }
 }

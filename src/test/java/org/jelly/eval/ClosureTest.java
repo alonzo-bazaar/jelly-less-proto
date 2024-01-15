@@ -69,10 +69,10 @@ public class ClosureTest {
                    "                 balance)" +
                    "          \"Insufficient funds\")))").eval(env);
 
-        assertEquals((int)fromString("(withdraw 25)").eval(env), 75);
-        assertEquals((int)fromString("(withdraw 25)").eval(env), 50);
-        assertEquals((String)fromString("(withdraw 60)").eval(env), "Insufficient funds");
-        assertEquals((int)fromString("(withdraw 15)").eval(env), 35);
+        assertEquals(75, (int)fromString("(withdraw 25)").eval(env));
+        assertEquals(50, (int)fromString("(withdraw 25)").eval(env));
+        assertEquals("Insufficient funds", (String)fromString("(withdraw 60)").eval(env));
+        assertEquals(35, (int)fromString("(withdraw 15)").eval(env));
     }
 
 
@@ -89,10 +89,10 @@ public class ClosureTest {
                    "          \"Insufficient funds\")))) " +
                    "        assertTrue(true); ").eval(env);
 
-        assertEquals((int)fromString("(new-withdraw 25)").eval(env), 75);
-        assertEquals((int)fromString("(new-withdraw 25)").eval(env), 50);
-        assertEquals((String)fromString("(new-withdraw 60)").eval(env), "Insufficient funds");
-        assertEquals((int)fromString("(new-withdraw 15)").eval(env), 35);
+        assertEquals(75, (int)fromString("(new-withdraw 25)").eval(env));
+        assertEquals(50, (int)fromString("(new-withdraw 25)").eval(env));
+        assertEquals("Insufficient funds", (String)fromString("(new-withdraw 60)").eval(env));
+        assertEquals(35, (int)fromString("(new-withdraw 15)").eval(env));
 
         assertNull(env.lookup(new LispSymbol("balance")));
     }
@@ -111,10 +111,10 @@ public class ClosureTest {
         fromString("(define W1 (make-withdraw 100))").eval(env);
         fromString("(define W2 (make-withdraw 100))").eval(env);
 
-        assertEquals((int)fromString("(W1 50)").eval(env), 50);
-        assertEquals((int)fromString("(W2 70)").eval(env), 30);
-        assertEquals((String)fromString("(W2 40)").eval(env), "Insufficient funds");
-        assertEquals((int)fromString("(W1 40)").eval(env), 10);
+        assertEquals(50, (int)fromString("(W1 50)").eval(env));
+        assertEquals(30, (int)fromString("(W2 70)").eval(env));
+        assertEquals("Insufficient funds", (String)fromString("(W2 40)").eval(env));
+        assertEquals(10, (int)fromString("(W1 40)").eval(env));
     }
 
     /* pagina 301, (329 del pdf)
@@ -132,10 +132,10 @@ public class ClosureTest {
         fromString("(define W1 (make-withdraw 100))").eval(env);
         fromString("(define W2 (make-withdraw 100))").eval(env);
 
-        assertEquals((int)fromString("(W1 50)").eval(env), 50);
-        assertEquals((int)fromString("(W2 70)").eval(env), 30);
-        assertEquals((String)fromString("(W2 40)").eval(env), "Insufficient funds");
-        assertEquals((int)fromString("(W1 40)").eval(env), 10);
+        assertEquals(50, (int)fromString("(W1 50)").eval(env));
+        assertEquals(30, (int)fromString("(W2 70)").eval(env));
+        assertEquals("Insufficient funds", (String)fromString("(W2 40)").eval(env));
+        assertEquals(10, (int)fromString("(W1 40)").eval(env));
     }
 
 }

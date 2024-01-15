@@ -53,7 +53,7 @@ public class CallForeignTest {
         try {
             TestClass testObj = new TestClass();
             env.define(new LispSymbol("testObj"), testObj);
-            assertEquals((String)fromString("(call testObj \"testMeth\")").eval(env), "string");
+            assertEquals("string", (String)fromString("(call testObj \"testMeth\")").eval(env));
         }
         catch(Exception e) {
             throw new AssertionError("fuck you", e);
@@ -65,10 +65,10 @@ public class CallForeignTest {
         try {
             TestClass testObj = new TestClass();
             env.define(new LispSymbol("testObj"), testObj);
-            assertEquals((String)fromString("(call testObj \"testMeth\" \"ugo\")").eval(env), "stringugo");
-            assertEquals((String)fromString("(call testObj \"testMeth\" \"ugo\" 10)").eval(env), "ugostring10");
+            assertEquals("stringugo", (String)fromString("(call testObj \"testMeth\" \"ugo\")").eval(env));
+            assertEquals("ugostring10", (String)fromString("(call testObj \"testMeth\" \"ugo\" 10)").eval(env));
 
-            assertEquals((int)fromString("(call testObj \"mixal\" 10 20 30)").eval(env), 60);
+            assertEquals(60, (int)fromString("(call testObj \"mixal\" 10 20 30)").eval(env));
         }
         catch(Exception e) {
             throw new AssertionError("fuck you", e);
@@ -76,17 +76,17 @@ public class CallForeignTest {
     }
     @Test
     public void testCallStringLength() {
-        assertEquals((int)fromString("(call \"hello\" \"length\")").eval(env), 5);
+        assertEquals(5, (int)fromString("(call \"hello\" \"length\")").eval(env));
     }
 
     @Test
     public void testCallEmptyStringLength() {
-        assertEquals((int)fromString("(call \"\" \"length\")").eval(env), 0);
+        assertEquals(0, (int)fromString("(call \"\" \"length\")").eval(env));
     }
 
     @Test
     public void testCallStaticIntegerParse() {
-        assertEquals((int) fromString("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"10\")").eval(env), 10);
+        assertEquals(10, (int) fromString("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"10\")").eval(env));
     }
 
     // questo non funziona perchè tutti i tipi primitivi in jelly sono sostituiti da tipi boxed
@@ -94,7 +94,7 @@ public class CallForeignTest {
     // quindi se voglio chiamare una funzoine che utilizza tipi primitivi devo inventarmi qualcos'altro
     @Test
     public void testCallStaticIntegerParseMoreArgs() {
-        assertEquals((int)fromString("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"ff\" 16)").eval(env), 255);
+        assertEquals(255, (int)fromString("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"ff\" 16)").eval(env));
     }
 }
 

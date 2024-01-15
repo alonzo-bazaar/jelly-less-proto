@@ -11,7 +11,7 @@ public class ParameterTest
     public void replFileTest() {
         String[] s = {"repl", "file"};
         RunningParameters rn = RunningParameters.fromArgs(s);
-        assertEquals(rn.getRunningMode(), RunningMode.REPL_MODE);
+        assertEquals(RunningMode.REPL_MODE, rn.getRunningMode());
         assertTrue(rn.hasFile());
         assertEquals(rn.getFilename(), "file");
     }
@@ -20,7 +20,7 @@ public class ParameterTest
     public void replNoFileTest() {
         String[] s = { "repl" };
         RunningParameters rn = RunningParameters.fromArgs(s);
-        assertEquals(rn.getRunningMode(), RunningMode.REPL_MODE);
+        assertEquals(RunningMode.REPL_MODE, rn.getRunningMode());
         assertFalse(rn.hasFile());
     }
 
@@ -28,16 +28,16 @@ public class ParameterTest
     public void batchFileTest() {
         String[] s = {"batch", "file"};
         RunningParameters rn = RunningParameters.fromArgs(s);
-        assertEquals(rn.getRunningMode(), RunningMode.BATCH_MODE);
+        assertEquals(RunningMode.BATCH_MODE, rn.getRunningMode());
         assertTrue(rn.hasFile());
-        assertEquals(rn.getFilename(), "file");
+        assertEquals("file", rn.getFilename());
     }
 
     @Test
     public void batchNoFileTest() {
         String[] s = { "batch" };
         RunningParameters rn = RunningParameters.fromArgs(s);
-        assertEquals(rn.getRunningMode(), RunningMode.BATCH_MODE);
+        assertEquals(RunningMode.BATCH_MODE, rn.getRunningMode());
         assertFalse(rn.hasFile());
     }
 
@@ -45,16 +45,16 @@ public class ParameterTest
     public void defaultFileTest() {
         String[] s = { "file" };
         RunningParameters rn = RunningParameters.fromArgs(s);
-        assertEquals(rn.getRunningMode(), RunningMode.REPL_MODE);
+        assertEquals(RunningMode.REPL_MODE, rn.getRunningMode());
         assertTrue(rn.hasFile());
-        assertEquals(rn.getFilename(), "file");
+        assertEquals("file", rn.getFilename());
     }
 
     @Test
     public void defaultNoFileTest() {
         String[] s = {};
         RunningParameters rn = RunningParameters.fromArgs(s);
-        assertEquals(rn.getRunningMode(), RunningMode.REPL_MODE);
+        assertEquals(RunningMode.REPL_MODE, rn.getRunningMode());
         assertFalse(rn.hasFile());
     }
 }
