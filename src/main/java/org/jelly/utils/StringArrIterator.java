@@ -1,4 +1,4 @@
-package org.jelly.parse.token;
+package org.jelly.utils;
 import java.util.Iterator;
 
 public class StringArrIterator implements Iterator<String> {

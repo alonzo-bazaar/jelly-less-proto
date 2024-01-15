@@ -33,7 +33,7 @@ public class LineTokenizer {
                 return res;
             }
 
-            // multliline shit (if(wentPastLine())
+            // multiline things (if(wentPastLine())
             else if(startsWithMultilineComment()) {
                 skipMultilineComment();
                 if(wentPastLine) {
@@ -58,14 +58,6 @@ public class LineTokenizer {
         return res;
     }
 
-    /* to be called after calling tokenizeLine()
-     * LineTokenizer::tokenizeLine() is one big mr.sideEffect,
-     * and half this class's job is in those side effects
-     *
-     * getCurrentLine() should be called first, because side effects
-     * I'm not too big a fan of temporal couplings either, but this works well enough for now
-     * and it is hopefully moving toward a less shit structure of this lexer
-     */
     public String getCurrentLine() {
         return currentLine;
     }
@@ -103,7 +95,7 @@ public class LineTokenizer {
         }
     }
 
-    private char currentChar() {
+    private char getCurrentChar() {
         return currentLine.charAt(currentIndex);
     }
 
@@ -111,7 +103,7 @@ public class LineTokenizer {
         return !isAtEndOfLine() || otherLines.hasNext();
     }
 
-    private boolean nextLine() {
+    private boolean advanceToNextLine() {
         // advances lines to the next line
         // returns true if this was possible to do, false otherwise
         if(otherLines.hasNext()) {
@@ -123,13 +115,13 @@ public class LineTokenizer {
         return false;
     }
 
-    private boolean checkAdvance(int n) {
+    private boolean advanceCheckExhaustion(int n) {
         // returns false if all chars were exhausted during advancement by n
         // exhaustion is not an exception as character exhaustion is expected behaviour, but it needs to be known
         int newIndex = currentIndex + n;
         while(newIndex >= currentLine.length()) {
             newIndex -= currentLine.length();
-            if(!nextLine())
+            if(!advanceToNextLine())
                 return false;
         }
         currentIndex = newIndex;
@@ -143,19 +135,18 @@ public class LineTokenizer {
          * - remains entirely within the context of currentLine
          */
 
+        // particularly recognizable tokens (strings were handled in the multiline logic, no they're not here)
         if (startsWithPunctuation())
-            return extractPunctuation();
-        // else if (startsWithStringLiteral())
-        //     return extractStringLiteral();
+            return extractStartingPunctuationToken();
         else if (startsWithCharLiteral())
-            return extractCharLiteral();
+            return extractStartingCharLiteral();
 
         // symbols, integers, floats &Co. have the same rules, easier this way
         else {
-            String lex = extractNormalString();
-            if (StringUtils.stringIsInteger(lex))
+            String lex = extractStartingNormalString();
+            if (Synthax.stringIsInteger(lex))
                 return new LiteralToken<>(lex, Long.parseLong(lex));
-            else if (StringUtils.stringIsFloat(lex))
+            else if (Synthax.stringIsFloat(lex))
                 return new LiteralToken<>(lex, Double.parseDouble(lex));
             else
                 return new NormalToken(lex);
@@ -190,7 +181,7 @@ public class LineTokenizer {
     // this thing is going to be long, way too long
     private void skipMultilineComment() throws TokenLineParsingException {
         while(!startsWithPrefix("|#")) {
-            if(!checkAdvance(1)) {
+            if(!advanceCheckExhaustion(1)) {
                 throw new TokenLineParsingException("multiline comment not closed ", currentIndex);
             }
         }
@@ -202,7 +193,7 @@ public class LineTokenizer {
     }
 
     // token extraction
-    String extractNormalString () {
+    String extractStartingNormalString() {
         int tokenEnd = currentIndex;
         while(!endOfNormalTokenString(tokenEnd)) {
             tokenEnd++;
@@ -218,7 +209,7 @@ public class LineTokenizer {
                 || startsWithPunctuation(i) || startsWithLiteral(i);
     }
 
-    Token extractPunctuation() throws TokenLineParsingException {
+    Token extractStartingPunctuationToken() throws TokenLineParsingException {
         // assumes that this.startsWithPunctuation()
         // and that the state
         // of the iterator hasn't been change after that called returned true
@@ -237,13 +228,13 @@ public class LineTokenizer {
         appendNormalStringChar(lexBuild);
 
         while (hasNextChar() && !startsWithPrefix("\"")) {
-            String escape = prefixEscape();
+            String escape = currentPrefixEscapeSequence();
             if(escape == null) {
                 appendNormalStringChar(lexBuild);
             }
             else {
                 lexBuild.append(escape);
-                if(!checkAdvance(2)) {
+                if(!advanceCheckExhaustion(2)) {
                     throw new TokenLineParsingException("error at an escaped character while reading string ", currentIndex);
                     /* all string escape sequences so far ('\n', \t', '\\', and '\r') have length 2
                      * TODO rework code if you need to introduce new escape sequences that have different lengths
@@ -257,7 +248,7 @@ public class LineTokenizer {
         // closing '"'
         if(hasNextChar()) { // must have exited loop on the closing '"'
             assertCurrentChar('"', "error while finishing extraction of string literal, could not find '\"' terminator");
-            lexBuild.append(currentChar());
+            lexBuild.append(getCurrentChar());
             currentIndex++;
         }
         else
@@ -272,50 +263,27 @@ public class LineTokenizer {
         // (advancing changes position in line, so we need to know beforehand)
         boolean wasLast = currentIndex == currentLine.length()-1;
         char c = currentLine.charAt(currentIndex);
-        if(!checkAdvance(1))
+        if(!advanceCheckExhaustion(1))
             throw new TokenLineParsingException("string not closed ", currentIndex);
         sb.append(c);
         if(wasLast)
             sb.append('\n');
     }
 
-    String prefixEscape() {
-        if(startsWithPrefix("\\\\"))
-            return "\\";
-        if(startsWithPrefix("\\\""))
-            return "\"";
-        if(startsWithPrefix("\\r"))
-            return "\r";
-        if(startsWithPrefix("\\n"))
-            return "\n";
-        if(startsWithPrefix("\\t"))
-            return "\t";
-        else return null;
+    String currentPrefixEscapeSequence() {
+        return Synthax.stringEscapePrefix(currentLine, currentIndex);
     }
 
-    LiteralToken<Character> extractCharLiteral() {
-        // assumes startsWithCharLiteral() was called, returned true
-        // and that the state of the iterator hasn't changed since
+    LiteralToken<Character> extractStartingCharLiteral() {
+        // assumes that this.startsWithCharLiteral()
 
-        // special chars like #\Space or #\Newline are not yet supported
-        checkAdvance(2); // past the "#\" starter
-        String lex = extractNormalString();
-        Character special = specialCharacter(lex);
+        advanceCheckExhaustion(2); // past the "#\" starter
+        String lex = extractStartingNormalString();
+        Character special = Synthax.stringSpecialCharacter(lex);
         if(special != null)
             return new LiteralToken<Character>(lex, special);
         else if(lex.length() == 1)
             return new LiteralToken<Character>(lex, lex.charAt(0));
         else throw new RuntimeException("#\\" + lex + " is not a valid special character");
-    }
-
-    Character specialCharacter(String ch) {
-        return switch(ch) {
-            case "Space" -> ' ';
-            case "Newline" -> '\n';
-            case "Return" -> '\r';
-            case "Tab" -> '\t';
-            case "Null" -> '\0';
-            default -> null;
-        };
     }
 }
