@@ -12,16 +12,16 @@ public class SignificantCharsIteratorTest
     {
         SignificantCharsIterator sci = SignificantCharsIterator.fromString("#| ok |#a");
         assertTrue(Character.isWhitespace(sci.next()));
-        assertEquals(sci.next(), 'a');
+        assertEquals('a', sci.next());
     }
 
     @Test
     public void baseNonIgnoraTutto()
     {
         SignificantCharsIterator sci = SignificantCharsIterator.fromString("a#| ok |#b");
-        assertEquals(sci.next(), 'a');
+        assertEquals('a', sci.next());
         assertTrue(Character.isWhitespace(sci.next()));
-        assertEquals(sci.next(), 'b');
+        assertEquals('b', sci.next());
         assertFalse(sci.hasNext());
     }
 
@@ -30,10 +30,10 @@ public class SignificantCharsIteratorTest
         SignificantCharsIterator sci = SignificantCharsIterator.fromString("; this is mazzo\r\njuuj").emulateDos();
         assertTrue(sci.hasNext());
         assertTrue(Character.isWhitespace(sci.next()));
-        assertEquals(sci.next(), 'j');
-        assertEquals(sci.next(), 'u');
-        assertEquals(sci.next(), 'u');
-        assertEquals(sci.next(), 'j');
+        assertEquals('j', sci.next());
+        assertEquals('u', sci.next());
+        assertEquals('u', sci.next());
+        assertEquals('j', sci.next());
         assertFalse(sci.hasNext());
     }
 
@@ -50,8 +50,8 @@ public class SignificantCharsIteratorTest
         SignificantCharsIterator sci = SignificantCharsIterator.fromString("; o\njk").emulateUnix();
         assertTrue(sci.hasNext());
         assertTrue(Character.isWhitespace(sci.next()));
-        assertEquals(sci.next(),'j');
-        assertEquals(sci.next(),'k');
+        assertEquals('j', sci.next());
+        assertEquals('k', sci.next());
         assertFalse(sci.hasNext());
     }
 
@@ -60,8 +60,8 @@ public class SignificantCharsIteratorTest
         SignificantCharsIterator sci = SignificantCharsIterator.fromString(";;; o\njk").emulateUnix();
         assertTrue(sci.hasNext());
         assertTrue(Character.isWhitespace(sci.next()));
-        assertEquals(sci.next(),'j');
-        assertEquals(sci.next(),'k');
+        assertEquals('j', sci.next());
+        assertEquals('k', sci.next());
         assertFalse(sci.hasNext());
     }
 
@@ -74,8 +74,8 @@ public class SignificantCharsIteratorTest
         SignificantCharsIterator sci = SignificantCharsIterator.fromString("; o\r\njk").emulateUnix();
         assertTrue(sci.hasNext());
         assertTrue(Character.isWhitespace(sci.next()));
-        assertEquals(sci.next(),'j');
-        assertEquals(sci.next(),'k');
+        assertEquals('j', sci.next());
+        assertEquals('k', sci.next());
         assertFalse(sci.hasNext());
     }
 }

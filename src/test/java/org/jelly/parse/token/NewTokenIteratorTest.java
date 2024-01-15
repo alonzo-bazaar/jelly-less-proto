@@ -16,7 +16,7 @@ public class NewTokenIteratorTest {
     <T> boolean literalEquals(LiteralToken<?> t, T target) {
         return t.getVal().equals(target);
     }
-    <T> void assertEqualsLiteral(Token t, T target) {
+    <T> void assertEqualsLiteral(T target, Token t) {
         if(t instanceof LiteralToken<?> lt) {
             if(!literalEquals(lt, target)) {
                 throw new AssertionError("token " + lt + " is literal of type "
@@ -33,7 +33,7 @@ public class NewTokenIteratorTest {
                                      + t.getClass().getCanonicalName());
     }
 
-    void assertEqualsFloatLiteral(Token t, Double target, double eps) {
+    void assertEqualsFloatLiteral(Double target, Token t, double eps) {
         // float comparisons requires some extra work because of the epsilon
         if(t instanceof LiteralToken<?> lts) {
             if(lts.getVal() instanceof Double vt) {
@@ -52,7 +52,7 @@ public class NewTokenIteratorTest {
             throw new AssertionError(t + " should have been a literal it is instead of type " + t.getClass().getCanonicalName());
     }
 
-    void assertEqualsNormal(Token t, String target) {
+    void assertEqualsNormal(String target, Token t) {
         if (Objects.requireNonNull(t) instanceof NormalToken nt) {
             assertEquals(nt.getString(), target);
         } else {
@@ -60,7 +60,7 @@ public class NewTokenIteratorTest {
         }
     }
 
-    void assertEqualsPunctuation(Token t, String target) {
+    void assertEqualsPunctuation(String target, Token t) {
         if (Objects.requireNonNull(t) instanceof PunctuationToken nt) {
             assertEquals(nt.getString(), target);
         } else {
@@ -71,347 +71,347 @@ public class NewTokenIteratorTest {
     @Test
     public void justOneChar() {
         NewTokenIterator nti = DebuggingUtils.fromStrings("a");
-        assertEqualsNormal(nti.next(), "a");
+        assertEqualsNormal("a", nti.next());
         assertFalse(nti.hasNext());
     }
 
     @Test
     public void justOneCharMultiline() {
         NewTokenIterator nti = DebuggingUtils.fromStrings("a", "b");
-        assertEqualsNormal(nti.next(), "a");
-        assertEqualsNormal(nti.next(), "b");
+        assertEqualsNormal("a", nti.next());
+        assertEqualsNormal("b", nti.next());
         assertFalse(nti.hasNext());
     }
     @Test
     public void getSpecialNonWhite() {
         NewTokenIterator nti = DebuggingUtils.fromStrings("(prova)");
-        assertEqualsPunctuation(nti.next(), "(");
-        assertEqualsNormal(nti.next(), "prova");
-        assertEqualsPunctuation(nti.next(), ")");
+        assertEqualsPunctuation("(", nti.next());
+        assertEqualsNormal("prova", nti.next());
+        assertEqualsPunctuation(")", nti.next());
         assertFalse(nti.hasNext());
     }
 
     @Test
     public void getSpecialWhite() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("(  kitemmuort  )");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "kitemmuort");
-        assertEqualsPunctuation(ti.next(), ")");
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("kitemmuort", ti.next());
+        assertEqualsPunctuation(")", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void trailingWhitespace() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("fat       ");
-        assertEqualsNormal(ti.next(), "fat");
+        assertEqualsNormal("fat", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void leadingWhiteSpace() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("      fat");
-        assertEqualsNormal(ti.next(), "fat");
+        assertEqualsNormal("fat", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void leadingWhiteSpaceSpecial() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("      ::");
-        assertEqualsPunctuation(ti.next(), "::");
+        assertEqualsPunctuation("::", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void trailingWhitespaceSpecial() {
         NewTokenIterator ti = DebuggingUtils.fromStrings(":::       ");
-        assertEqualsPunctuation(ti.next(), ":::");
+        assertEqualsPunctuation(":::", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void bothWhitespace() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("   kitemmuort       ");
-        assertEqualsNormal(ti.next(), "kitemmuort");
+        assertEqualsNormal("kitemmuort", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void bothWhitespaceSpecial() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("   :       ");
-        assertEqualsPunctuation(ti.next(), ":");
+        assertEqualsPunctuation(":", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void getsBiggestSpecial() {
         NewTokenIterator ti = DebuggingUtils.fromStrings(":::::::::::");
-        assertEqualsPunctuation(ti.next(), ":::");
-        assertEqualsPunctuation(ti.next(), ":::");
-        assertEqualsPunctuation(ti.next(), ":::");
-        assertEqualsPunctuation(ti.next(), "::");
+        assertEqualsPunctuation(":::", ti.next());
+        assertEqualsPunctuation(":::", ti.next());
+        assertEqualsPunctuation(":::", ti.next());
+        assertEqualsPunctuation("::", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void noCommentAllParen() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("(when (that (fat old sun)) in (the sky))");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "when");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "that");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "fat");
-        assertEqualsNormal(ti.next(), "old");
-        assertEqualsNormal(ti.next(), "sun");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsNormal(ti.next(), "in");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "the");
-        assertEqualsNormal(ti.next(), "sky");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), ")");
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("when", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("that", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("fat", ti.next());
+        assertEqualsNormal("old", ti.next());
+        assertEqualsNormal("sun", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsNormal("in", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("the", ti.next());
+        assertEqualsNormal("sky", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation(")", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void CommentNoSpacesAllSpecial() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("(when(that(fat:old::sun)):::in::(the#||#sky))");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "when");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "that");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "fat");
-        assertEqualsPunctuation(ti.next(), ":");
-        assertEqualsNormal(ti.next(), "old");
-        assertEqualsPunctuation(ti.next(), "::");
-        assertEqualsNormal(ti.next(), "sun");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), ":::");
-        assertEqualsNormal(ti.next(), "in");
-        assertEqualsPunctuation(ti.next(), "::");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "the");
-        assertEqualsNormal(ti.next(), "sky");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), ")");
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("when", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("that", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("fat", ti.next());
+        assertEqualsPunctuation(":", ti.next());
+        assertEqualsNormal("old", ti.next());
+        assertEqualsPunctuation("::", ti.next());
+        assertEqualsNormal("sun", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation(":::", ti.next());
+        assertEqualsNormal("in", ti.next());
+        assertEqualsPunctuation("::", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("the", ti.next());
+        assertEqualsNormal("sky", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation(")", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void whitestHour() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("mannaggia:  kite", "\t mmuort", "\t");
-        assertEqualsNormal(ti.next(), "mannaggia");
-        assertEqualsPunctuation(ti.next(), ":");
-        assertEqualsNormal(ti.next(), "kite");
-        assertEqualsNormal(ti.next(), "mmuort");
+        assertEqualsNormal("mannaggia", ti.next());
+        assertEqualsPunctuation(":", ti.next());
+        assertEqualsNormal("kite", ti.next());
+        assertEqualsNormal("mmuort", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void specialWhite() { // non il dentifricio
         NewTokenIterator ti = DebuggingUtils.fromStrings("kono: dio :da");
-        assertEqualsNormal(ti.next(), "kono");
-        assertEqualsPunctuation(ti.next(), ":");
-        assertEqualsNormal(ti.next(), "dio");
-        assertEqualsPunctuation(ti.next(), ":");
-        assertEqualsNormal(ti.next(), "da");
+        assertEqualsNormal("kono", ti.next());
+        assertEqualsPunctuation(":", ti.next());
+        assertEqualsNormal("dio", ti.next());
+        assertEqualsPunctuation(":", ti.next());
+        assertEqualsNormal("da", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void string() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"stringus\"");
-        assertEqualsLiteral(ti.next(), "stringus");
+        assertEqualsLiteral("stringus", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void stringStartingWithWhitespace() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"    stringus\"");
-        assertEqualsLiteral(ti.next(), "    stringus");
+        assertEqualsLiteral("    stringus", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void stringEndingWithWhitespace() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"stringus      \"");
-        assertEqualsLiteral(ti.next(), "stringus      ");
+        assertEqualsLiteral("stringus      ", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void stringBeforeTokens() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"something\"in the way  ");
-        assertEqualsLiteral(ti.next(), "something");
-        assertEqualsNormal(ti.next(), "in");
-        assertEqualsNormal(ti.next(), "the");
-        assertEqualsNormal(ti.next(), "way");
+        assertEqualsLiteral("something", ti.next());
+        assertEqualsNormal("in", ti.next());
+        assertEqualsNormal("the", ti.next());
+        assertEqualsNormal("way", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void stringAfterTokens() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("çeci est une\"stringa\"");
-        assertEqualsNormal(ti.next(), "çeci");
-        assertEqualsNormal(ti.next(), "est");
-        assertEqualsNormal(ti.next(), "une");
-        assertEqualsLiteral(ti.next(), "stringa");
+        assertEqualsNormal("çeci", ti.next());
+        assertEqualsNormal("est", ti.next());
+        assertEqualsNormal("une", ti.next());
+        assertEqualsLiteral("stringa", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void multipleStrings() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"jojo\" \"bizarre\" \"strings\"");
-        assertEqualsLiteral(ti.next(), "jojo");
-        assertEqualsLiteral(ti.next(), "bizarre");
-        assertEqualsLiteral(ti.next(), "strings");
+        assertEqualsLiteral("jojo", ti.next());
+        assertEqualsLiteral("bizarre", ti.next());
+        assertEqualsLiteral("strings", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void multipleAttachedStrings() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"jojo\"\"bizarre\"\"strings\"");
-        assertEqualsLiteral(ti.next(), "jojo");
-        assertEqualsLiteral(ti.next(), "bizarre");
-        assertEqualsLiteral(ti.next(), "strings");
+        assertEqualsLiteral("jojo", ti.next());
+        assertEqualsLiteral("bizarre", ti.next());
+        assertEqualsLiteral("strings", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void stringsAndSpecials() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("(strcat\"kite\"\"mmurt\" \"mannaggia \\\"\" bello bello\"mannaggia\")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "strcat");
-        assertEqualsLiteral(ti.next(), "kite");
-        assertEqualsLiteral(ti.next(), "mmurt");
-        assertEqualsLiteral(ti.next(), "mannaggia \"");
-        assertEqualsNormal(ti.next(), "bello");
-        assertEqualsNormal(ti.next(), "bello");
-        assertEqualsLiteral(ti.next(), "mannaggia");
-        assertEqualsPunctuation(ti.next(), ")");
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("strcat", ti.next());
+        assertEqualsLiteral("kite", ti.next());
+        assertEqualsLiteral("mmurt", ti.next());
+        assertEqualsLiteral("mannaggia \"", ti.next());
+        assertEqualsNormal("bello", ti.next());
+        assertEqualsNormal("bello", ti.next());
+        assertEqualsLiteral("mannaggia", ti.next());
+        assertEqualsPunctuation(")", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void emptyString() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"\"");
-        assertEqualsLiteral(ti.next(), "");
+        assertEqualsLiteral("", ti.next());
         assertFalse(ti.hasNext());
     }
     
     @Test
     public void multipleEmptyStrings() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"\"\"\"\"\"");
-        assertEqualsLiteral(ti.next(), "");
-        assertEqualsLiteral(ti.next(), "");
-        assertEqualsLiteral(ti.next(), "");
+        assertEqualsLiteral("", ti.next());
+        assertEqualsLiteral("", ti.next());
+        assertEqualsLiteral("", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void gettingStupid() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("((((((((((((((((((((");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void gettingStupidWhitespace() {
         NewTokenIterator ti = DebuggingUtils.fromStrings(" ((    ((((((((((((((((((  ");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), "(");
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation("(", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void gettingStupider() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("()()()()()()()()()()");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void gettingStupiderWhitespace() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("() ( )()()()(  )()()()() ");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsPunctuation(ti.next(), ")");
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsPunctuation(")", ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -422,17 +422,17 @@ public class NewTokenIteratorTest {
          * controllo giusto in caso
          */
         NewTokenIterator ti = DebuggingUtils.fromStrings("ti voglio #| bene |# bastonare");
-        assertEqualsNormal(ti.next(), "ti");
-        assertEqualsNormal(ti.next(), "voglio");
-        assertEqualsNormal(ti.next(), "bastonare");
+        assertEqualsNormal("ti", ti.next());
+        assertEqualsNormal("voglio", ti.next());
+        assertEqualsNormal("bastonare", ti.next());
     }
 
     @Test
     public void ignoresMultilineComments() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("ti voglio #| bene", " |# bastonare");
-        assertEqualsNormal(ti.next(), "ti");
-        assertEqualsNormal(ti.next(), "voglio");
-        assertEqualsNormal(ti.next(), "bastonare");
+        assertEqualsNormal("ti", ti.next());
+        assertEqualsNormal("voglio", ti.next());
+        assertEqualsNormal("bastonare", ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -443,10 +443,10 @@ public class NewTokenIteratorTest {
          * controllo giusto in caso
          */
         NewTokenIterator ti = DebuggingUtils.fromStrings("ti voglio ;; bastonare", "benissimo; muori", "<3");
-        assertEqualsNormal(ti.next(), "ti");
-        assertEqualsNormal(ti.next(), "voglio");
-        assertEqualsNormal(ti.next(), "benissimo");
-        assertEqualsNormal(ti.next(), "<3");
+        assertEqualsNormal("ti", ti.next());
+        assertEqualsNormal("voglio", ti.next());
+        assertEqualsNormal("benissimo", ti.next());
+        assertEqualsNormal("<3", ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -456,10 +456,10 @@ public class NewTokenIteratorTest {
                                           "rita",
                                           "meter",
                                           "maid");
-        assertEqualsNormal(ti.next(), "lovely");
-        assertEqualsNormal(ti.next(), "rita");
-        assertEqualsNormal(ti.next(), "meter");
-        assertEqualsNormal(ti.next(), "maid");
+        assertEqualsNormal("lovely", ti.next());
+        assertEqualsNormal("rita", ti.next());
+        assertEqualsNormal("meter", ti.next());
+        assertEqualsNormal("maid", ti.next());
     }
 
     @Test
@@ -468,10 +468,10 @@ public class NewTokenIteratorTest {
                 "rita",
                 "meter ",
                 "maid");
-        assertEqualsNormal(ti.next(), "lovely");
-        assertEqualsNormal(ti.next(), "rita");
-        assertEqualsNormal(ti.next(), "meter");
-        assertEqualsNormal(ti.next(), "maid");
+        assertEqualsNormal("lovely", ti.next());
+        assertEqualsNormal("rita", ti.next());
+        assertEqualsNormal("meter", ti.next());
+        assertEqualsNormal("maid", ti.next());
     }
 
     @Test
@@ -480,10 +480,10 @@ public class NewTokenIteratorTest {
                 "rita #| name |#",
                 "meter",
                 "maid ;; because someone thought getting a parking ticket was sexy");
-        assertEqualsNormal(ti.next(), "lovely");
-        assertEqualsNormal(ti.next(), "rita");
-        assertEqualsNormal(ti.next(), "meter");
-        assertEqualsNormal(ti.next(), "maid");
+        assertEqualsNormal("lovely", ti.next());
+        assertEqualsNormal("rita", ti.next());
+        assertEqualsNormal("meter", ti.next());
+        assertEqualsNormal("maid", ti.next());
     }
 
     @Test
@@ -491,7 +491,7 @@ public class NewTokenIteratorTest {
         // bug earlier where skipInlineComment() wouldn't signal eof and set currentLine() to the next() of an iterator
         // that didn't hasNext(), ergo, null
         NewTokenIterator ti = DebuggingUtils.fromStrings("hello ;; comment");
-        assertEqualsNormal(ti.next(), "hello");
+        assertEqualsNormal("hello", ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -541,14 +541,14 @@ public class NewTokenIteratorTest {
     @Test
     public void multilineCommentFinisher() {
         NewTokenIterator ti = DebuggingUtils.fromStrings ("lovely #| rita |#");
-        assertEqualsNormal(ti.next(), "lovely");
+        assertEqualsNormal("lovely", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void multilineCommentMultilineComment() {
         NewTokenIterator ti = DebuggingUtils.fromStrings ("lovely #| #| rita #| |#");
-        assertEqualsNormal(ti.next(), "lovely");
+        assertEqualsNormal("lovely", ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -558,10 +558,10 @@ public class NewTokenIteratorTest {
                                           "100",
                                           "meter",
                                           "0.4");
-        assertEqualsNormal(ti.next(), "lovely");
-        assertEqualsLiteral(ti.next(), (long)100);
-        assertEqualsNormal(ti.next(), "meter");
-        assertEqualsFloatLiteral(ti.next(), 0.4, 0.0001);
+        assertEqualsNormal("lovely", ti.next());
+        assertEqualsLiteral((long)100, ti.next());
+        assertEqualsNormal("meter", ti.next());
+        assertEqualsFloatLiteral(0.0001, ti.next(), 0.4);
     }
 
     @Test
@@ -569,9 +569,9 @@ public class NewTokenIteratorTest {
         NewTokenIterator ti = DebuggingUtils.fromStrings("#\\a",
                                           "#\\b",
                                           "#\\c");
-        assertEqualsLiteral(ti.next(), 'a');
-        assertEqualsLiteral(ti.next(), 'b');
-        assertEqualsLiteral(ti.next(), 'c');
+        assertEqualsLiteral('a', ti.next());
+        assertEqualsLiteral('b', ti.next());
+        assertEqualsLiteral('c', ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -580,25 +580,25 @@ public class NewTokenIteratorTest {
         NewTokenIterator ti = DebuggingUtils.fromStrings("#\\Space",
                                           "#\\Newline",
                                           "#\\Tab");
-        assertEqualsLiteral(ti.next(), ' ');
-        assertEqualsLiteral(ti.next(), '\n');
-        assertEqualsLiteral(ti.next(), '\t');
+        assertEqualsLiteral(' ', ti.next());
+        assertEqualsLiteral('\n', ti.next());
+        assertEqualsLiteral('\t', ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void stringEscapeSequences() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"lovely \\n rita \\t meter\"");
-        assertEqualsLiteral(ti.next(), "lovely \n rita \t meter");
+        assertEqualsLiteral("lovely \n rita \t meter", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void newlineTokenSeparators() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("made\nin\theaven");
-        assertEqualsNormal(ti.next(), "made");
-        assertEqualsNormal(ti.next(), "in");
-        assertEqualsNormal(ti.next(), "heaven");
+        assertEqualsNormal("made", ti.next());
+        assertEqualsNormal("in", ti.next());
+        assertEqualsNormal("heaven", ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -608,16 +608,16 @@ public class NewTokenIteratorTest {
                 ("made#\\a\"in\" \t \t\t\t\t",
                         "hea#| ;:::; |#ven",
                         "it's #\\f or     ;;");
-        assertEqualsNormal(ti.next(), "made");
-        assertEqualsLiteral(ti.next(), 'a');
-        assertEqualsLiteral(ti.next(), "in");
-        assertEqualsNormal(ti.next(), "hea");
-        assertEqualsNormal(ti.next(), "ven");
-        assertEqualsNormal(ti.next(), "it");
-        assertEqualsPunctuation(ti.next(), "'");
-        assertEqualsNormal(ti.next(), "s");
-        assertEqualsLiteral(ti.next(), 'f');
-        assertEqualsNormal(ti.next(), "or");
+        assertEqualsNormal("made", ti.next());
+        assertEqualsLiteral('a', ti.next());
+        assertEqualsLiteral("in", ti.next());
+        assertEqualsNormal("hea", ti.next());
+        assertEqualsNormal("ven", ti.next());
+        assertEqualsNormal("it", ti.next());
+        assertEqualsPunctuation("'", ti.next());
+        assertEqualsNormal("s", ti.next());
+        assertEqualsLiteral('f', ti.next());
+        assertEqualsNormal("or", ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -641,74 +641,74 @@ public class NewTokenIteratorTest {
     @Test
     public void testMultilineStrings() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"lovely rita", "meter maid\"");
-        assertEqualsLiteral(ti.next(), "lovely rita\nmeter maid");
+        assertEqualsLiteral("lovely rita\nmeter maid", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void testMultilineStringStartAtEndOfLine() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"", "ok\"");
-        assertEqualsLiteral(ti.next(), "\nok");
+        assertEqualsLiteral("\nok", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void testMultilineStringEndAtEndOfLine() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"ok", "\"");
-        assertEqualsLiteral(ti.next(), "ok\n");
+        assertEqualsLiteral("ok\n", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void testExtractFloatingPoint() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("(+ 10 0.1)");
-        assertEqualsPunctuation(ti.next(), "(");
-        assertEqualsNormal(ti.next(), "+");
-        assertEqualsLiteral(ti.next(), (long)10);
-        assertEqualsFloatLiteral(ti.next(), 0.1, 0.00001);
-        assertEqualsPunctuation(ti.next(), ")");
+        assertEqualsPunctuation("(", ti.next());
+        assertEqualsNormal("+", ti.next());
+        assertEqualsLiteral((long)10, ti.next());
+        assertEqualsFloatLiteral(0.1, ti.next(), 0.00001);
+        assertEqualsPunctuation(")", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void testExtractFloatingNothingBeforeDot() {
         NewTokenIterator ti = DebuggingUtils.fromStrings(".01");
-        assertEqualsFloatLiteral(ti.next(), 0.01, 0.00001);
+        assertEqualsFloatLiteral(0.01, ti.next(), 0.00001);
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void testExtractFloatingNothingBeforeDotSign() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("-.01");
-        assertEqualsFloatLiteral(ti.next(), -0.01, 0.00001);
+        assertEqualsFloatLiteral(-0.01, ti.next(), 0.00001);
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void testExtractFloatingSign() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("-0.01");
-        assertEqualsFloatLiteral(ti.next(), -0.01, 0.00001);
+        assertEqualsFloatLiteral(-0.01, ti.next(), 0.00001);
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void testExtractInteger() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("100");
-        assertEqualsLiteral(ti.next(), (long)100);
+        assertEqualsLiteral((long)100, ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void testExtractIntegerLeadingZeros() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("0100");
-        assertEqualsLiteral(ti.next(), (long)100);
+        assertEqualsLiteral((long)100, ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void testExtractIntegerSign() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("-100");
-        assertEqualsLiteral(ti.next(), (long)-100);
+        assertEqualsLiteral((long)-100, ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -720,18 +720,18 @@ public class NewTokenIteratorTest {
                     "#\\Return",
                     "#\\Null"
         );
-        assertEqualsLiteral(ti.next(), ' ');
-        assertEqualsLiteral(ti.next(), '\t');
-        assertEqualsLiteral(ti.next(), '\n');
-        assertEqualsLiteral(ti.next(), '\r');
-        assertEqualsLiteral(ti.next(), '\0');
+        assertEqualsLiteral(' ', ti.next());
+        assertEqualsLiteral('\t', ti.next());
+        assertEqualsLiteral('\n', ti.next());
+        assertEqualsLiteral('\r', ti.next());
+        assertEqualsLiteral('\0', ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
     public void testStringEscapes() {
         NewTokenIterator ti = DebuggingUtils.fromStrings("\"lovely \\\\ rita \\n meter \\t maid \\r\\n\"");
-        assertEqualsLiteral(ti.next(), "lovely \\ rita \n meter \t maid \r\n");
+        assertEqualsLiteral("lovely \\ rita \n meter \t maid \r\n", ti.next());
         assertFalse(ti.hasNext());
     }
 }

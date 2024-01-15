@@ -19,10 +19,10 @@ public class ExpressionIteratorTest {
         LispSymbol ls;
 
         o = ei.next();
-        assertEquals(((LispSymbol)o).getName(), "mamma");
+        assertEquals("mamma", ((LispSymbol)o).getName());
 
         o = ei.next();
-        assertEquals(((LispSymbol)o).getName(), "mia");
+        assertEquals("mia", ((LispSymbol)o).getName());
 
         assertFalse(ei.hasNext());
     }
@@ -33,13 +33,13 @@ public class ExpressionIteratorTest {
         Object o;
 
         o = ei.next();
-        assertEquals((int)((Integer)o),20);
+        assertEquals(20, (int)((Integer)o));
 
         o = ei.next();
-        assertEquals((int)((Integer)o),30);
+        assertEquals(30, (int)((Integer)o));
 
         o = ei.next();
-        assertEquals((int)((Integer)o),0);
+        assertEquals(0, (int)((Integer)o));
 
         assertFalse(ei.hasNext());
     }
@@ -48,7 +48,7 @@ public class ExpressionIteratorTest {
     public void consesLength() throws ParsingException {
         ExpressionIterator ei = ExpressionIterator.fromString("(ei fu siccome immobile)");
         Object o = ei.next();
-        assertEquals(((Cons)o).length(), 4);
+        assertEquals(4, ((Cons)o).length());
     }
 
     @Test
@@ -64,9 +64,9 @@ public class ExpressionIteratorTest {
         Object le1 = c.nth(1);
         Object le2 = c.nth(2);
         
-        assertEquals(((LispSymbol)le0).getName(), "define");
-        assertEquals(((LispSymbol)le1).getName(), "x");
-        assertEquals((int)((Integer)le2), 20);
+        assertEquals("define", ((LispSymbol)le0).getName());
+        assertEquals("x", ((LispSymbol)le1).getName());
+        assertEquals(20, (int)((Integer)le2));
     }
 
     @Test
@@ -76,13 +76,13 @@ public class ExpressionIteratorTest {
         // stiamo testando contro questa struttura
         Object outer = ei.next();
         assertFalse(ei.hasNext());
-        assertSame(((Cons) outer).getCdr(), Constants.NIL);
+        assertSame(Constants.NIL, ((Cons) outer).getCdr());
 
         Object midder = ((Cons) outer).getCar();
-        assertSame((((Cons)midder).getCdr()), Constants.NIL);
+        assertSame(Constants.NIL, (((Cons)midder).getCdr()));
 
         Object inner = ((Cons) midder).getCar();
-        assertEquals(((LispSymbol) inner).getName(), "ok");
+        assertEquals("ok", ((LispSymbol) inner).getName());
     }
 
     @Test
