@@ -51,7 +51,7 @@ public class ArgArith {
     public static Integer modulo(List<Object> args) throws IncorrectArgumentsException {
         ArgUtils.ensureAllIntegers("modulo", args);
         ArgUtils.ensureSizeExactly("modulo", 2, args);
-        return Arith.modulo((Integer) args.get(0), (Integer) args.get(1));
+        return Arith.modulo((Number)args.get(0), (Number)args.get(1));
     }
 
     // all comparisons perform the same two checks, so why not

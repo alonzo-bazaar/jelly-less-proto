@@ -145,7 +145,7 @@ public class LineTokenizer {
         else {
             String lex = extractStartingNormalString();
             if (Synthax.stringIsInteger(lex))
-                return new LiteralToken<>(lex, Long.parseLong(lex));
+                return new LiteralToken<>(lex, Integer.parseInt(lex));
             else if (Synthax.stringIsFloat(lex))
                 return new LiteralToken<>(lex, Double.parseDouble(lex));
             else

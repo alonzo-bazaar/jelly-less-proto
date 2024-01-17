@@ -1,5 +1,6 @@
 package org.jelly.utils;
 
+import org.jelly.parse.expression.NewExpressionIterator;
 import org.jelly.parse.token.NewTokenIterator;
 
 /**
@@ -10,10 +11,6 @@ import org.jelly.parse.token.NewTokenIterator;
 public class DebuggingUtils {
 
     // utilities
-    public static NewTokenIterator fromStrings(String... args) {
-        return new NewTokenIterator(new StringArrIterator(args));
-    }
-
     public static String renderDebugString(String s) {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i<s.length(); ++i) {
@@ -41,5 +38,13 @@ public class DebuggingUtils {
         case String s -> renderDebugString(s);
         default -> o.toString();
         };
+    }
+
+    public static NewTokenIterator tokensFromStrings(String... lines) {
+        return new NewTokenIterator(new StringArrIterator(lines));
+    }
+
+    public static NewExpressionIterator expressionsFromStrings(String... lines) {
+        return new NewExpressionIterator(tokensFromStrings(lines));
     }
 }

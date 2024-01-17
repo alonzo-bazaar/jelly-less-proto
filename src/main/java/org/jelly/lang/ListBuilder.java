@@ -1,8 +1,12 @@
 package org.jelly.lang;
 
 public class ListBuilder {
-    LispList initial = Constants.NIL;
+    LispList initial;
     Cons lastCons;
+
+    public ListBuilder() {
+        this.initial = Constants.NIL;
+    }
 
     public void addLast(Object o) {
         if (initial == Constants.NIL) {

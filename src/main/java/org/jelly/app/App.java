@@ -3,10 +3,14 @@ package org.jelly.app;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.Iterator;
 
 import org.jelly.eval.runtime.Runtime;
 import org.jelly.parse.ExpressionIterator;
 import org.jelly.lang.errors.ParsingException;
+import org.jelly.parse.expression.NewExpressionIterator;
+import org.jelly.parse.token.NewTokenIterator;
+import org.jelly.parse.token.Token;
 
 /**
  * the jellyt package contains some sort of package level façade
@@ -58,18 +62,18 @@ public class App
         try {
             runtime.evalFile(f);
         }
-        catch(FileNotFoundException fnfe) {
+        catch(FileNotFoundException noFile) {
             System.out.println("error while looking for file : "+ f.getPath());
             System.out.println("no such file (or directory)");
-            System.out.println(fnfe.getMessage());
+            System.out.println(noFile.getMessage());
         }
-        catch(ParsingException pe) {
+        catch(ParsingException parse) {
             System.out.println("error while parsing file" + f.getPath());
-            System.out.println("synthax error");
-            System.out.println(pe.getMessage());
+            System.out.println("syntax error");
+            System.out.println(parse.getMessage());
         }
         catch(Throwable t) {
-            System.out.println("some error occured, " +
+            System.out.println("some error occurred, " +
                                t.getClass().getCanonicalName());
             System.out.println(t.getMessage());
         }
@@ -77,34 +81,45 @@ public class App
 
     public static void repl() {
         Scanner scan = new Scanner(System.in);
-        String str = "";
-        ExpressionIterator ei = ExpressionIterator.fromString(str);
+        Iterator<String> lines = new InputLinesIterator();
+        Iterator<Token> tokens = new NewTokenIterator(lines);
+        Iterator<Object> expressions = new NewExpressionIterator(tokens);
 
         while (true) {
             try {
-                if (ei.hasNext()) {
-                    Object expr = ei.next();
+                replPrompt();
+                if(expressions.hasNext()) {
+                    Object expr = expressions.next();
                     Object val = runtime.evalExpr(expr);
                     System.out.println(val);
                 }
                 else {
-                    replPrompt();
-                    if (!scan.hasNext()) {
-                        scan.close();
-                        break;
-                    }
-                    str = scan.nextLine();
-                    ei.setString(str);
+                    System.out.println("hello, goodbye");
+                    break;
                 }
-            } catch (Throwable t) {
-                System.out.println("Caugh error of type : " + t.getClass().getCanonicalName());
-                System.out.println(t.getMessage());
-                System.out.println("see stack trace? [y(es)/n(o)] ");
-                String wanna = scan.next();
-                if(wanna.toLowerCase().startsWith("y"))
-                    t.printStackTrace();
+            } catch (Throwable t){
+                if (!replHandleThrowable(t, scan)) {
+                    System.out.println("ok, bye then");
+                    break;
+                }
             }
         }
+
+        scan.close();
+    }
+
+    private static boolean replHandleThrowable(Throwable t, Scanner s) {
+        System.out.println("caught error of type : " + t.getClass().getCanonicalName());
+        System.out.println("error: " + t.getMessage());
+        System.out.println("see stack trace? [y(es)/n(o)] ");
+
+        String wannaStackTrace = s.next();
+        if(wannaStackTrace.toLowerCase().startsWith("y"))
+            t.printStackTrace();
+
+        System.out.println("continue? [y(es)/n(o)] ");
+        String wannaContinue = s.next();
+        return wannaContinue.toLowerCase().startsWith("y");
     }
 
     private static void replPrompt() {

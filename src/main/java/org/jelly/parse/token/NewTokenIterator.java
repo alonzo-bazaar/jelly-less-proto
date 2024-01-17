@@ -48,7 +48,7 @@ public class NewTokenIterator implements Iterator<Token> {
     private void tryPopulateBuffer() {
         try {
             while (buffer.isEmpty()) {
-                /* fa un po' schifo,
+                /* TODO fa un po' schifo,
                  * ma per funzionare con un repl bisogna essere lazy sul souurceLines.next();
                  * visto che se si chiama next() a caso, questo next potrebbe richiedere user interaction
                  * e bloccare l'applicazione in momenti poco desiderabili

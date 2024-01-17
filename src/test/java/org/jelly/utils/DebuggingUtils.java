@@ -1,12 +1,23 @@
 package org.jelly.utils;
 
+import org.jelly.parse.expression.NewExpressionIterator;
 import org.jelly.parse.token.NewTokenIterator;
-import org.jelly.parse.token.NewTokenIteratorTest;
 
 public class DebuggingUtils {
-    public static NewTokenIterator fromStrings(String... args) {
-        return new NewTokenIterator(new StringArrIterator(args));
+
+    public static NewTokenIterator tokensFromStringArr(String[] ss) {
+        return new NewTokenIterator(new StringArrIterator(ss));
     }
+    public static NewTokenIterator tokensFromStrings(String... args) {
+        return tokensFromStringArr(args);
+    }
+    public static NewExpressionIterator expressionsFromStringArr(String[] ss) {
+        return new NewExpressionIterator(tokensFromStringArr(ss));
+    }
+    public static NewExpressionIterator expressionsFromStrings(String... args) {
+        return expressionsFromStringArr(args);
+    }
+
 
     public static String debugRender(Object o) {
         return switch(o) {
