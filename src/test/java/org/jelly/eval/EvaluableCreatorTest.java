@@ -2,10 +2,7 @@ package org.jelly.eval;
 
 import org.jelly.eval.evaluable.AndEvaluable;
 import org.jelly.eval.evaluable.Evaluable;
-import org.jelly.eval.evaluable.EvaluableCreator;
 import org.jelly.eval.evaluable.OrEvaluable;
-import org.jelly.eval.runtime.Runtime;
-import org.jelly.eval.runtime.Environment;
 import org.jelly.lang.LispSymbol;
 import org.jelly.lang.LispList;
 
@@ -15,31 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-
-import org.jelly.parse.ExpressionIterator;
 import org.jelly.lang.errors.ParsingException;
 
-public class EvaluableCreatorTest {
-    private Evaluable fromString(String s) throws ParsingException {
-        ExpressionIterator ei = ExpressionIterator.fromString(s);
-        Object le = ei.next();
-        return EvaluableCreator.fromExpression(le);
-    }
-
-    private Environment env = new Environment();
-
-    @BeforeEach
-    public void refreshEnv() {
-        env = Runtime.buildInitialEnvironment();
-    }
-
-    @AfterEach
-    public void resetEnvironment() {
-        env.reset();
-    }
-
+public class EvaluableCreatorTest extends BaseEvaluableTest {
     @Test
     public void testQuoteSymbol() throws ParsingException {
         Evaluable ev = fromString("(quote a)");

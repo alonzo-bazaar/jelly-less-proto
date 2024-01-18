@@ -8,33 +8,13 @@ import org.jelly.lang.LispList;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 
-import org.jelly.parse.ExpressionIterator;
 import org.jelly.lang.errors.ParsingException;
 
-public class ProcedureTest {
-    private Environment env = new Environment();
-
-    private Evaluable fromString(String s) throws ParsingException {
-        ExpressionIterator ei = ExpressionIterator.fromString(s);
-        Object le = ei.next();
-        return EvaluableCreator.fromExpression(le);
-    }
-
-    @BeforeEach
-    public void refreshEnv() {
-        env = Runtime.buildInitialEnvironment();
-    }
-
-    @AfterEach
-    public void resetEnvironment() {
-        env.reset();
-    }
-
+public class ProcedureTest extends BaseEvaluableTest {
     @Test
     public void testLambdaUsingBuiltins() throws ParsingException {
         fromString("(define bigger-than-10" +

@@ -1,38 +1,9 @@
 package org.jelly.eval;
 
-import org.jelly.eval.evaluable.Evaluable;
-import org.jelly.eval.evaluable.EvaluableCreator;
-import org.jelly.eval.runtime.Environment;
-import org.jelly.eval.runtime.Runtime;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.junit.Assert.assertEquals;
-
-import org.jelly.lang.errors.ParsingException;
-import org.jelly.parse.ExpressionIterator;
-
-public class DoEvaluableTest {
-    private Environment env;
-
-    @BeforeEach
-    public void envSetup() {
-        env = Runtime.buildInitialEnvironment();
-    }
-
-    @AfterEach
-    public void envReset() {
-        env.reset();
-    }
-
-    private Evaluable fromString(String s) throws ParsingException {
-        ExpressionIterator ei = ExpressionIterator.fromString(s);
-        Object le = ei.next();
-        return EvaluableCreator.fromExpression(le);
-    }
-
+public class DoEvaluableTest extends BaseEvaluableTest {
     @Test
     public void testNormalLoopOneVar() {
         fromString("(define (powah-iter base exp) " +

@@ -42,6 +42,8 @@ public class Synthax {
         int i = 0;
         if(s.charAt(0) == '-')
             i = 1;
+        if(i == s.length())
+            return false;
         while(i != s.length()) {
             if(!charIsDigit(s.charAt(i)))
                 return false;
@@ -55,6 +57,8 @@ public class Synthax {
         boolean dot = false;
         if(s.charAt(0) == '-')
             i = 1;
+        if(i == s.length())
+            return false;
         while(i != s.length()) {
             if(charIsDigit(s.charAt(i)))
                 i++;

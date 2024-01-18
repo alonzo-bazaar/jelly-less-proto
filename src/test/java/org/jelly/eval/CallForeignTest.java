@@ -1,12 +1,9 @@
 package org.jelly.eval;
 
-import org.jelly.eval.evaluable.Evaluable;
-import org.jelly.eval.evaluable.EvaluableCreator;
 import org.jelly.eval.procedure.Procedure;
 import org.jelly.eval.runtime.Environment;
 import org.jelly.eval.runtime.Runtime;
 import org.jelly.eval.utils.ArgUtils;
-import org.jelly.lang.errors.ParsingException;
 import org.junit.jupiter.api.Test;
 
 import org.jelly.lang.LispSymbol;
@@ -17,9 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
-import org.jelly.parse.ExpressionIterator;
 
-public class CallForeignTest {
+public class CallForeignTest extends BaseEvaluableTest {
     private Environment env = new Environment();
 
     @BeforeEach
@@ -41,17 +37,10 @@ public class CallForeignTest {
         env.reset();
     }
 
-    private Evaluable fromString(String s) throws ParsingException {
-        ExpressionIterator ei = ExpressionIterator.fromString(s);
-        Object le = ei.next();
-        return EvaluableCreator.fromExpression(le);
-    }
-
-
     @Test
     public void testClass() {
         try {
-            TestClass testObj = new TestClass();
+            TestRatClass testObj = new TestRatClass();
             env.define(new LispSymbol("testObj"), testObj);
             assertEquals("string", (String)fromString("(call testObj \"testMeth\")").eval(env));
         }
@@ -63,7 +52,7 @@ public class CallForeignTest {
     @Test
     public void testClassWithParams() {
         try {
-            TestClass testObj = new TestClass();
+            TestRatClass testObj = new TestRatClass();
             env.define(new LispSymbol("testObj"), testObj);
             assertEquals("stringugo", (String)fromString("(call testObj \"testMeth\" \"ugo\")").eval(env));
             assertEquals("ugostring10", (String)fromString("(call testObj \"testMeth\" \"ugo\" 10)").eval(env));

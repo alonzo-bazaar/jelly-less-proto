@@ -4,14 +4,9 @@ import org.jelly.lang.Cons;
 import org.jelly.lang.Constants;
 import org.jelly.lang.LispSymbol;
 import org.jelly.lang.errors.ParsingException;
-import org.jelly.parse.ExpressionIterator;
 import org.jelly.parse.errors.UnbalancedParenthesesException;
 import org.jelly.utils.DebuggingUtils;
 import org.junit.jupiter.api.Test;
-import org.jelly.parse.token.errors.TokenParsingException;
-
-import java.lang.Math;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 

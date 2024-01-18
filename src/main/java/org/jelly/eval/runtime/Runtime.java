@@ -1,5 +1,7 @@
 package org.jelly.eval.runtime;
 
+import java.util.Iterator;
+
 import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.evaluable.EvaluableCreator;
 import org.jelly.eval.procedure.Procedure;
@@ -9,12 +11,11 @@ import org.jelly.eval.utils.ArgUtils;
 import org.jelly.eval.utils.ArgFFI;
 import org.jelly.lang.LispSymbol;
 import org.jelly.lang.Constants;
-
-import org.jelly.parse.ExpressionIterator;
-import org.jelly.parse.SignificantCharsIterator;
-import org.jelly.parse.TokenIterator;
-import org.jelly.utils.FileCharIterator;
+import org.jelly.utils.DebuggingUtils;
 import org.jelly.lang.errors.CompilationError;
+import org.jelly.parse.expression.NewExpressionIterator;
+import org.jelly.parse.token.NewTokenIterator;
+import org.jelly.utils.FileLineIterator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,7 +31,7 @@ public class Runtime {
     private final Environment env = buildInitialEnvironment();
 
     public Object evalString(String s) throws CompilationError {
-        ExpressionIterator ei = ExpressionIterator.fromString(s);
+        Iterator<Object> ei = DebuggingUtils.expressionsFromStrings(s);
         while (ei.hasNext()) {
             Object le = ei.next();
             if (ei.hasNext())
@@ -50,17 +51,17 @@ public class Runtime {
     public Object evalFile(File f)
         throws FileNotFoundException, CompilationError  {
 
-        ExpressionIterator ei = new ExpressionIterator
-            (new TokenIterator
-             (new SignificantCharsIterator
-              (new FileCharIterator(f))));
+        Iterator<Object> expressions =
+            new NewExpressionIterator
+            (new NewTokenIterator
+             (new FileLineIterator(f)));
 
-        while (ei.hasNext()) {
-            Object le = ei.next();
-            if (ei.hasNext())
-                this.evalExpr(le);
+        while (expressions.hasNext()) {
+            Object expr = expressions.next();
+            if (expressions.hasNext())
+                this.evalExpr(expr);
             else
-                return this.evalExpr(le);
+                return this.evalExpr(expr);
         }
         // (si spera) unreachable
         return null;

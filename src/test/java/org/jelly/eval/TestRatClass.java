@@ -1,6 +1,7 @@
 package org.jelly.eval;
 
-public class TestClass {
+public class TestRatClass {
+    // simple class on which to test foreign method calls
     public String testMeth() {
         return "string";
     }

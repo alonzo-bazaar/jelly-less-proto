@@ -4,7 +4,8 @@ import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.evaluable.EvaluableCreator;
 import org.jelly.eval.runtime.Environment;
 import org.jelly.eval.runtime.Runtime;
-import org.jelly.parse.ExpressionIterator;
+import org.jelly.parse.expression.NewExpressionIterator;
+import org.jelly.utils.DebuggingUtils;
 import org.jelly.lang.errors.ParsingException;
 
 import org.junit.jupiter.api.Test;
@@ -18,25 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 
-public class ClosureTest {
-    private Environment env = new Environment();
-
-    @BeforeEach
-    public void refreshEnv() {
-        env = Runtime.buildInitialEnvironment();
-    }
-
-    @AfterEach
-    public void resetEnvironment() {
-        env.reset();
-    }
-
-    private Evaluable fromString(String s) throws ParsingException {
-        ExpressionIterator ei = ExpressionIterator.fromString(s);
-        Object le = ei.next();
-        return EvaluableCreator.fromExpression(le);
-    }
-
+public class ClosureTest extends BaseEvaluableTest {
     /* esempio da sicp (pagina 298 della versione texinfo, pagina 326 del pdf
      * - Modularity, Objects, and State
      * -- Assignment and Local State
