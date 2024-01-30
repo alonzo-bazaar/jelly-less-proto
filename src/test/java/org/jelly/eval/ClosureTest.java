@@ -1,23 +1,14 @@
 package org.jelly.eval;
 
-import org.jelly.eval.evaluable.Evaluable;
-import org.jelly.eval.evaluable.EvaluableCreator;
-import org.jelly.eval.runtime.Environment;
-import org.jelly.eval.runtime.Runtime;
-import org.jelly.parse.expression.NewExpressionIterator;
-import org.jelly.utils.DebuggingUtils;
 import org.jelly.lang.errors.ParsingException;
 
 import org.junit.jupiter.api.Test;
 
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispSymbol;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
 
 public class ClosureTest extends BaseEvaluableTest {
     /* esempio da sicp (pagina 298 della versione texinfo, pagina 326 del pdf

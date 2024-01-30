@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.Assert.assertEquals;
 
-import org.jelly.lang.Constants;
+import org.jelly.lang.data.Constants;
 
 public class IfEvaluableTest {
     private Environment env;

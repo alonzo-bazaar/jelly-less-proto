@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.jelly.lang.errors.ParsingException;
-import org.jelly.lang.Constants;
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.Constants;
+import org.jelly.lang.data.LispSymbol;
 
 
 public class LogicalOperatorsTest extends BaseEvaluableTest {

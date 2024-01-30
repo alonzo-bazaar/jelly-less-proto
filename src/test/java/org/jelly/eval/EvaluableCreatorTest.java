@@ -3,8 +3,8 @@ package org.jelly.eval;
 import org.jelly.eval.evaluable.AndEvaluable;
 import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.evaluable.OrEvaluable;
-import org.jelly.lang.LispSymbol;
-import org.jelly.lang.LispList;
+import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.LispList;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispSymbol;
 
 public class EnvironmentTest {
     private void hcf(String s) {

@@ -1,0 +1,88 @@
+- dimostrare capacità in
+  - analisi dei requisiti
+  - progettazione object oriented
+- qualità della metodologia
+- qualità della presentazione (scritta e discussione del progetto)
+- piena padronanza di quanto prodotto, anche di fronte a richieste di modifica
+
+* Modelli  
+** Modello 1  
+micro progettazione, scazzare con progettazione
+applicazione di iodiomi e schemi progettuali, e pratiche di programmazione
+ - anticipare e dominare la complessità attraverso modelli UML
+
+la relazione include
+ - definizione di un problema
+ - progettazione e ocumentazione con artefatti UML
+ - implementazione delle classi java
+ - inseme di test *con argomentazione circa la loro progettazione*
+
+dispiegare schemi concettuali e pratiche di programmazione in uno scenario di riferimento
+
+(vai di model driven sugli elementi di un interpreter e sparagli l'intero package di ~parse~, ~eval~ non dovrebbe avere troppi problemi al riguardo, ~lang~ è più dichiarativo del linguaggio in sè quindi forse un po' meno)
+
+(poi o trovi un modo per giustificare il fatto che si usino i ~Cons~ per fare gli alberi, o fai una classe ~Lists~ in ~org.jelly.lang~ (simile a ~Objects~ o ~Arrays~ di ~java.utils~), e utilizzi un qualche ~Lists.requireCons~, ~Lists.length()~ &Co. per evitare i type check nella costruzione dell'albero)
+
+- schede CRC
+- usare junit (e grazialcazzo)
+
+** Modello 2
+analisi dei requisiti di un contesto applicativo e la progettazione di un domain model che rappresenta le entità e permette l'implementazione di casi d'uso identificati
+
+*** UML
+sia nell'analisi dei requisiti
+(use case diagram, templates, mockups)
+sia nella progettazione del modello di dominio
+
+*** Relazione include
+ - definizione di un ambito di problema che identifichi concetti del dominio e requisiti funzionali
+ - identificazione di casi d'uso, di cui alcuni espansi in use case template
+   (accompagnato da mockup ma sticazzo non ho la gui)
+ - progettazione di un modello di dominio capace di assumere le responsabilità sottese dai casi d'uso
+ - implementazione delle classi Java
+
+lo statement circa una paginetta?
+la progettazione può concentrarsi su un sottinsieme dei casi d'uso
+ - con template &Co.
+ - ha più valore la varietà delle presentazioni che la loro completezza
+
+riscontro post definizoine di
+ - statement
+ - use case
+ - modello concettuale
+
+*** Test
+ - unit test :: focalizzino specifiche complessità della struttura della relaizzazoine
+ - test funzionali :: chee coprano particolari casi d'uso
+
+   
+
+** Modello 3
+approccio model driven engineering nel quale un modello trattabile in modo automatico viene generato attraverso la vista dei dati rappresentati in un modello di dominio
+(fuck it, we tokenizing bois)
+
+* C'è quindi da fare
+visto che lo presento come modello 2 o 3
+** Docs
+*** Scriverlo
+*** Diagrammi
+**** UML
+- finire sto cazzo di class diagram
+- fare sto cazzo di sequence diagram (per il repl) (forse)
+- fare un qualche cazzo di use case diagram
+  richiede avere una qualche applicazione con
+  - use case
+  - scripting
+  - (fattibile in una settimana)
+
+**** et al.
+ - schede CRC
+ - use case template
+ - mockup?
+
+** Tests
+- argomentazione circa la progettazione dei test
+
+** Code
+- ~&rest~ ?
+

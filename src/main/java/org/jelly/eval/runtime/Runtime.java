@@ -9,12 +9,12 @@ import org.jelly.eval.utils.ArgArith;
 import org.jelly.eval.utils.ArgListProcessing;
 import org.jelly.eval.utils.ArgUtils;
 import org.jelly.eval.utils.ArgFFI;
-import org.jelly.lang.LispSymbol;
-import org.jelly.lang.Constants;
+import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Constants;
 import org.jelly.utils.DebuggingUtils;
 import org.jelly.lang.errors.CompilationError;
-import org.jelly.parse.expression.NewExpressionIterator;
-import org.jelly.parse.token.NewTokenIterator;
+import org.jelly.parse.expression.ExpressionIterator;
+import org.jelly.parse.token.TokenIterator;
 import org.jelly.utils.FileLineIterator;
 
 import java.io.File;
@@ -52,8 +52,8 @@ public class Runtime {
         throws FileNotFoundException, CompilationError  {
 
         Iterator<Object> expressions =
-            new NewExpressionIterator
-            (new NewTokenIterator
+            new ExpressionIterator
+            (new TokenIterator
              (new FileLineIterator(f)));
 
         while (expressions.hasNext()) {

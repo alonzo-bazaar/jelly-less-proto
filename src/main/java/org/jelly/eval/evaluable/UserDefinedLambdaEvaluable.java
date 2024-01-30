@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jelly.eval.procedure.UserDefinedProcedure;
 import org.jelly.eval.runtime.Environment;
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispSymbol;
 
 public class UserDefinedLambdaEvaluable implements LambdaEvaluable {
     /* evaluating a lambda expression

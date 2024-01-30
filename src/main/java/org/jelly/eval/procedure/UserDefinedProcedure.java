@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jelly.eval.runtime.Environment;
 import org.jelly.eval.evaluable.SequenceEvaluable;
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispSymbol;
 
 public class UserDefinedProcedure implements Procedure {
     // TODO to be refined into a LambdaList class

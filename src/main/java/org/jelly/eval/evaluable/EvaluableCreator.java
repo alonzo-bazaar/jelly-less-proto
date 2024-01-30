@@ -2,12 +2,9 @@ package org.jelly.eval.evaluable;
 
 import java.util.List;
 
+import org.jelly.eval.ErrorFormatter;
 import org.jelly.eval.utils.Utils;
-import org.jelly.lang.*;
-import org.jelly.lang.Cons;
-import org.jelly.lang.Constants;
-import org.jelly.lang.LispList;
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.*;
 import org.jelly.lang.errors.SynthaxTreeParsingException;
 
 // non l'ho chiamato factory visto che non somiglia molto al pattern
@@ -53,82 +50,75 @@ public class EvaluableCreator {
                                               sequenceFromConsList((LispList)c.nthCdr(2)));
 
             case "do":
-                try {
-                if (c.nth(1) instanceof Cons doVars &&
-                    c.nth(2) instanceof Cons doStop &&
-                    c.nthCdr(3) instanceof LispList doBody) {
+               try {
+                   Cons doVars = LispLists.requireCons(c.nth(1));
+                   Cons doStop = LispLists.requireCons(c.nth(2));
+                   LispList doBody = LispLists.requireList(c.nthCdr(3));
 
-                    List<LispSymbol> names = Utils.toJavaList(doVars)
-                        .stream()
-                        .map(var -> (LispSymbol)(((Cons)var).nth(0)))
-                        .toList();
+                   List<LispSymbol> names = Utils.toStream(doVars)
+                       .map(var -> (LispSymbol)(((Cons)var).nth(0)))
+                       .toList();
 
-                    List<Evaluable> initForms = Utils.toJavaList(doVars)
-                        .stream()
-                        .map(var -> fromExpression(((Cons)var).nth(1)))
-                        .toList();
+                   List<Evaluable> initForms = Utils.toStream(doVars)
+                       .map(var -> fromExpression(((Cons)var).nth(1)))
+                       .toList();
 
-                    List<Evaluable> updateForms = Utils.toJavaList(doVars)
-                        .stream()
-                        .map(var -> fromExpression(((Cons)var).nth(2)))
-                        .toList();
+                   List<Evaluable> updateForms = Utils.toStream(doVars)
+                       .map(var -> fromExpression(((Cons)var).nth(2)))
+                       .toList();
 
-                    Evaluable stopCondition = fromExpression(doStop.nth(0));
-                    Evaluable returnOnStop = fromExpression(doStop.nth(1));
+                   Evaluable stopCondition = fromExpression(doStop.nth(0));
+                   Evaluable returnOnStop = fromExpression(doStop.nth(1));
 
-                    SequenceEvaluable body = sequenceFromConsList(doBody);
+                   SequenceEvaluable body = sequenceFromConsList(doBody);
 
-                    return new DoEvaluable(names, initForms, updateForms,
-                                           body,
-                                           stopCondition, returnOnStop);
-                }
-                else {
-                    throw new SynthaxTreeParsingException("do form is malformed");
-                }
-            } catch (ClassCastException cce) {
-                throw new SynthaxTreeParsingException
-                    ("do form is malformed " +
-                     "parts of some inner element have the wrong type, " +
-                     "most likely an error while writing the variable behaviour or the stop condition\n" +
-                     cce.getMessage());
-            }
-                
+                   return new DoEvaluable(names, initForms, updateForms,
+                                          body,
+                                          stopCondition, returnOnStop);
+               } catch (ClassCastException cce) {
+                    throw new SynthaxTreeParsingException
+                            ("do form is malformed, most likely some subform has incorrect nesting, check the parentheses, the error in most likely somewhere in the variable declarations or in the stop condition\n"
+                             + cce.getMessage());
+               }
             case "let":
-                if (c.nth(1) instanceof Cons frameDesc &&
-                    c.nthCdr(2) instanceof Cons letBody) {
-                    List<LispSymbol> names = Utils.toJavaList(frameDesc)
-                        .stream()
-                        .map(bind -> (LispSymbol)((Cons)bind).nth(0))
+                try {
+                    Cons frames = LispLists.requireCons(c.nth(1));
+                    LispList body = LispLists.requireList(c.nthCdr(2));
+                    List<LispSymbol> names = Utils.toStream(frames)
+                        .map(LispLists::requireCons)
+                        .map(bind -> (LispSymbol)bind.nth(0))
                         .toList();
-                    List<Evaluable> vals = Utils.toJavaList(frameDesc)
-                        .stream()
-                        .map(bind -> fromExpression(((Cons)bind).nth(1)))
+                    List<Evaluable> vals = Utils.toStream(frames)
+                        .map(LispLists::requireCons)
+                        .map(bind -> fromExpression(bind.nth(1)))
                         .toList();
-                    return new LetEvaluation(names,
-                                             vals,
-                                             sequenceFromConsList(letBody));
+                    return new LetEvaluation(names, vals, sequenceFromConsList(body));
                 }
-                else
-                    throw new SynthaxTreeParsingException("let form is malformed");
-
+                catch(ClassCastException cce) {
+                    throw new SynthaxTreeParsingException
+                            ("let form is malformed, likely some subform has incorrect nesting, check the parentheses\n"
+                            + cce.getMessage());
+                }
             case "lambda":
-                if (c.nth(1) instanceof LispList formalParameters &&
-                    c.nthCdr(2) instanceof Cons lambdaBody) {
-                    List<LispSymbol> paramsList = Utils.toJavaList(formalParameters)
-                        .stream()
+                try {
+                    LispList formalParameters = LispLists.requireList(c.nth(1));
+                    Cons body = LispLists.requireCons(c.nthCdr(2));
+                    List<LispSymbol> paramsList = Utils.toStream(formalParameters)
                         .map(a -> (LispSymbol)a)
                         .toList();
-                    SequenceEvaluable bodEval = sequenceFromConsList(lambdaBody);
+                    SequenceEvaluable bodEval = sequenceFromConsList(body);
                     return new UserDefinedLambdaEvaluable(paramsList, bodEval);
                 }
-                else
-                    throw new SynthaxTreeParsingException
-                        ("lambda expression is malformed");
+                catch(ClassCastException cce) {
+                    throw new SynthaxTreeParsingException("lambda expression is malformed\n");
+                }
 
             case "define":
+                // TODO qui piccolo problema con gli instanceof
                 if(c.nth(1) instanceof LispSymbol definedVarName)
                     return new DefinitionEvaluable(definedVarName,
                                                    fromExpression(c.nth(2)));
+
                 else if (c.nth(1) instanceof Cons funspec
                          && funspec.getCar() instanceof LispSymbol funName
                          && funspec.getCdr() instanceof LispList funParams
@@ -162,7 +152,6 @@ public class EvaluableCreator {
                 /* and e or sono short circuiting
                  * serve un trattamento particolare per permettere lo short circuit
                  * o si implementano con delle macro o va fatto questo
-                 * e non credo che jelly avrà mai delle macro :(
                  */
                 if (c.getCdr() instanceof LispList andll) {
                     return new AndEvaluable(toEvaluableList(andll));

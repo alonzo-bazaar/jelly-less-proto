@@ -6,7 +6,7 @@ import org.jelly.eval.runtime.Runtime;
 import org.jelly.eval.utils.ArgUtils;
 import org.junit.jupiter.api.Test;
 
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispSymbol;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

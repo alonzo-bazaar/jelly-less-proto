@@ -1,7 +1,7 @@
 package org.jelly.eval.evaluable;
 
 import org.jelly.eval.runtime.Environment;
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispSymbol;
 
 public class LookupEvaluable implements Evaluable {
     private LispSymbol sym;

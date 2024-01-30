@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jelly.eval.ErrorFormatter;
 import org.jelly.eval.runtime.errors.VariableDoesNotExistException;
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispSymbol;
 
 public class Environment {
     // definizione abbastanza poco implicita come lista concatenata

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.jelly.eval.runtime.Environment;
 import org.jelly.eval.utils.Utils;
-import org.jelly.lang.Constants;
+import org.jelly.lang.data.Constants;
 
 public class AndEvaluable implements Evaluable {
     private List<Evaluable> elements;

@@ -6,9 +6,9 @@ import java.util.stream.Stream;
 
 import org.jelly.utils.Pair;
 
-import org.jelly.lang.Cons;
-import org.jelly.lang.Constants;
-import org.jelly.lang.LispList;
+import org.jelly.lang.data.Cons;
+import org.jelly.lang.data.Constants;
+import org.jelly.lang.data.LispList;
 
 public class Utils {
     public static Pair<LispList, Object> splitLast(Cons c) {

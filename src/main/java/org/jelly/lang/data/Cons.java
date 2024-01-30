@@ -1,4 +1,4 @@
-package org.jelly.lang;
+package org.jelly.lang.data;
 
 import java.security.InvalidParameterException;
 

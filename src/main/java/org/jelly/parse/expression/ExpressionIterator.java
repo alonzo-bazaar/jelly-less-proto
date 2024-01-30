@@ -1,23 +1,21 @@
 package org.jelly.parse.expression;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Stack;
 
-import org.jelly.lang.Constants;
-import org.jelly.lang.LispSymbol;
-import org.jelly.lang.ListBuilder;
+import org.jelly.lang.data.Constants;
+import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.ListBuilder;
 
-import org.jelly.parse.errors.TokensExhaustedException;
 import org.jelly.parse.errors.UnbalancedParenthesesException;
 import org.jelly.parse.token.*;
 
 
-public class NewExpressionIterator implements Iterator<Object> {
+public class ExpressionIterator implements Iterator<Object> {
     private final Iterator<Token> tokens;
     private final Stack<ListBuilder> stack = new Stack<>();
 
-    public NewExpressionIterator(Iterator<Token> tokens) {
+    public ExpressionIterator(Iterator<Token> tokens) {
         this.tokens = tokens;
     }
 

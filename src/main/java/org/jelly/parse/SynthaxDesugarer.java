@@ -1,6 +1,6 @@
 package org.jelly.parse;
 
-import org.jelly.lang.LispList;
+import org.jelly.lang.data.LispList;
 
 public class SynthaxDesugarer {
     public LispList desugar(LispList sugared) {

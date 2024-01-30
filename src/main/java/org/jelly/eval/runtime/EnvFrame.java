@@ -1,6 +1,6 @@
 package org.jelly.eval.runtime;
 
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispSymbol;
 
 import java.util.HashMap;
 import java.util.List;

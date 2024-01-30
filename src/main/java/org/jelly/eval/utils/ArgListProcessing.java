@@ -2,8 +2,8 @@ package org.jelly.eval.utils;
 
 import java.util.List;
 
-import org.jelly.lang.LispList;
-import org.jelly.lang.Cons;
+import org.jelly.lang.data.LispList;
+import org.jelly.lang.data.Cons;
 
 public class ArgListProcessing {
     public static Object car(List<Object> args) {

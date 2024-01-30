@@ -2,7 +2,7 @@ package org.jelly.eval.evaluable;
 
 import org.jelly.eval.runtime.Environment;
 import org.jelly.eval.utils.Utils;
-import org.jelly.lang.Constants;
+import org.jelly.lang.data.Constants;
 
 public class WhileLoopEvaluable implements Evaluable {
     private Evaluable cond;

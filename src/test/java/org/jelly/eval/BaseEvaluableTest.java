@@ -4,12 +4,8 @@ import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.evaluable.EvaluableCreator;
 import org.jelly.eval.runtime.Environment;
 import org.jelly.eval.runtime.Runtime;
-import org.jelly.parse.expression.NewExpressionIterator;
+import org.jelly.parse.expression.ExpressionIterator;
 import org.jelly.utils.DebuggingUtils;
-import org.junit.jupiter.api.Test;
-
-import org.jelly.eval.errors.IncorrectArgumentListException;
-import org.jelly.eval.errors.IncorrectTypeException;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,7 +20,7 @@ public class BaseEvaluableTest {
     protected Environment env = new Environment();
 
     protected Evaluable fromString(String s) throws ParsingException {
-        NewExpressionIterator ei = DebuggingUtils.expressionsFromStrings(s);
+        ExpressionIterator ei = DebuggingUtils.expressionsFromStrings(s);
         Object le = ei.next();
         return EvaluableCreator.fromExpression(le);
     }

@@ -1,0 +1,12 @@
+queste idee dovrebbero essere PICCOLE
+
+* Funzioni
+ - contract :: un qualche meccanismo per controllare che i membri passati siano correti
+   - come generalizzare?
+   - come inizializzare?
+   - come non rendere una rottura di cazzo nel creare funzioni builtin?
+     - o funzioni per jelly definite in codice java?
+
+* Struct
+[[https://docs.racket-lang.org/reference/define-struct.html][fotti sti struct]]       
+

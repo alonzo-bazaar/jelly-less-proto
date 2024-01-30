@@ -1,7 +1,7 @@
 package org.jelly.utils;
 
-import org.jelly.parse.expression.NewExpressionIterator;
-import org.jelly.parse.token.NewTokenIterator;
+import org.jelly.parse.expression.ExpressionIterator;
+import org.jelly.parse.token.TokenIterator;
 
 /**
  * utilities used in debug and test code
@@ -40,11 +40,11 @@ public class DebuggingUtils {
         };
     }
 
-    public static NewTokenIterator tokensFromStrings(String... lines) {
-        return new NewTokenIterator(new StringArrIterator(lines));
+    public static TokenIterator tokensFromStrings(String... lines) {
+        return new TokenIterator(new StringArrIterator(lines));
     }
 
-    public static NewExpressionIterator expressionsFromStrings(String... lines) {
-        return new NewExpressionIterator(tokensFromStrings(lines));
+    public static ExpressionIterator expressionsFromStrings(String... lines) {
+        return new ExpressionIterator(tokensFromStrings(lines));
     }
 }

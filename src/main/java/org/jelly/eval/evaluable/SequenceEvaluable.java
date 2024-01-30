@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.jelly.eval.runtime.Environment;
-import org.jelly.lang.Constants;
+import org.jelly.lang.data.Constants;
 
 public class SequenceEvaluable implements Evaluable {
     // last is treated differently since evaluation of a sequence returns the value

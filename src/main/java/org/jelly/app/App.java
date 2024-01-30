@@ -7,8 +7,8 @@ import java.util.Iterator;
 
 import org.jelly.eval.runtime.Runtime;
 import org.jelly.lang.errors.ParsingException;
-import org.jelly.parse.expression.NewExpressionIterator;
-import org.jelly.parse.token.NewTokenIterator;
+import org.jelly.parse.expression.ExpressionIterator;
+import org.jelly.parse.token.TokenIterator;
 import org.jelly.parse.token.Token;
 
 /**
@@ -81,8 +81,8 @@ public class App
     public static void repl() {
         Scanner scan = new Scanner(System.in);
         Iterator<String> lines = new InputLinesIterator();
-        Iterator<Token> tokens = new NewTokenIterator(lines);
-        Iterator<Object> expressions = new NewExpressionIterator(tokens);
+        Iterator<Token> tokens = new TokenIterator(lines);
+        Iterator<Object> expressions = new ExpressionIterator(tokens);
 
         while (true) {
             try {

@@ -18,7 +18,7 @@ import java.util.HashMap;
  * (tryCallStatic class method . args)
  *
  * POTENTIAL TODO
- * generics might fuck with jelly's interface to the java typesystem
+ * generics might fuck with jelly's (inexistant) interface to the java typesystem
  * replace result<T,E> with result { Object res; Throwable caught; } if all goes shitface
  */
 

@@ -1,20 +1,20 @@
 package org.jelly.utils;
 
-import org.jelly.parse.expression.NewExpressionIterator;
-import org.jelly.parse.token.NewTokenIterator;
+import org.jelly.parse.expression.ExpressionIterator;
+import org.jelly.parse.token.TokenIterator;
 
 public class DebuggingUtils {
 
-    public static NewTokenIterator tokensFromStringArr(String[] ss) {
-        return new NewTokenIterator(new StringArrIterator(ss));
+    public static TokenIterator tokensFromStringArr(String[] ss) {
+        return new TokenIterator(new StringArrIterator(ss));
     }
-    public static NewTokenIterator tokensFromStrings(String... args) {
+    public static TokenIterator tokensFromStrings(String... args) {
         return tokensFromStringArr(args);
     }
-    public static NewExpressionIterator expressionsFromStringArr(String[] ss) {
-        return new NewExpressionIterator(tokensFromStringArr(ss));
+    public static ExpressionIterator expressionsFromStringArr(String[] ss) {
+        return new ExpressionIterator(tokensFromStringArr(ss));
     }
-    public static NewExpressionIterator expressionsFromStrings(String... args) {
+    public static ExpressionIterator expressionsFromStrings(String... args) {
         return expressionsFromStringArr(args);
     }
 

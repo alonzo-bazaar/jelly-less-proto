@@ -11,8 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 
 import java.util.HashMap;
 
-import org.jelly.lang.LispSymbol;
-import org.jelly.lang.Constants;
+import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Constants;
 
 public class EnvironmentInitWithFramesTest {
     private Environment env;

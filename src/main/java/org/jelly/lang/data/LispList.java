@@ -1,4 +1,4 @@
-package org.jelly.lang;
+package org.jelly.lang.data;
 
 public interface LispList {
     public Object getCar();
@@ -7,7 +7,7 @@ public interface LispList {
     public int length();
 
     public Object nth(int n);
-    public Object nthCdr(int n);
+    public Object nthCdr(int n); // mi sa era meglio LispList
 
     public Object last();
 }

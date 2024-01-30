@@ -6,7 +6,7 @@ import org.jelly.eval.runtime.EnvFrame;
 import org.jelly.eval.runtime.Environment;
 import org.jelly.eval.runtime.errors.VariableDoesNotExistException;
 import org.jelly.eval.utils.Utils;
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispSymbol;
 
 public class DoEvaluable implements Evaluable {
     private List<LispSymbol> vars;

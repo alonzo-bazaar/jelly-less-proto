@@ -1,16 +1,9 @@
 package org.jelly.eval;
 
-import org.jelly.eval.evaluable.Evaluable;
-import org.jelly.eval.evaluable.EvaluableCreator;
-import org.jelly.eval.runtime.Environment;
-import org.jelly.eval.runtime.Runtime;
-import org.jelly.lang.LispList;
+import org.jelly.lang.data.LispList;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
 
 import org.jelly.lang.errors.ParsingException;
 

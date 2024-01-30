@@ -1,9 +1,9 @@
 package org.jelly.eval.evaluable;
 
 import org.jelly.eval.runtime.Environment;
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispSymbol;
 
-import static org.jelly.lang.Constants.NIL;
+import static org.jelly.lang.data.Constants.NIL;
 
 public class DefinitionEvaluable implements Evaluable {
     private final LispSymbol sym;

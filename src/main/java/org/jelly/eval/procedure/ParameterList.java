@@ -6,8 +6,8 @@ import java.util.List;
 import org.jelly.eval.runtime.EnvFrame;
 import org.jelly.eval.utils.ArgUtils;
 import org.jelly.eval.utils.Utils;
-import org.jelly.lang.LispList;
-import org.jelly.lang.LispSymbol;
+import org.jelly.lang.data.LispList;
+import org.jelly.lang.data.LispSymbol;
 import org.jelly.lang.errors.SynthaxTreeParsingException;
 
 public class ParameterList {
