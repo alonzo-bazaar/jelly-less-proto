@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.evaluable.EvaluableCreator;
+import org.jelly.eval.evaluable.formbuild.MalformedFormException;
 import org.jelly.eval.procedure.Procedure;
 import org.jelly.eval.utils.ArgArith;
 import org.jelly.eval.utils.ArgListProcessing;
@@ -30,7 +31,7 @@ public class Runtime {
      */
     private final Environment env = buildInitialEnvironment();
 
-    public Object evalString(String s) throws CompilationError {
+    public Object evalString(String s) throws CompilationError, MalformedFormException {
         Iterator<Object> ei = DebuggingUtils.expressionsFromStrings(s);
         while (ei.hasNext()) {
             Object le = ei.next();
@@ -43,13 +44,13 @@ public class Runtime {
         return null;
     }
 
-    public Object evalExpr(Object le) throws CompilationError {
+    public Object evalExpr(Object le) throws CompilationError, MalformedFormException {
         Evaluable ev = EvaluableCreator.fromExpression(le);
         return ev.eval(env);
     }
 
     public Object evalFile(File f)
-        throws FileNotFoundException, CompilationError  {
+        throws FileNotFoundException, CompilationError, MalformedFormException  {
 
         Iterator<Object> expressions =
             new ExpressionIterator

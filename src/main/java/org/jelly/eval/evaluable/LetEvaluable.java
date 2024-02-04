@@ -6,14 +6,14 @@ import org.jelly.eval.runtime.EnvFrame;
 import org.jelly.eval.runtime.Environment;
 import org.jelly.lang.data.LispSymbol;
 
-public class LetEvaluation implements Evaluable {
+public class LetEvaluable implements Evaluable {
     private List<LispSymbol> names;
     private List<Evaluable> uncomputed_vals;
     private SequenceEvaluable body;
 
-    public LetEvaluation(List<LispSymbol> names,
-                         List<Evaluable> evals,
-                         SequenceEvaluable body) {
+    public LetEvaluable(List<LispSymbol> names,
+                        List<Evaluable> evals,
+                        SequenceEvaluable body) {
         this.names = names;
         this.uncomputed_vals = evals;
         this.body = body;

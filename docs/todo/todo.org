@@ -2,8 +2,8 @@
  - [X] crea una classe a parte per le util di sistema operativo
  - [X] ripulisci le condizioni di arresto dell'estrazione di tokenizer
  - [ ] crea(e inserisci nella struttura del codice) una classe per la lambda list
- - [ ] crea(e inserisci nella struttura del codice) una classe per i token
- - [ ] ristruttura la pipeline di parsing per permettere un'interazione più naturale con un repl
+ - [X] crea(e inserisci nella struttura del codice) una classe per i token
+ - [X] ristruttura la pipeline di parsing per permettere un'interazione più naturale con un repl
  - [X] disaccoppia la lista di nomi builtin con i nomi delle funzioni builtin considerate (vale a dire, toglila)
 
 ** TODO 100% test coverage
