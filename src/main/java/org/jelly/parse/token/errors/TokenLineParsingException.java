@@ -1,18 +1,36 @@
 package org.jelly.parse.token.errors;
 
-public class TokenLineParsingException extends Exception {
-    private int columnNumber = TokenParsingException.noCol;
+import org.jelly.lang.errors.CompilationError;
+import org.jelly.lang.errors.TokenParsingException;
 
+public class TokenLineParsingException extends RuntimeException {
+
+    private static final int unassigned = -1;
+    private int column = unassigned;
+    private int rowOffset = unassigned;
     public TokenLineParsingException(String s) {
         super(s);
     }
 
-    public TokenLineParsingException(String s, int col) {
-        super(s);
-        this.columnNumber = col;
+    public TokenLineParsingException(String s, Throwable t) {
+        super(s, t);
     }
 
-    public int getColumnNumber() {
-        return columnNumber;
+    public TokenLineParsingException setColumn(int c) {
+        this.column = c;
+        return this;
+    }
+
+    public TokenLineParsingException setRowOffset(int off) {
+        this.rowOffset = off;
+        return this;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public int getRowOffset() {
+        return rowOffset;
     }
 }

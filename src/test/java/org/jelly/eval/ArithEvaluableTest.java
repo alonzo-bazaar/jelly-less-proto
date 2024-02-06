@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.jelly.lang.errors.ParsingException;
+import org.jelly.parse.errors.ParsingException;
 
 
 public class ArithEvaluableTest extends BaseEvaluableTest {

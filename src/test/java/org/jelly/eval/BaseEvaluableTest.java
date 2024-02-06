@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
-import org.jelly.lang.errors.ParsingException;
+import org.jelly.parse.errors.ParsingException;
 
 public class BaseEvaluableTest {
     protected Environment env = new Environment();

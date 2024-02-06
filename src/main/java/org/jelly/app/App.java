@@ -6,7 +6,7 @@ import java.util.Scanner;
 import java.util.Iterator;
 
 import org.jelly.eval.runtime.Runtime;
-import org.jelly.lang.errors.ParsingException;
+import org.jelly.parse.errors.ParsingException;
 import org.jelly.parse.expression.ExpressionIterator;
 import org.jelly.parse.token.TokenIterator;
 import org.jelly.parse.token.Token;

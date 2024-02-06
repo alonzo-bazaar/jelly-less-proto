@@ -1,6 +1,6 @@
 package org.jelly.eval;
 
-import org.jelly.lang.errors.ParsingException;
+import org.jelly.parse.errors.ParsingException;
 
 import org.junit.jupiter.api.Test;
 

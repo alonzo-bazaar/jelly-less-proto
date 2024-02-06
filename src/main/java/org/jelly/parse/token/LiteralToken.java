@@ -12,6 +12,6 @@ public final class LiteralToken<T> extends Token {
 
     @Override
     public String toString() {
-        return "LitearalToken<" + obj.getClass().getCanonicalName() +">(" + obj + ")";
+        return "LiteralToken<" + obj.getClass().getCanonicalName() +">(" + obj + ")";
     }
 }

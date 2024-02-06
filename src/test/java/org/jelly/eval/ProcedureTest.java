@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.jelly.lang.errors.ParsingException;
+import org.jelly.parse.errors.ParsingException;
 
 public class ProcedureTest extends BaseEvaluableTest {
     @Test

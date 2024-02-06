@@ -8,7 +8,7 @@ import org.jelly.eval.utils.ArgUtils;
 import org.jelly.eval.utils.Utils;
 import org.jelly.lang.data.LispList;
 import org.jelly.lang.data.LispSymbol;
-import org.jelly.lang.errors.SynthaxTreeParsingException;
+import org.jelly.parse.errors.SynthaxTreeParsingException;
 
 public class ParameterList {
     private List<LispSymbol> positional;

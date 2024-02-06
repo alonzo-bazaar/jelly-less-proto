@@ -7,12 +7,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * shitty class I'm making just to jave something to replace TokenIterator with, someday
- * the code is currently a fucking assfest
- * please rework into something like
- * String s = currentLine(); buffer = tokenizeRow(s, eventualOtherLines); // eventualOtherLines for multiline strings or comments
- */
 public class TokenIterator implements Iterator<Token> {
     private Iterator<String> sourceLines;
     // private final Queue<Token> precomputed = new LinkedList<Token>();
@@ -22,7 +16,6 @@ public class TokenIterator implements Iterator<Token> {
 
     private List<Token> buffer = new ArrayList<>(0);
 
-    // should be sorted from longest to shortest for implementation reasons
     public TokenIterator(Iterator<String> lines) {
         this.sourceLines = lines;
         currentLine = lines.next();
@@ -72,7 +65,7 @@ public class TokenIterator implements Iterator<Token> {
             }
         }
         catch(TokenLineParsingException lineEx) {
-            throw new TokenParsingException(lineEx.getMessage(), lineNumber, lineEx.getColumnNumber(), TokenParsingException.noFile);
+            throw new TokenParsingException(lineEx.getMessage()).setRow(lineNumber).setColumn(lineEx.getColumn());
         }
     }
 

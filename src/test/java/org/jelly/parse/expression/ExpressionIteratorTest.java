@@ -3,7 +3,7 @@ package org.jelly.parse.expression;
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.Constants;
 import org.jelly.lang.data.LispSymbol;
-import org.jelly.lang.errors.ParsingException;
+import org.jelly.parse.errors.ParsingException;
 import org.jelly.parse.errors.UnbalancedParenthesesException;
 import org.jelly.utils.DebuggingUtils;
 import org.junit.jupiter.api.Test;

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-import org.jelly.lang.errors.ParsingException;
+import org.jelly.parse.errors.ParsingException;
 
 public class EvaluableCreatorTest extends BaseEvaluableTest {
     @Test

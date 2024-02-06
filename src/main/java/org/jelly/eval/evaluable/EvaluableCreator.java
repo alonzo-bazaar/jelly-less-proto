@@ -2,12 +2,11 @@ package org.jelly.eval.evaluable;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.jelly.eval.evaluable.formbuild.MalformedFormException;
 import org.jelly.eval.utils.Utils;
 import org.jelly.lang.data.*;
-import org.jelly.lang.errors.SynthaxTreeParsingException;
+import org.jelly.parse.errors.SynthaxTreeParsingException;
 import org.jetbrains.annotations.NotNull;
 
 // non l'ho chiamato factory visto che non somiglia molto al pattern
@@ -25,7 +24,7 @@ public class EvaluableCreator {
             // malformed form exception STAYS IN THE PARSER
             // no checked exceptions from internal code go outside
             // NO EXCEPTIONS
-            throw new SynthaxTreeParsingException(mfe.getMessage());
+            throw new SynthaxTreeParsingException(mfe.getMessage(), mfe);
         }
     }
 
@@ -109,21 +108,23 @@ public class EvaluableCreator {
             switch(ls.getName()) {
                 case "quote" -> {return;} // quoted expressions just contain data, no syntax checking needed
                 case "if" -> ensureIfForm(c);
-                case "let" -> ensureIfForm(c);
-                case "lambda" -> ensureIfForm(c);
-                case "do" -> ensureIfForm(c);
-                case "while" -> ensureIfForm(c);
-                case "set" -> ensureIfForm(c);
-                case "define" -> ensureIfForm(c);
-                case "and" -> ensureIfForm(c);
-                case "or" -> ensureIfForm(c);
+                case "when" -> ensureWhenForm(c);
+                case "unless" -> ensureUnlessForm(c);
+                case "let" -> ensureLetForm(c);
+                // case "lambda" -> ensureIfForm(c);
+                case "do" -> ensureDoForm(c);
+                case "while" -> ensureWhileForm(c);
+                // case "set" -> ensureIfForm(c);
+                // case "define" -> ensureIfForm(c);
+                // case "and" -> ensureIfForm(c);
+                // case "or" -> ensureIfForm(c);
             }
         }
         else {
             /* data lists will be skipped, as everything you find in a quoted form is just going to be data,
              * no point checking for valid code, since it's not code
              */
-            throw new MalformedFormException("code list starts with " + c.getCar() + ", not a symbol, can be neither special form nor function call");
+            throw new MalformedFormException("code list starts with " + c.getCar() + ", which is not a symbol, the list can thus be neither a special form nor a function call");
         }
     }
 
@@ -242,18 +243,13 @@ public class EvaluableCreator {
     }
 
     @NotNull
-    private static DoEvaluable doFromCons(Cons c) {
-        try {
-            return _doFromCons(c);
-        } catch (ClassCastException cce) {
-            throw new SynthaxTreeParsingException
-                    ("do form is malformed, most likely some subform has incorrect nesting, check the parentheses, the error in most likely somewhere in the variable declarations or in the stop condition\n"
-                            + cce.getMessage());
-        }
+    private static DoEvaluable doFromCons(Cons c) throws MalformedFormException {
+        ensureDoForm(c);
+        return doFromEnsuredCons(c);
     }
 
     @NotNull
-    private static DoEvaluable _doFromCons(Cons c) {
+    private static DoEvaluable doFromEnsuredCons(Cons c) {
         Cons doVars = LispLists.requireCons(c.nth(1));
         Cons doStop = LispLists.requireCons(c.nth(2));
         LispList doBody = LispLists.requireList(c.nthCdr(3));
@@ -289,14 +285,9 @@ public class EvaluableCreator {
         }
 
         try {
-            // vars
-            ensureDoVariables(LispLists.requireList(c.nth(1)));
-
-            // stop
-            ensureDoStop(LispLists.requireList(c.nth(2)));
-
-            // body
-            List<Object> l = Utils.toJavaList(LispLists.requireList(c.nthCdr(3)));
+            ensureDoVariables(LispLists.requireList(c.nth(1))); // vars
+            ensureDoStop(LispLists.requireList(c.nth(2))); // stop
+            List<Object> l = Utils.toJavaList(LispLists.requireList(c.nthCdr(3))); // body
             for(Object o : l) {
                 ensureForm(o);
             }
@@ -314,7 +305,7 @@ public class EvaluableCreator {
             if(var.size() != 3)
                 throw new MalformedFormException("do variable must have exactly 3 elements, (<name> <init-form> <update-form>)");
             if(!(var.getFirst() instanceof LispSymbol))
-                throw new MalformedFormException("do variable binding must starts with symbol, " + var.get(0) + " is not a valid variable name");
+                throw new MalformedFormException("do variable binding must starts valid variable name (with a symbol), " + var.get(0) + " is not a valid variable name");
             ensureForm(var.get(1));
             ensureForm(var.get(2));
         }
@@ -322,19 +313,41 @@ public class EvaluableCreator {
 
     private static void ensureDoStop(LispList ll) throws MalformedFormException {
         if(ll.length() > 2) {
-            throw new MalformedFormException("do stop must have less than three elements ([<stop-condition> [<stop-return]])");
+            throw new MalformedFormException("do stop must have at most elements ([<stop-condition> [<stop-return>]])");
         }
     }
 
     @NotNull
-    private static LetEvaluable letFromCons(Cons c) {
+    private static LetEvaluable letFromCons(Cons c) throws MalformedFormException {
+        ensureLetForm(c);
+        return _letFromCons(c);
+    }
+
+    private static void ensureLetForm(Cons c) throws MalformedFormException {
+        if(!startsWithSym(c, "let"))
+            throw new RuntimeException("let let let");
         try {
-            return _letFromCons(c);
+            ensureLetBindings(LispLists.requireList(c.nth(1))); // bindings
+            List<Object> l = Utils.toJavaList(LispLists.requireList(c.nthCdr(2))); // body
+            for (Object o : l) {
+                ensureForm(o);
+            }
+        } catch(ClassCastException cce) {
+            throw new MalformedFormException("let form is malformed because child element has the wrong type, likely some subform has incorrect nesting, check the parentheses", cce);
+        } catch(MalformedFormException mfe) {
+            throw new MalformedFormException("let form is malformed because child is malformed ", mfe);
         }
-        catch(ClassCastException cce) {
-            throw new SynthaxTreeParsingException
-                    ("let form is malformed, likely some subform has incorrect nesting, check the parentheses\n"
-                    + cce.getMessage());
+    }
+
+    private static void ensureLetBindings(LispList ll) throws MalformedFormException {
+        List<Object> binds = Utils.toJavaList(ll);
+        for(Object bind : binds) {
+            Cons c = LispLists.requireCons(bind);
+            if(c.length() != 2)
+                throw new MalformedFormException("let variable binding must have exactly two elements (<var-name> <var-value>)");
+            if(!(c.getCar() instanceof LispSymbol))
+                throw new MalformedFormException("let variable binding must starts valid variable name (with a symbol), " + c.getCar() + " is not a valid variable name");
+            ensureForm(c.nth(1));
         }
     }
 

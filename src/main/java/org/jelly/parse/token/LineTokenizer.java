@@ -91,7 +91,7 @@ public class LineTokenizer {
 
     private void assertCurrentChar(char c, String error) throws TokenLineParsingException {
         if(currentLine.charAt(currentIndex) != c) {
-            throw new TokenLineParsingException(error, currentIndex);
+            throw new TokenLineParsingException(error).setColumn(currentIndex);
         }
     }
 
@@ -182,12 +182,12 @@ public class LineTokenizer {
     private void skipMultilineComment() throws TokenLineParsingException {
         while(!startsWithPrefix("|#")) {
             if(!advanceCheckExhaustion(1)) {
-                throw new TokenLineParsingException("multiline comment not closed ", currentIndex);
+                throw new TokenLineParsingException("multiline comment not closed ").setColumn(currentIndex);
             }
         }
 
         if(!startsWithPrefix("|#")) {
-            throw new TokenLineParsingException("error skipping multiline comment ", currentIndex);
+            throw new TokenLineParsingException("error skipping multiline comment ").setColumn(currentIndex);
         }
         currentIndex += 2;
     }
@@ -216,7 +216,7 @@ public class LineTokenizer {
 
         String s = StringUtils.longestStartingPunctuation(currentLine, currentIndex);
         if(s == null) {
-            throw new TokenLineParsingException("cannot get punctuation prefix ", currentIndex);
+            throw new TokenLineParsingException("cannot get punctuation prefix ").setColumn(currentIndex);
         }
         currentIndex += s.length();
         return new PunctuationToken(s);
@@ -235,7 +235,7 @@ public class LineTokenizer {
             else {
                 lexBuild.append(escape);
                 if(!advanceCheckExhaustion(2)) {
-                    throw new TokenLineParsingException("error at an escaped character while reading string ", currentIndex);
+                    throw new TokenLineParsingException("error at an escaped character while reading string ").setColumn(currentIndex);
                     /* all string escape sequences so far ('\n', \t', '\\', and '\r') have length 2
                      * TODO rework code if you need to introduce new escape sequences that have different lengths
                      * TODO this exception is also susceptible to row number changes,
@@ -252,7 +252,7 @@ public class LineTokenizer {
             currentIndex++;
         }
         else
-            throw new TokenLineParsingException("error while finishing extraction of string literal, likely character to be exhaustion", currentIndex);
+            throw new TokenLineParsingException("error while finishing extraction of string literal, likely character to be exhaustion").setColumn(currentIndex);
 
         String lex = lexBuild.toString();
         return new LiteralToken<>(lex, lex.substring(1, lex.length()-1));
@@ -264,7 +264,7 @@ public class LineTokenizer {
         boolean wasLast = currentIndex == currentLine.length()-1;
         char c = currentLine.charAt(currentIndex);
         if(!advanceCheckExhaustion(1))
-            throw new TokenLineParsingException("string not closed ", currentIndex);
+            throw new TokenLineParsingException("string not closed ").setColumn(currentIndex);
         sb.append(c);
         if(wasLast)
             sb.append('\n');
