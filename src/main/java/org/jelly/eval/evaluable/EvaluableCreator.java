@@ -1,9 +1,8 @@
 package org.jelly.eval.evaluable;
 
-import java.util.Arrays;
 import java.util.List;
 
-import org.jelly.eval.evaluable.formbuild.MalformedFormException;
+import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.eval.utils.Utils;
 import org.jelly.lang.data.*;
 import org.jelly.parse.errors.SynthaxTreeParsingException;
@@ -16,9 +15,11 @@ public class EvaluableCreator {
         throws SynthaxTreeParsingException {
         try {
             if (le instanceof Cons c) {
-                return fromList(c);
+                checkCons(c);
+                return fromCheckedList(c);
             } else {
-                return fromAtom(le);
+                // all atoms are valid, no need to check atoms
+                return FormBuilding.fromAtom(le);
             }
         } catch(MalformedFormException mfe) {
             // malformed form exception STAYS IN THE PARSER
@@ -29,63 +30,39 @@ public class EvaluableCreator {
     }
 
     // crea i sotto-evaluable necessari e ci costruisce l'Evaluable mposto
-    public static Evaluable fromList(Cons c) throws SynthaxTreeParsingException, MalformedFormException {
+    public static Evaluable fromCheckedList(Cons c) throws SynthaxTreeParsingException, MalformedFormException {
         if (c.getCar() instanceof LispSymbol sym) {
             // is it a special form?
-            switch(sym.getName()) {
-            case "quote":
-                return new ConstantEvaluable(c.nth(1));
+            return switch(sym.getName()) {
+            case "quote" -> new ConstantEvaluable(c.nth(1));
+            case "if" -> IfForm.fromCheckedAST(c);
+            case "when" -> whenFromCons(c);
+            case "unless" -> unlessFromCons(c);
+            case "while" -> WhileForm.fromCheckedAST(c);
+            case "do" -> DoForm.fromCheckedAST(c);
+            case "let" -> LetForm.fromCheckedAST(c);
+            case "lambda" -> lambdaFromCons(c);
+            case "define" -> definitionFromCons(c);
+            case "set!" -> setFromCons(c);
+            case "begin" -> sequenceFromCons(c);
+            case "and" -> andFromCons(c);
+            case "or" -> orFromCons(c);
 
-            case "if":
-                return ifFromCons(c);
-                
-            case "when":
-                return whenFromCons(c);
-
-            case "unless":
-                return unlessFromCons(c);
-
-            case "while":
-                return whileFromCons(c);
-
-            case "do":
-                return doFromCons(c);
-
-            case "let":
-                return letFromCons(c);
-
-            case "lambda":
-                return lambdaFromCons(c);
-
-            case "define":
-                return definitionFromCons(c);
-
-            case "set!":
-                return setFromCons(c);
-
-            case "begin":
-                return sequenceFromCons(c);
-
-            case "and":
-                return andFromCons(c);
-
-            case "or":
-                return orFromCons(c);
-            }
+            /* altrimenti è una chiamata a funzione
+             * NOTA: qui fromExpression del car visto che il car potrebbe essere
+             * sia un simbolo (e quindi si cerca la funzione associata)
+             * (se si trova un simbolo fromExpression ritorna una LookupEvaluation)
+             * che una lambda (e quindi si chiama la funzione descritta)
+             * (se si trova una lambda fromExpression ritorna una lambdaEvaluation)
+             */
+            default -> new FuncallEvaluable(fromExpression(c.getCar()), Utils.toJavaList((LispList)c.getCdr()));
+            };
         }
-
-        // and if all else fails, it is a normal function call
-        return new FuncallEvaluable(fromExpression(c.getCar()),
-                                    Utils.toJavaList((LispList)c.getCdr()));
-        /* NOTA: qui fromExpression del car visto che il car potrebbe essere
-         * sia un simbolo (e quindi si cerca la funzione associata)
-         * (se si trova un simbolo fromExpression ritorna una LookupEvaluation)
-         * che una lambda (e quindi si chiama la funzione descritta)
-         * (se si trova una lambda fromExpression ritorna una lambdaEvaluation)
-         */
+        // stesso ragionamento del fromExpression car
+        return new FuncallEvaluable(fromExpression(c.getCar()), Utils.toJavaList((LispList)c.getCdr()));
     }
 
-    private static void ensureForm(Object o) throws MalformedFormException {
+    public static void ensureForm(Object o) throws MalformedFormException {
         switch(o) {
             // first of all ensure not null
             case null -> throw new MalformedFormException("null form");
@@ -96,371 +73,239 @@ public class EvaluableCreator {
                     throw new MalformedFormException("no nil value except for NIL can be used");
                 // else ok
             }
-            case Cons c -> ensureCons(c);
+            case Cons c -> checkCons(c);
 
             // if not null or list it's a non null atom, we're ok with all non null atoms
             default -> {return;}
         }
     }
 
-    private static void ensureCons(Cons c) throws MalformedFormException {
+    public static void checkCons(Cons c) throws MalformedFormException {
         if(c.getCar() instanceof LispSymbol ls) {
             switch(ls.getName()) {
                 case "quote" -> {return;} // quoted expressions just contain data, no syntax checking needed
-                case "if" -> ensureIfForm(c);
+                case "if" -> IfForm.checkAST(c);
                 case "when" -> ensureWhenForm(c);
                 case "unless" -> ensureUnlessForm(c);
-                case "let" -> ensureLetForm(c);
-                // case "lambda" -> ensureIfForm(c);
-                case "do" -> ensureDoForm(c);
-                case "while" -> ensureWhileForm(c);
-                // case "set" -> ensureIfForm(c);
-                // case "define" -> ensureIfForm(c);
-                // case "and" -> ensureIfForm(c);
-                // case "or" -> ensureIfForm(c);
+                case "let" -> LetForm.checkAST(c);
+                case "lambda" -> ensureLambdaForm(c);
+                case "do" -> DoForm.checkAST(c);
+                case "while" -> WhileForm.checkAST(c);
+                case "set" -> ensureSetForm(c);
+                case "define" -> ensureDefinitionForm(c);
+                case "and" -> ensureAndForm(c);
+                case "or" -> ensureOrForm(c);
             }
         }
-        else {
-            /* data lists will be skipped, as everything you find in a quoted form is just going to be data,
-             * no point checking for valid code, since it's not code
-             */
-            throw new MalformedFormException("code list starts with " + c.getCar() + ", which is not a symbol, the list can thus be neither a special form nor a function call");
-        }
-    }
-
-    private static String renderFormPrototype(String formName, String[] childrenNames) {
-        StringBuilder formPrototypeBuilder = new StringBuilder();
-        formPrototypeBuilder.append("(").append(formName);
-        Arrays.stream(childrenNames).forEach(a -> formPrototypeBuilder.append(" <").append(a).append(">"));
-        return formPrototypeBuilder.append(")").toString();
-    }
-
-    private static void verifyFlatFixed(Cons form, String formName, String[] childrenNames) throws MalformedFormException {
-        /*
-         * encapsulates some repeated behaviour in validating certain "flat" forms
-         *
-         * this function works under the following assumptions
-         * 1. the form has a fixed amount of children as dictated by the syntax
-         * 2. the syntax only dictates the validity of the immediate children of the form, that is
-         * it only cares about the fact that every element of the list starting with if, when, unless, &Co. are correct
-         * this does not work for things like let, do, or lambda, as those demand the parameters to fit in a certain
-         * nested structure, not in a plain "all children are good" structure
-         *
-         * these assumptions are common enough that it made sense to write this function
+        /* "if a code list, it's not a lambda application, and it doesn't start with a symbol then it's incorrect"
+         * says the man who completely forgot you can return functions from this shit
+         * also all function calls are grammatically correct, incorrect parameter lists are checked at runtime because
+         * the functions are created at runtime (this interpreter has great static checking btw)
          */
-        if(! startsWithSym(form, formName)) {
-            throw new RuntimeException("expected form to start with " + formName + " symbol, but it starts with " + form.getCar());
-        }
-        if(form.length() != (childrenNames.length + 1)) {
-            String formPrototype = renderFormPrototype(formName, childrenNames);
-            throw new MalformedFormException("form must have exactly " + childrenNames.length + " children in the form " + formPrototype);
-        }
-        for(int i = 1; i<form.length(); ++i) {
-            try {
-                ensureForm(form.nth(i));
-            } catch(MalformedFormException mfe) {
-                throw new MalformedFormException(formName + " form is malformed because " + childrenNames[i-1] + " is malformed");
-            }
-        }
     }
 
-    private static boolean startsWithSym(LispList ll, String s) {
-        return ((LispSymbol)ll.getCar()).getName().equals(s);
-    }
-
+    // poi unlessForm extends IfForm e WhenForm extends IfForm
     @NotNull
-    private static IfEvaluable ifFromCons(Cons c) throws MalformedFormException {
-        ensureIfForm(c);
-        return ifFromEnsuredCons(c);
-    }
-
-    private static void ensureIfForm(Cons c) throws MalformedFormException {
-        verifyFlatFixed(c, "if", new String[]{"condition", "consequent", "alternative"});
-    }
-
-    private static IfEvaluable ifFromEnsuredCons(Cons c) {
-        return new IfEvaluable(fromExpression(c.nth(1)), fromExpression(c.nth(2)), fromExpression(c.nth(3)));
-    }
-
-    @NotNull
-    private static IfEvaluable unlessFromCons(Cons c) throws MalformedFormException {
+    private static IfForm unlessFromCons(Cons c) throws MalformedFormException {
         ensureUnlessForm(c);
         return unlessFromEnsuredCons(c);
     }
 
     private static void ensureUnlessForm(Cons c) throws MalformedFormException {
-        verifyFlatFixed(c, "unless", new String[]{"condition", "alternative"});
+        FormBuilding.verifyFlatFixed(c, "unless", new String[]{"condition", "alternative"});
     }
 
-    public static IfEvaluable unlessFromEnsuredCons(Cons c) {
-        return new IfEvaluable(fromExpression(c.nth(1)),
+    public static IfForm unlessFromEnsuredCons(Cons c) {
+        return new IfForm(fromExpression(c.nth(1)),
                                new ConstantEvaluable(Constants.FALSE),
                                fromExpression(c.nth(2)));
     }
 
     @NotNull
-    private static IfEvaluable whenFromCons(Cons c) throws MalformedFormException {
+    private static IfForm whenFromCons(Cons c) throws MalformedFormException {
         ensureWhenForm(c);
         return whenFromEnsuredCons(c);
     }
 
     private static void ensureWhenForm(Cons c) throws MalformedFormException {
-        verifyFlatFixed(c, "when", new String[]{"condition", "consequent"});
+        FormBuilding.verifyFlatFixed(c, "when", new String[]{"condition", "consequent"});
     }
 
-    public static IfEvaluable whenFromEnsuredCons(Cons c) {
-        return new IfEvaluable(fromExpression(c.nth(1)),
+    public static IfForm whenFromEnsuredCons(Cons c) {
+        return new IfForm(fromExpression(c.nth(1)),
                                fromExpression(c.nth(2)),
                                new ConstantEvaluable(Constants.FALSE));
     }
 
     @NotNull
-    private static WhileLoopEvaluable whileFromCons(Cons c) throws MalformedFormException {
-        ensureWhileForm(c);
-        return whileFromEnsuredCons(c);
+    private static UserDefinedLambdaEvaluable lambdaFromCons(Cons c) throws MalformedFormException {
+        ensureLambdaForm(c);
+        return lambdaFromEnsuredCons(c);
     }
 
-    private static void ensureWhileForm(Cons c) throws MalformedFormException {
-        if(!startsWithSym(c, "while"))
-            throw new RuntimeException("expected form to start with while symbol, but it starts with " + c.getCar());
+    private static void ensureLambdaForm(Cons c) throws MalformedFormException {
+        if(!FormBuilding.startsWithSym(c,"lambda"))
+            throw new RuntimeException("lambda lambda lambda sosteneva tesi e illusioni");
         if(c.length() < 2)
-            throw new MalformedFormException("while form expected to have exactly at least two members (while <condition> <sequence-element>*");
+            throw new MalformedFormException("lambda form must have at least a parameter list");
         try {
-            LispList ll = LispLists.requireList(c.getCdr());
-            for(Object o : Utils.toJavaList(ll)) {
-                ensureForm(o);
-            }
-        } catch(ClassCastException cce) {
-            throw new MalformedFormException("while body is not a list, cannot turn into sequence", cce);
+            ensureLambdaList(LispLists.requireList(c.nth(1)));
+            FormBuilding.ensureSequenceList(LispLists.requireList(c.nthCdr(2)));
         } catch(MalformedFormException mfe) {
-            throw new MalformedFormException("while form is malformed because body element is malformed", mfe);
-        }
-    }
-
-    private static WhileLoopEvaluable whileFromEnsuredCons(Cons c) {
-        return new WhileLoopEvaluable(fromExpression(c.nth(1)),
-                   sequenceFromConsList((LispList) c.nthCdr(2)));
-    }
-
-    @NotNull
-    private static DoEvaluable doFromCons(Cons c) throws MalformedFormException {
-        ensureDoForm(c);
-        return doFromEnsuredCons(c);
-    }
-
-    @NotNull
-    private static DoEvaluable doFromEnsuredCons(Cons c) {
-        Cons doVars = LispLists.requireCons(c.nth(1));
-        Cons doStop = LispLists.requireCons(c.nth(2));
-        LispList doBody = LispLists.requireList(c.nthCdr(3));
-
-        List<LispSymbol> names = Utils.toStream(doVars)
-                .map(var -> (LispSymbol)(((Cons)var).nth(0)))
-                .toList();
-
-        List<Evaluable> initForms = Utils.toStream(doVars)
-                .map(var -> fromExpression(((Cons)var).nth(1)))
-                .toList();
-
-        List<Evaluable> updateForms = Utils.toStream(doVars)
-                .map(var -> fromExpression(((Cons)var).nth(2)))
-                .toList();
-
-        Evaluable stopCondition = fromExpression(doStop.nth(0));
-        Evaluable returnOnStop = fromExpression(doStop.nth(1));
-
-        SequenceEvaluable body = sequenceFromConsList(doBody);
-
-        return new DoEvaluable(names, initForms, updateForms,
-                body,
-                stopCondition, returnOnStop);
-    }
-
-    private static void ensureDoForm(Cons c) throws MalformedFormException {
-        if(!startsWithSym(c, "do"))
-            throw new RuntimeException("do do do");
-
-        if(c.length() < 3) {
-            throw new MalformedFormException("do form expects at least two arguments (do (<do-variable>*) <do-stop> <sequence-element>*)");
-        }
-
-        try {
-            ensureDoVariables(LispLists.requireList(c.nth(1))); // vars
-            ensureDoStop(LispLists.requireList(c.nth(2))); // stop
-            List<Object> l = Utils.toJavaList(LispLists.requireList(c.nthCdr(3))); // body
-            for(Object o : l) {
-                ensureForm(o);
-            }
+            throw new MalformedFormException("lambda form is malformed because child is malformed", mfe);
         } catch(ClassCastException cce) {
-            throw new MalformedFormException("do form is malformed, most likely some subform has incorrect nesting, check the parentheses, the error in most likely somewhere in the variable declarations or in the stop condition\n", cce);
-        } catch(MalformedFormException mfe) {
-            throw new MalformedFormException("do form is malformed because child is malformed", mfe);
+            throw new MalformedFormException("lambda form is malformed, either too short or parameter list is not a list", cce);
         }
     }
 
-    private static void ensureDoVariables(LispList ll) throws MalformedFormException {
-        List<Object> allVars = Utils.toJavaList(ll);
-        for(Object o : allVars) {
-            List<Object> var = Utils.toJavaList(LispLists.requireCons(o));
-            if(var.size() != 3)
-                throw new MalformedFormException("do variable must have exactly 3 elements, (<name> <init-form> <update-form>)");
-            if(!(var.getFirst() instanceof LispSymbol))
-                throw new MalformedFormException("do variable binding must starts valid variable name (with a symbol), " + var.get(0) + " is not a valid variable name");
-            ensureForm(var.get(1));
-            ensureForm(var.get(2));
-        }
-    }
-
-    private static void ensureDoStop(LispList ll) throws MalformedFormException {
-        if(ll.length() > 2) {
-            throw new MalformedFormException("do stop must have at most elements ([<stop-condition> [<stop-return>]])");
-        }
-    }
-
-    @NotNull
-    private static LetEvaluable letFromCons(Cons c) throws MalformedFormException {
-        ensureLetForm(c);
-        return _letFromCons(c);
-    }
-
-    private static void ensureLetForm(Cons c) throws MalformedFormException {
-        if(!startsWithSym(c, "let"))
-            throw new RuntimeException("let let let");
-        try {
-            ensureLetBindings(LispLists.requireList(c.nth(1))); // bindings
-            List<Object> l = Utils.toJavaList(LispLists.requireList(c.nthCdr(2))); // body
-            for (Object o : l) {
-                ensureForm(o);
+    private static void ensureLambdaList(LispList ll) throws MalformedFormException {
+        List<Object> l = Utils.toJavaList(ll);
+        for(Object o : l) {
+            if(!(o instanceof LispSymbol)) {
+                throw new MalformedFormException(o + " should not be in a lambda list, only symbols can be there");
             }
-        } catch(ClassCastException cce) {
-            throw new MalformedFormException("let form is malformed because child element has the wrong type, likely some subform has incorrect nesting, check the parentheses", cce);
-        } catch(MalformedFormException mfe) {
-            throw new MalformedFormException("let form is malformed because child is malformed ", mfe);
-        }
-    }
-
-    private static void ensureLetBindings(LispList ll) throws MalformedFormException {
-        List<Object> binds = Utils.toJavaList(ll);
-        for(Object bind : binds) {
-            Cons c = LispLists.requireCons(bind);
-            if(c.length() != 2)
-                throw new MalformedFormException("let variable binding must have exactly two elements (<var-name> <var-value>)");
-            if(!(c.getCar() instanceof LispSymbol))
-                throw new MalformedFormException("let variable binding must starts valid variable name (with a symbol), " + c.getCar() + " is not a valid variable name");
-            ensureForm(c.nth(1));
         }
     }
 
     @NotNull
-    private static LetEvaluable _letFromCons(Cons c) {
-        Cons frames = LispLists.requireCons(c.nth(1));
-        LispList body = LispLists.requireList(c.nthCdr(2));
-        List<LispSymbol> names = Utils.toStream(frames)
-                .map(LispLists::requireCons)
-                .map(bind -> (LispSymbol)bind.nth(0))
-                .toList();
-        List<Evaluable> vals = Utils.toStream(frames)
-                .map(LispLists::requireCons)
-                .map(bind -> fromExpression(bind.nth(1)))
-                .toList();
-        return new LetEvaluable(names, vals, sequenceFromConsList(body));
-    }
-
-    @NotNull
-    private static UserDefinedLambdaEvaluable lambdaFromCons(Cons c) {
-        try {
-            return _lambdaFromCons(c);
-        }
-        catch(ClassCastException cce) {
-            throw new SynthaxTreeParsingException("lambda expression is malformed\n");
-        }
-    }
-
-    @NotNull
-    private static UserDefinedLambdaEvaluable _lambdaFromCons(Cons c) {
+    private static UserDefinedLambdaEvaluable lambdaFromEnsuredCons(Cons c) {
         LispList formalParameters = LispLists.requireList(c.nth(1));
-        Cons body = LispLists.requireCons(c.nthCdr(2));
+        LispList body = LispLists.requireList(c.nthCdr(2));
         List<LispSymbol> paramsList = Utils.toStream(formalParameters)
                 .map(a -> (LispSymbol)a)
                 .toList();
-        SequenceEvaluable bodEval = sequenceFromConsList(body);
+        SequenceEvaluable bodEval = FormBuilding.sequenceFromConsList(body);
         return new UserDefinedLambdaEvaluable(paramsList, bodEval);
     }
 
     @NotNull
-    private static AndEvaluable andFromCons(Cons c) {
-        if (c.getCdr() instanceof LispList and) {
-            return new AndEvaluable(toEvaluableList(and));
+    private static AndEvaluable andFromCons(Cons c) throws MalformedFormException {
+        ensureAndForm(c);
+        return andFromEnsuredCons(c);
+    }
+
+    private static void ensureAndForm(Cons c) throws MalformedFormException {
+        if(!FormBuilding.startsWithSym(c, "and"))
+            throw new RuntimeException("ok, and?");
+        try {
+            FormBuilding.ensureSequenceList(LispLists.requireList(c.getCdr()));
+        } catch(MalformedFormException mfe) {
+            throw new MalformedFormException("and form is malformed because child is malformed", mfe);
+        } catch(ClassCastException cce) {
+            throw new MalformedFormException("and form is malformed, given parameters are not a list", cce);
         }
-        else throw new SynthaxTreeParsingException
-                ("and statement malformed, given parameters are not a list");
+    }
+
+    private static AndEvaluable andFromEnsuredCons(Cons c) throws MalformedFormException {
+        return new AndEvaluable(FormBuilding.toEvaluableList(LispLists.requireList(c.getCdr())));
     }
 
     @NotNull
-    private static OrEvaluable orFromCons(Cons c) {
-        if (c.getCdr() instanceof LispList or) {
-            return new OrEvaluable(toEvaluableList(or));
+    private static OrEvaluable orFromCons(Cons c) throws MalformedFormException {
+        ensureOrForm(c);
+        return orFromEnsuredCons(c);
+    }
+
+    private static void ensureOrForm(Cons c) throws MalformedFormException {
+        if(!FormBuilding.startsWithSym(c, "or"))
+            throw new RuntimeException("ok, or?");
+        try {
+            FormBuilding.ensureSequenceList(LispLists.requireList(c.getCdr()));
+        } catch(MalformedFormException mfe) {
+            throw new MalformedFormException("or form is malformed because child is malformed", mfe);
+        } catch(ClassCastException cce) {
+            throw new MalformedFormException("or form is malformed, given parameters are not a list", cce);
         }
-        else throw new SynthaxTreeParsingException
-            ("or statement malformed, given parameters are not a list");
     }
 
-
-    @NotNull
-    private static SetEvaluable setFromCons(Cons c) {
-        if(c.nth(1) instanceof LispSymbol setVarName)
-            return new SetEvaluable(setVarName,
-                        fromExpression(c.nth(2)));
-        else
-            throw new SynthaxTreeParsingException
-                ("set form expects a symbol as its first argument");
+    private static OrEvaluable orFromEnsuredCons(Cons c) throws MalformedFormException {
+        return new OrEvaluable(FormBuilding.toEvaluableList(LispLists.requireList(c.getCdr())));
     }
 
     @NotNull
-    private static SequenceEvaluable sequenceFromCons(Cons c) {
-        return sequenceFromConsList(LispLists.requireList(c.getCdr()));
+    private static SetEvaluable setFromCons(Cons c) throws MalformedFormException {
+        ensureSetForm(c);
+        return setFromEnsuredCons(c);
+    }
+
+    private static void ensureSetForm(Cons c) throws MalformedFormException {
+        if(!FormBuilding.startsWithSym(c, "set!"))
+            throw new RuntimeException("set no setty");
+        if(c.length() != 3)
+            throw new MalformedFormException("set form must have exactly two parameters (set! <var-name> <new-value>)");
+        if(!(c.nth(1) instanceof LispSymbol))
+            throw new MalformedFormException("set form must with valid variable name (with symbol), " + c.nth(2) + " is not a symbol");
+        try {
+            ensureForm(c.nth(2));
+        } catch(MalformedFormException mfe) {
+            throw new MalformedFormException("set form is malformed because assigned value is not a valid form", mfe);
+        }
+    }
+
+    private static SetEvaluable setFromEnsuredCons(Cons c) {
+        return new SetEvaluable((LispSymbol)c.nth(1), fromExpression(c.nth(2)));
     }
 
     @NotNull
-    private static DefinitionEvaluable definitionFromCons(Cons c) {
-        // piccolo problema con gli instanceof
+    private static SequenceEvaluable sequenceFromCons(Cons c) throws MalformedFormException {
+        ensureSequenceForm(c);
+        return FormBuilding.sequenceFromConsList(LispLists.requireList(c.getCdr()));
+    }
+
+    private static void ensureSequenceForm(Cons c) throws MalformedFormException {
+        if(!FormBuilding.startsWithSym(c, "begin"))
+            throw new RuntimeException("beeeeeeeeeeeeeeeeeeeeeee");
+        FormBuilding.ensureSequenceList(LispLists.requireList(c.getCdr()));
+    }
+
+    @NotNull
+    private static DefinitionEvaluable definitionFromCons(Cons c) throws MalformedFormException {
+        ensureDefinitionForm(c);
+        return definitionFromEnsuredCons(c);
+
+    }
+
+    private static void ensureDefinitionForm(Cons c) throws MalformedFormException {
+        // (define var val)
+        // (define (fun params) body)
+        if(!FormBuilding.startsWithSym(c, "define"))
+            throw new RuntimeException("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        if(c.nth(1) instanceof LispSymbol) {
+            try {
+                ensureForm(c.nth(2));
+            } catch(MalformedFormException mfe) {
+                throw new MalformedFormException("define form for symbol " + c.nth(1) + " malformed because assigned value is malformed");
+            }
+        }
+        else if(c.nth(1) instanceof Cons fun) {
+            if(!(fun.getCar() instanceof LispSymbol))
+                throw new MalformedFormException("cannot define function " + fun.getCar() + " as " + fun.getCar() + " is not a valid function name (it is not a symbol)");
+            ensureLambdaList(LispLists.requireList(fun.getCdr()));
+            FormBuilding.ensureSequenceList(LispLists.requireList(c.nthCdr(2)));
+        }
+        else throw new MalformedFormException("define form is malformed, defined variable" + c.nth(1) + "is neither a symbol nor a function declaration");
+    }
+
+    private static DefinitionEvaluable definitionFromEnsuredCons(Cons c) {
         if(c.nth(1) instanceof LispSymbol definedVarName)
             return new DefinitionEvaluable(definedVarName,
-                    fromExpression(c.nth(2)));
+                                           fromExpression(c.nth(2)));
 
-        else if (c.nth(1) instanceof Cons funspec
-                 && funspec.getCar() instanceof LispSymbol funName
-                 && funspec.getCdr() instanceof LispList funParams
-                 && c.nthCdr(2) instanceof LispList funBod) {
+        else {
+            Cons funSpec = LispLists.requireCons(c.nth(1));
+            LispSymbol funName = (LispSymbol)funSpec.getCar();
+            LispList funParams = LispLists.requireList(funSpec.getCdr());
+            LispList body = LispLists.requireList(c.nthCdr(2));
+
             List<LispSymbol> paramsList = Utils.toJavaList(funParams)
-                .stream()
-                .map(a -> (LispSymbol) a)
-                .toList();
-            SequenceEvaluable bodEval = sequenceFromConsList(funBod);
+                    .stream()
+                    .map(a -> (LispSymbol) a)
+                    .toList();
+            SequenceEvaluable bodEval = FormBuilding.sequenceFromConsList(body);
 
             return new DefinitionEvaluable
                     (funName,
                             new UserDefinedLambdaEvaluable(paramsList, bodEval));
         }
-        else
-            throw new SynthaxTreeParsingException
-                ("define form malformed, symbol definition or valid function specification expected");
-    }
-
-    static SequenceEvaluable sequenceFromConsList(LispList c) {
-        return new SequenceEvaluable(toEvaluableList(c));
-    }
-
-    static List<Evaluable> toEvaluableList(LispList c) {
-        return Utils.toStream(c)
-            .map(EvaluableCreator::fromExpression)
-            .toList();
-    }
-
-    public static Evaluable fromAtom(Object exp) {
-        if (exp instanceof LispSymbol sym)
-            return new LookupEvaluable(sym);
-        else
-            return new ConstantEvaluable(exp);
     }
 }
