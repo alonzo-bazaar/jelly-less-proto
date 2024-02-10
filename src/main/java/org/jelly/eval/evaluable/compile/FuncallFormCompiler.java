@@ -24,7 +24,7 @@ public class FuncallFormCompiler implements FormCompiler {
         checkAST(form);
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(c.getCar() instanceof LispSymbol) {
             Utils.checkSequenceList(LispLists.requireCons(c.getCdr()));
         }
@@ -35,7 +35,7 @@ public class FuncallFormCompiler implements FormCompiler {
         }
     }
 
-    public static FuncallEvaluable fromCheckedAST(Cons c) {
+    private static FuncallEvaluable fromCheckedAST(Cons c) {
         return new FuncallEvaluable(Compiler.compileExpression(c.getCar()), ListUtils.toJavaList((LispList)c.getCdr()));
     }
 }

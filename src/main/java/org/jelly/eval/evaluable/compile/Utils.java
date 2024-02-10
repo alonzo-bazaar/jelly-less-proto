@@ -20,7 +20,7 @@ public class Utils {
         return formPrototypeBuilder.append(")").toString();
     }
 
-    public static void checkFlatFixed(Cons form, String formName, String[] childrenNames) throws MalformedFormException {
+    static void checkFlatFixed(Cons form, String formName, String[] childrenNames) throws MalformedFormException {
         /*
          * encapsulates some repeated behaviour in validating certain "flat" forms
          *
@@ -49,24 +49,33 @@ public class Utils {
         }
     }
 
-    public static boolean startsWithSym(LispList ll, String s) {
+    static boolean startsWithSym(LispList ll, String s) {
         return ((LispSymbol)ll.getCar()).getName().equals(s);
     }
 
-    public static void checkSequenceList(LispList ll) throws MalformedFormException {
+    static void checkSequenceList(LispList ll) throws MalformedFormException {
         List<Object> l = ListUtils.toJavaList(ll);
         for (Object o : l) {
             Compiler.checkExpression(o);
         }
     }
 
-    public static SequenceEvaluable sequenceFromConsList(LispList c) {
+    static SequenceEvaluable sequenceFromConsList(LispList c) {
         return new SequenceEvaluable(toEvaluableList(c));
     }
 
-    public static List<Evaluable> toEvaluableList(LispList c) {
+    static List<Evaluable> toEvaluableList(LispList c) {
         return ListUtils.toStream(c)
             .map(Compiler::compileExpression)
             .toList();
+    }
+
+    static void ensureLambdaListAST(LispList ll) throws MalformedFormException {
+        List<Object> l = ListUtils.toJavaList(ll);
+        for(Object o : l) {
+            if(!(o instanceof LispSymbol)) {
+                throw new MalformedFormException(o + " should not be in a lambda list, only symbols can be there");
+            }
+        }
     }
 }

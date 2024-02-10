@@ -24,12 +24,12 @@ public class WhileFormCompiler implements FormCompiler {
     }
 
 
-    public static WhileEvaluable fromCheckedAST(Cons c) {
+    private static WhileEvaluable fromCheckedAST(Cons c) {
         return new WhileEvaluable(Compiler.compileExpression(c.nth(1)),
                              Utils.sequenceFromConsList((LispList) c.nthCdr(2)));
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c, "while"))
             throw new RuntimeException("expected form to start with while symbol, but it starts with " + c.getCar());
         if(c.length() < 2)

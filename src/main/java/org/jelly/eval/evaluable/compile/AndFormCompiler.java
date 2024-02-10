@@ -21,7 +21,7 @@ public class AndFormCompiler implements FormCompiler {
         checkAST(form);
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c, "and"))
             throw new RuntimeException("ok, and?");
         try {
@@ -33,7 +33,7 @@ public class AndFormCompiler implements FormCompiler {
         }
     }
 
-    public static AndEvaluable fromCheckedAST(Cons c) {
+    private static AndEvaluable fromCheckedAST(Cons c) {
         return new AndEvaluable(Utils.toEvaluableList(LispLists.requireList(c.getCdr())));
     }
 }

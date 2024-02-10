@@ -10,14 +10,14 @@ public class UserDefinedProcedure implements Procedure {
     // TODO to be refined into a LambdaList class
     // to also allows optional and/or keyword arguments
     private final Environment definitionEnvironment;
-    private final List<LispSymbol> formalParameters;
+    private final LambdaList formalParameters;
     private final SequenceEvaluable functionBody;
 
     public UserDefinedProcedure(Environment definitionEnvironment,
                                 List<LispSymbol> formalParameters,
                                 SequenceEvaluable functionBody) {
         this.definitionEnvironment = definitionEnvironment;
-        this.formalParameters = formalParameters;
+        this.formalParameters = LambdaList.fromList(formalParameters);
         this.functionBody = functionBody;
     }
 
@@ -26,6 +26,6 @@ public class UserDefinedProcedure implements Procedure {
      */
     @Override
     public Object call(List<Object> values) {
-        return functionBody.eval(definitionEnvironment.extend(formalParameters, values));
+        return functionBody.eval(definitionEnvironment.extend(formalParameters.bind(values)));
     }
 }

@@ -23,11 +23,11 @@ public class SequenceFormCompiler implements FormCompiler {
     }
 
     @NotNull
-    public static SequenceEvaluable fromCheckedAST(Cons c) {
+    private static SequenceEvaluable fromCheckedAST(Cons c) {
         return Utils.sequenceFromConsList(LispLists.requireList(c.getCdr()));
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c, "begin"))
             throw new RuntimeException("beelandi amici di striscia!");
         Utils.checkSequenceList(LispLists.requireList(c.getCdr()));

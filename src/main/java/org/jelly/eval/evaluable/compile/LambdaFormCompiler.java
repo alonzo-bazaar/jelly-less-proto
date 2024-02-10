@@ -29,7 +29,7 @@ public class LambdaFormCompiler implements FormCompiler {
     }
 
     @NotNull
-    public static UserDefinedLambdaEvaluable fromCheckedAST(Cons c) {
+    private static UserDefinedLambdaEvaluable fromCheckedAST(Cons c) {
         LispList formalParameters = LispLists.requireList(c.nth(1));
         LispList body = LispLists.requireList(c.nthCdr(2));
         List<LispSymbol> paramsList = ListUtils.toStream(formalParameters)
@@ -39,27 +39,18 @@ public class LambdaFormCompiler implements FormCompiler {
         return new UserDefinedLambdaEvaluable(paramsList, bodEval);
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c,"lambda"))
             throw new RuntimeException("lambda lambda lambda sosteneva tesi e illusioni");
         if(c.length() < 2)
             throw new MalformedFormException("lambda form must have at least a parameter list");
         try {
-            ensureLambdaListAST(LispLists.requireList(c.nth(1)));
+            Utils.ensureLambdaListAST(LispLists.requireList(c.nth(1)));
             Utils.checkSequenceList(LispLists.requireList(c.nthCdr(2)));
         } catch(MalformedFormException mfe) {
             throw new MalformedFormException("lambda form is malformed because child is malformed", mfe);
         } catch(ClassCastException cce) {
             throw new MalformedFormException("lambda form is malformed, either too short or parameter list is not a list", cce);
-        }
-    }
-
-    public static void ensureLambdaListAST(LispList ll) throws MalformedFormException {
-        List<Object> l = ListUtils.toJavaList(ll);
-        for(Object o : l) {
-            if(!(o instanceof LispSymbol)) {
-                throw new MalformedFormException(o + " should not be in a lambda list, only symbols can be there");
-            }
         }
     }
 }

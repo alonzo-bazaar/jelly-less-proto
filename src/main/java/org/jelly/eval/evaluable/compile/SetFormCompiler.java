@@ -23,11 +23,11 @@ public class SetFormCompiler implements FormCompiler {
     }
 
     @NotNull
-    public static SetEvaluable fromCheckedAST(Cons c)  {
+    private static SetEvaluable fromCheckedAST(Cons c)  {
         return new SetEvaluable((LispSymbol)c.nth(1), Compiler.compileExpression(c.nth(2)));
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c, "set!"))
             throw new RuntimeException("set no setty");
         if(c.length() != 3)

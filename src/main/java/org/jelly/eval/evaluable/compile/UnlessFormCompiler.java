@@ -22,13 +22,13 @@ public class UnlessFormCompiler implements FormCompiler {
         checkAST(form);
     }
 
-    public IfEvaluable fromCheckedAST(Cons c) {
+    private IfEvaluable fromCheckedAST(Cons c) {
         return new IfEvaluable(Compiler.compileExpression(c.nth(1)),
                                new ConstantEvaluable(Constants.FALSE),
                                Compiler.compileExpression(c.nth(2)));
     }
 
-    public void checkAST(Cons c) throws MalformedFormException {
+    private void checkAST(Cons c) throws MalformedFormException {
         Utils.checkFlatFixed(c, "when", new String[]{"condition", "alternative"});
     }
 }

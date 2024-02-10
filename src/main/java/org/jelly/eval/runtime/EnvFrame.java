@@ -29,15 +29,15 @@ public class EnvFrame {
     }
 
     // Environment does all the checking, input data assumed to be valid
-    Object lookup(LispSymbol sym) {
+    public Object lookup(LispSymbol sym) {
         return nameToExpr.get(sym);
     }
 
-    boolean hasSymbol(LispSymbol sym) {
+    public boolean hasSymbol(LispSymbol sym) {
         return nameToExpr.containsKey(sym);
     }
 
-    void set(LispSymbol sym, Object val) {
+    public void bind(LispSymbol sym, Object val) {
         nameToExpr.put(sym, val);
     }
 

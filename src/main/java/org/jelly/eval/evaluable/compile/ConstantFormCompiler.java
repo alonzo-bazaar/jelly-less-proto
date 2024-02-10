@@ -20,11 +20,11 @@ public class ConstantFormCompiler implements FormCompiler {
         checkAST(form);
     }
 
-    public static ConstantEvaluable fromCheckedAST(Cons c) {
+    private static ConstantEvaluable fromCheckedAST(Cons c) {
         return new ConstantEvaluable(c.nth(1));
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c, "quote"))
             throw new RuntimeException("unquote");
 

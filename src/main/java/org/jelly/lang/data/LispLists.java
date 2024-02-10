@@ -21,4 +21,12 @@ public class LispLists {
         }
         throw new ClassCastException(o + " required to be nil but is not");
     }
+
+    public static Object nth(Object o, int i) {
+        return requireList(o).nth(i);
+    }
+
+    public static Object nthCdr(Object o, int i) {
+        return requireList(o).nthCdr(i);
+    }
 }

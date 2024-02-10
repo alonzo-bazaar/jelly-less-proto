@@ -58,7 +58,7 @@ public class Environment {
         Environment e = this;
         while(e != null) {
             if(e.head.hasSymbol(sym)) {
-                e.head.set(sym,val);
+                e.head.bind(sym,val);
                 return;
             }
             e = e.tail;
@@ -75,7 +75,7 @@ public class Environment {
         if(head.hasSymbol(sym))
             ErrorFormatter.warn("redefining variable " + sym.getName());
 
-        head.set(sym, val);
+        head.bind(sym, val);
     }
 
     public void reset() {

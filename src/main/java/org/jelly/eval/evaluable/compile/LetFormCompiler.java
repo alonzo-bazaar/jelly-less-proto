@@ -29,7 +29,7 @@ public class LetFormCompiler implements FormCompiler {
     }
 
     @NotNull
-    public static LetEvaluable fromCheckedAST(Cons c) {
+    private static LetEvaluable fromCheckedAST(Cons c) {
         Cons frames = LispLists.requireCons(c.nth(1));
         LispList body = LispLists.requireList(c.nthCdr(2));
         List<LispSymbol> names = ListUtils.toStream(frames)
@@ -43,7 +43,7 @@ public class LetFormCompiler implements FormCompiler {
         return new LetEvaluable(names, vals, Utils.sequenceFromConsList(body));
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c, "let"))
             throw new RuntimeException("let let let");
         try {

@@ -23,7 +23,7 @@ public class IfFormCompiler implements FormCompiler {
     }
 
     @NotNull
-    public static IfEvaluable fromCheckedAST(Cons c) {
+    private static IfEvaluable fromCheckedAST(Cons c) {
         if(c.length() == 3)
             return new IfEvaluable(Compiler.compileExpression(c.nth(1)),
                     Compiler.compileExpression(c.nth(2)),
@@ -34,7 +34,7 @@ public class IfFormCompiler implements FormCompiler {
                     Compiler.compileExpression(c.nth(3)));
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(c.length() == 4)
             Utils.checkFlatFixed(c, "if", new String[]{"condition", "consequent", "alternative"});
         else if(c.length() == 3)

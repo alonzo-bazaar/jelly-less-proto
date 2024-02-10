@@ -23,11 +23,11 @@ public class OrFormCompiler implements FormCompiler {
     }
 
     @NotNull
-    public static OrEvaluable fromCheckedAST(Cons c) {
+    private static OrEvaluable fromCheckedAST(Cons c) {
         return new OrEvaluable(Utils.toEvaluableList(LispLists.requireList(c.getCdr())));
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c, "or"))
             throw new RuntimeException("ok, or?");
         try {

@@ -28,7 +28,7 @@ public class DoFormCompiler implements FormCompiler {
     }
 
     @NotNull
-    public static DoEvaluable fromCheckedAST(Cons c) {
+    private static DoEvaluable fromCheckedAST(Cons c) {
         Cons doVars = LispLists.requireCons(c.nth(1));
         Cons doStop = LispLists.requireCons(c.nth(2));
         LispList doBody = LispLists.requireList(c.nthCdr(3));
@@ -55,7 +55,7 @@ public class DoFormCompiler implements FormCompiler {
                 stopCondition, returnOnStop);
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c, "do"))
             throw new RuntimeException("do do do");
         if(c.length() < 3)

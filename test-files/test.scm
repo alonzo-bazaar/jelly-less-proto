@@ -25,10 +25,13 @@
 ;;; send corrections or additions to jaffer@ai.mit.edu or
 ;;; Aubrey Jaffer, 84 Pleasant St., Wakefield MA 01880, USA
 
-(define cur-section '())(define errs '())
+(define cur-section '())
+(define errs '())
+
 (define SECTION (lambda args
 		  (display "SECTION") (write args) (newline)
 		  (set! cur-section args) #t))
+
 (define record-error (lambda (e) (set! errs (cons (list cur-section e) errs))))
 
 (define test
@@ -46,6 +49,7 @@
 	     #f)
 	    (else #t)))
      (if (procedure? fun) (apply fun args) (car args)))))
+
 (define (report-errs)
   (newline)
   (if (null? errs) (display "Passed all tests")
@@ -67,12 +71,14 @@
 (define type-examples
   (list
    #t #f #\a '() 9739 '(test) record-error "test" "" 'test '#() '#(a b c) ))
+
 (define i 1)
 (for-each (lambda (x) (display (make-string i #\ ))
 		  (set! i (+ 3 i))
 		  (write x)
 		  (newline))
 	  disjoint-type-functions)
+
 (define type-matrix
   (map (lambda (x)
 	 (let ((t (map (lambda (f) (f x)) disjoint-type-functions)))
@@ -81,11 +87,14 @@
 	   (newline)
 	   t))
        type-examples))
+
 (SECTION 4 1 2)
 (test '(quote a) 'quote (quote 'a))
 (test '(quote a) 'quote ''a)
+
 (SECTION 4 1 3)
 (test 12 (if #f + *) 3 4)
+
 (SECTION 4 1 4)
 (test 8 (lambda (x) (+ x x)) 4)
 (define reverse-subtract
@@ -97,15 +106,18 @@
 (test 10 add4 6)
 (test '(3 4 5 6) (lambda x x) 3 4 5 6)
 (test '(5 6) (lambda (x y . z) z) 3 4 5 6)
+
 (SECTION 4 1 5)
 (test 'yes 'if (if (> 3 2) 'yes 'no))
 (test 'no 'if (if (> 2 3) 'yes 'no))
 (test '1 'if (if (> 3 2) (- 3 2) (+ 3 2)))
+
 (SECTION 4 1 6)
 (define x 2)
 (test 3 'define (+ x 1))
 (set! x 4)
 (test 5 'set! (+ x 1))
+
 (SECTION 4 2 1)
 (test 'greater 'cond (cond ((> 3 2) 'greater)
 			   ((< 3 2) 'less)))
@@ -130,6 +142,7 @@
 (test #f 'or (or #f #f #f))
 (test #f 'or (or))
 (test '(b c) 'or (or (memq 'b '(a b c)) (+ 3 0)))
+
 (SECTION 4 2 2)
 (test 6 'let (let ((x 2) (y 3)) (* x y)))
 (test 35 'let (let ((x 2) (y 3)) (let ((x 7) (z (+ x y))) (* z x))))
@@ -153,6 +166,7 @@
 (test 10 'letrec (letrec ((x 3)) (define x 10) x))
 (test 34 'letrec x)
 (SECTION 4 2 3)
+
 (define x 0)
 (test 6 'begin (begin (set! x 5) (+ x 1)))
 (SECTION 4 2 4)
@@ -200,11 +214,13 @@
 	(let ((name1 'x) (name2 'y)) `(a `(b ,,name1 ,',name2 d) e)))
 (test '(list 3 4) 'quasiquote (quasiquote (list (unquote (+ 1 2)) 4)))
 (test '`(list ,(+ 1 2) 4) 'quasiquote '(quasiquote (list (unquote (+ 1 2)) 4)))
+
 (SECTION 5 2 1)
 (define add3 (lambda (x) (+ x 3)))
 (test 6 'define (add3 3))
 (define first car)
 (test 1 'define (first '(1 2)))
+
 (SECTION 5 2 2)
 (test 45 'define
 	(let ((x 5))
@@ -234,6 +250,7 @@
 (test #t boolean? #f)
 (test #f boolean? 0)
 (test #f boolean? '())
+
 (SECTION 6 2)
 (test #t eqv? 'a 'a)
 (test #f eqv? 'a 'b)
@@ -269,6 +286,7 @@
 (test #t equal? "abc" "abc")
 (test #t equal? 2 2)
 (test #t equal? (make-vector 5 'a) (make-vector 5 'a))
+
 (SECTION 6 3)
 (test '(a b c d e) 'dot '(a . (b . (c . (d . (e . ()))))))
 (define x (list 'a 'b 'c))
@@ -652,6 +670,7 @@
 (test #\A char-upcase #\a)
 (test #\a char-downcase #\A)
 (test #\a char-downcase #\a)
+
 (SECTION 6 7)
 (test #t string? "The word \"recursion\\\" has many meanings.")
 (test #t string? "")
@@ -750,6 +769,7 @@
 (test #t string-ci>=? "9" "0")
 (test #t string-ci>=? "A" "A")
 (test #t string-ci>=? "A" "a")
+
 (SECTION 6 8)
 (test #t vector? '#(0 (2 2 2 2) "Anna"))
 (test #t vector? '#())
@@ -765,6 +785,7 @@
 (test '#(hi hi) make-vector 2 'hi)
 (test '#() make-vector 0)
 (test '#() make-vector 0 'a)
+
 (SECTION 6 9)
 (test #t procedure? car)
 (test #f procedure? 'car)
@@ -878,6 +899,7 @@
 (test #t call-with-input-file "test.scm" input-port?)
 (define this-file (open-input-file "test.scm"))
 (test #t input-port? this-file)
+
 (SECTION 6 10 2)
 (test #\; peek-char this-file)
 (test #\; read-char this-file)
@@ -900,6 +922,7 @@
   (test display-test-obj read test-file)
   (test load-test-obj read test-file)
   (close-input-port test-file))
+
 (SECTION 6 10 3)
 (define write-test-obj
   '(#t #f #\a () 9739 -3 . #((test) "te \" \" st" "" test #() b c)))

@@ -28,7 +28,7 @@ public class DefinitionFormCompiler implements FormCompiler {
     }
 
     @NotNull
-    public static DefinitionEvaluable fromCheckedAST(Cons c) {
+    private static DefinitionEvaluable fromCheckedAST(Cons c) {
         if(c.nth(1) instanceof LispSymbol definedVarName)
             return new DefinitionEvaluable(definedVarName,
                     Compiler.compileExpression(c.nth(2)));
@@ -51,7 +51,7 @@ public class DefinitionFormCompiler implements FormCompiler {
         }
     }
 
-    public static void checkAST(Cons c) throws MalformedFormException {
+    private static void checkAST(Cons c) throws MalformedFormException {
         // (define var val)
         // (define (fun params) body)
         if(!Utils.startsWithSym(c, "define"))
@@ -66,7 +66,7 @@ public class DefinitionFormCompiler implements FormCompiler {
         else if(c.nth(1) instanceof Cons fun) {
             if(!(fun.getCar() instanceof LispSymbol))
                 throw new MalformedFormException("cannot define function " + fun.getCar() + " as " + fun.getCar() + " is not a valid function name (it is not a symbol)");
-            LambdaFormCompiler.ensureLambdaListAST(LispLists.requireList(fun.getCdr()));
+            Utils.ensureLambdaListAST(LispLists.requireList(fun.getCdr()));
             Utils.checkSequenceList(LispLists.requireList(c.nthCdr(2)));
         }
         else throw new MalformedFormException("define form is malformed, defined variable" + c.nth(1) + "is neither a symbol nor a function declaration");
