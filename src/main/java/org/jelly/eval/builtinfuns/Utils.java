@@ -1,6 +1,6 @@
-package org.jelly.eval.utils;
+package org.jelly.eval.builtinfuns;
 
-import org.jelly.eval.evaluable.EvaluableCreator;
+import org.jelly.eval.evaluable.compile.Compiler;
 import org.jelly.lang.data.LispList;
 import org.jelly.lang.data.ListBuilder;
 
@@ -12,7 +12,7 @@ import org.jelly.eval.errors.IncorrectTypeException;
 
 import org.jelly.eval.runtime.Environment;
 
-public class ArgUtils {
+public class Utils {
     // these checks are done so many times I might as well
     public static void ensureAllNumeric(String source, List<Object> args)
             throws IncorrectTypeException {
@@ -85,7 +85,7 @@ public class ArgUtils {
     public static List<Object> evlist(List<Object> lst, Environment env) {
         return lst
                 .stream()
-                .map(o -> EvaluableCreator.fromExpression(o).eval(env))
+                .map(o -> Compiler.compileExpression(o).eval(env))
                 .toList();
     }
 

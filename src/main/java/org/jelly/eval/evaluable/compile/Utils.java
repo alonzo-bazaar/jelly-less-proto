@@ -1,7 +1,10 @@
-package org.jelly.eval.evaluable;
+package org.jelly.eval.evaluable.compile;
 
+import org.jelly.eval.evaluable.Evaluable;
+import org.jelly.eval.evaluable.SequenceEvaluable;
+import org.jelly.eval.evaluable.compile.Compiler;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
-import org.jelly.eval.utils.Utils;
+import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.LispList;
 import org.jelly.lang.data.LispSymbol;
@@ -9,16 +12,15 @@ import org.jelly.lang.data.LispSymbol;
 import java.util.Arrays;
 import java.util.List;
 
-public class FormBuilding {
-
-    public static String renderFormPrototype(String formName, String[] childrenNames) {
+public class Utils {
+    private static String renderFormPrototype(String formName, String[] childrenNames) {
         StringBuilder formPrototypeBuilder = new StringBuilder();
         formPrototypeBuilder.append("(").append(formName);
         Arrays.stream(childrenNames).forEach(a -> formPrototypeBuilder.append(" <").append(a).append(">"));
         return formPrototypeBuilder.append(")").toString();
     }
 
-    public static void verifyFlatFixed(Cons form, String formName, String[] childrenNames) throws MalformedFormException {
+    public static void checkFlatFixed(Cons form, String formName, String[] childrenNames) throws MalformedFormException {
         /*
          * encapsulates some repeated behaviour in validating certain "flat" forms
          *
@@ -40,7 +42,7 @@ public class FormBuilding {
         }
         for(int i = 1; i<form.length(); ++i) {
             try {
-                EvaluableCreator.ensureForm(form.nth(i));
+                Compiler.checkExpression(form.nth(i));
             } catch(MalformedFormException mfe) {
                 throw new MalformedFormException(formName + " form is malformed because " + childrenNames[i-1] + " is malformed");
             }
@@ -51,10 +53,10 @@ public class FormBuilding {
         return ((LispSymbol)ll.getCar()).getName().equals(s);
     }
 
-    static void ensureSequenceList(LispList ll) throws MalformedFormException {
-        List<Object> l = Utils.toJavaList(ll);
+    public static void checkSequenceList(LispList ll) throws MalformedFormException {
+        List<Object> l = ListUtils.toJavaList(ll);
         for (Object o : l) {
-            EvaluableCreator.ensureForm(o);
+            Compiler.checkExpression(o);
         }
     }
 
@@ -63,15 +65,8 @@ public class FormBuilding {
     }
 
     public static List<Evaluable> toEvaluableList(LispList c) {
-        return Utils.toStream(c)
-            .map(EvaluableCreator::fromExpression)
+        return ListUtils.toStream(c)
+            .map(Compiler::compileExpression)
             .toList();
-    }
-
-    public static Evaluable fromAtom(Object exp) {
-        if (exp instanceof LispSymbol sym)
-            return new LookupEvaluable(sym);
-        else
-            return new ConstantEvaluable(exp);
     }
 }

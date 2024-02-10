@@ -1,10 +1,10 @@
 package org.jelly.eval;
 
 import org.jelly.eval.evaluable.Evaluable;
-import org.jelly.eval.evaluable.EvaluableCreator;
+import org.jelly.eval.evaluable.compile.Compiler;
 import org.jelly.eval.runtime.Environment;
-import org.jelly.eval.runtime.Runtime;
-import org.jelly.parse.expression.ExpressionIterator;
+import org.jelly.eval.runtime.JellyRuntime;
+import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
 import org.jelly.utils.DebuggingUtils;
 
 import static org.junit.Assert.assertThrows;
@@ -20,14 +20,14 @@ public class BaseEvaluableTest {
     protected Environment env = new Environment();
 
     protected Evaluable fromString(String s) throws ParsingException {
-        ExpressionIterator ei = DebuggingUtils.expressionsFromStrings(s);
+        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings(s);
         Object le = ei.next();
-        return EvaluableCreator.fromExpression(le);
+        return Compiler.compileExpression(le);
     }
 
     @BeforeEach
     public void refreshEnv() {
-        env = Runtime.buildInitialEnvironment();
+        env = new JellyRuntime().buildInitialEnvironment();
     }
 
     @AfterEach

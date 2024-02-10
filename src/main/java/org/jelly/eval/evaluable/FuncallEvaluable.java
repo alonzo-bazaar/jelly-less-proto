@@ -1,11 +1,11 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.eval.procedure.Procedure;
-import org.jelly.eval.runtime.Environment;
-import org.jelly.eval.utils.ArgUtils;
-
 import java.security.InvalidParameterException;
 import java.util.List;
+
+import org.jelly.eval.procedure.Procedure;
+import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.builtinfuns.Utils;
 
 public class FuncallEvaluable implements Evaluable {
     private final Evaluable proc;
@@ -18,11 +18,11 @@ public class FuncallEvaluable implements Evaluable {
 
     @Override
     public Object eval(Environment env) {
-        Object fun_ = proc.eval(env);
-        if (fun_ instanceof Procedure fun) {
-            return fun.call(ArgUtils.evlist(args, env));
+        Object funObj = proc.eval(env);
+        if (funObj instanceof Procedure fun) {
+            return fun.call(Utils.evlist(args, env));
         }
-        throw new InvalidParameterException(proc + " evaluates to " + fun_ + ", which is not a procedure, and thus cannot be called");
+        throw new InvalidParameterException(proc + " evaluates to " + funObj + ", which is not a procedure, and thus cannot be called");
     }
 }
     

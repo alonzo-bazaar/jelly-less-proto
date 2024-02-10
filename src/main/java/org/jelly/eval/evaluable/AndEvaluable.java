@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.jelly.eval.runtime.Environment;
-import org.jelly.eval.utils.Utils;
+import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Constants;
 
 public class AndEvaluable implements Evaluable {
@@ -18,7 +18,7 @@ public class AndEvaluable implements Evaluable {
         }
         else {
             this.elements = lst.subList(0, lst.size() - 1);
-            this.last = lst.get(lst.size() - 1);
+            this.last = lst.getLast();
         }
     }
 
@@ -26,7 +26,7 @@ public class AndEvaluable implements Evaluable {
     public Object eval(Environment env) {
         for (Evaluable e : elements) {
             Object o = e.eval(env);
-            if (Utils.isFalse(o)) {
+            if (ListUtils.isFalse(o)) {
                 return Constants.FALSE;
             }
         }

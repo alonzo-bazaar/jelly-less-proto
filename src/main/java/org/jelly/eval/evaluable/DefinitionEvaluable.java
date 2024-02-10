@@ -28,4 +28,5 @@ public class DefinitionEvaluable implements Evaluable {
             return NIL;
         }
     }
+
 }

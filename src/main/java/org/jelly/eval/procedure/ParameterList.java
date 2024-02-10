@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import org.jelly.eval.runtime.EnvFrame;
-import org.jelly.eval.utils.ArgUtils;
-import org.jelly.eval.utils.Utils;
+import org.jelly.eval.builtinfuns.Utils;
+import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.LispList;
 import org.jelly.lang.data.LispSymbol;
 import org.jelly.parse.errors.SynthaxTreeParsingException;
@@ -15,11 +15,11 @@ public class ParameterList {
     private LispSymbol rest;
     public static ParameterList fromLispList (LispList ll) {
         ParameterList res = new ParameterList();
-        res.positional = Utils.toStream(ll)
+        res.positional = ListUtils.toStream(ll)
                 .takeWhile(a -> !((LispSymbol)a).getName().equals("&rest"))
                 .map(a -> (LispSymbol)a)
                 .toList();
-        List<LispSymbol> restSyms = Utils.toStream(ll)
+        List<LispSymbol> restSyms = ListUtils.toStream(ll)
                 .dropWhile(a -> !((LispSymbol)a).getName().equals("&rest"))
                 .map(a -> (LispSymbol)a)
                 .toList();
@@ -55,7 +55,7 @@ public class ParameterList {
             for(int i = 0; i< positional.size(); ++i) {
                 binds.put(positional.get(i), vals.get(i));
             }
-            binds.put(this.rest, ArgUtils.javaListToCons(vals.stream().skip(this.positional.size()).toList()));
+            binds.put(this.rest, Utils.javaListToCons(vals.stream().skip(this.positional.size()).toList()));
 
             return new EnvFrame(binds);
         }

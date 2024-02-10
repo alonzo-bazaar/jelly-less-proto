@@ -120,8 +120,10 @@ public class LineTokenizer {
         // exhaustion is not an exception as character exhaustion is expected behaviour, but it needs to be known
         int newIndex = currentIndex + n;
         while(newIndex >= currentLine.length()) {
-            newIndex -= currentLine.length();
-            if(!advanceToNextLine())
+            int length = currentLine.length();
+            if(advanceToNextLine()) // must store length because advanceToNextLine() updates the line, and with it the length
+                newIndex -= length;
+            else
                 return false;
         }
         currentIndex = newIndex;
@@ -278,12 +280,21 @@ public class LineTokenizer {
         // assumes that this.startsWithCharLiteral()
 
         advanceCheckExhaustion(2); // past the "#\" starter
-        String lex = extractStartingNormalString();
-        Character special = Synthax.stringSpecialCharacter(lex);
+
+        int indexBeforeSearch = currentIndex;
+
+        String specialStr = extractStartingNormalString();
+        Character special = Synthax.stringSpecialCharacter(specialStr);
+        // special character? yes, return the value of special character
         if(special != null)
-            return new LiteralToken<Character>(lex, special);
-        else if(lex.length() == 1)
-            return new LiteralToken<Character>(lex, lex.charAt(0));
-        else throw new RuntimeException("#\\" + lex + " is not a valid special character");
+            return new LiteralToken<Character>(specialStr, special);
+        if(specialStr.length() > 1) // if == 0 allora extractStartingNormalString ha reso "", il che non va contro le nostre aspettative (metti #\\()
+            throw new TokenLineParsingException("\"" + specialStr + "\" is not a valid special character name");
+
+        // special character? no, just get the next character
+        currentIndex = indexBeforeSearch;
+        char c = getCurrentChar();
+        currentIndex++;
+        return new LiteralToken<Character>("" + c, c);
     }
 }

@@ -1,6 +1,6 @@
 package org.jelly.utils;
 
-import org.jelly.parse.expression.ExpressionIterator;
+import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
 import org.jelly.parse.token.TokenIterator;
 
 public class DebuggingUtils {
@@ -11,10 +11,10 @@ public class DebuggingUtils {
     public static TokenIterator tokensFromStrings(String... args) {
         return tokensFromStringArr(args);
     }
-    public static ExpressionIterator expressionsFromStringArr(String[] ss) {
-        return new ExpressionIterator(tokensFromStringArr(ss));
+    public static SyntaxTreeIterator expressionsFromStringArr(String[] ss) {
+        return new SyntaxTreeIterator(tokensFromStringArr(ss));
     }
-    public static ExpressionIterator expressionsFromStrings(String... args) {
+    public static SyntaxTreeIterator expressionsFromStrings(String... args) {
         return expressionsFromStringArr(args);
     }
 

@@ -3,7 +3,7 @@ package org.jelly.eval.evaluable;
 import java.util.List;
 
 import org.jelly.eval.runtime.Environment;
-import org.jelly.eval.utils.Utils;
+import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Constants;
 
 public class OrEvaluable implements Evaluable {
@@ -17,10 +17,11 @@ public class OrEvaluable implements Evaluable {
     public Object eval(Environment env) {
         for (Evaluable e : elements) {
             Object o = e.eval(env);
-            if (!Utils.isFalse(o)) {
+            if (!ListUtils.isFalse(o)) {
                 return o;
             }
         }
         return Constants.FALSE;
     }
+
 }

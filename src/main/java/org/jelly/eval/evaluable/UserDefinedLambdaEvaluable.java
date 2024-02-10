@@ -6,7 +6,7 @@ import org.jelly.eval.procedure.UserDefinedProcedure;
 import org.jelly.eval.runtime.Environment;
 import org.jelly.lang.data.LispSymbol;
 
-public class UserDefinedLambdaEvaluable implements LambdaEvaluable {
+public class UserDefinedLambdaEvaluable implements Evaluable, LambdaEvaluable {
     /* evaluating a lambda expression
      * (aka "running" a lambda evaluable)
      * returns a procedure

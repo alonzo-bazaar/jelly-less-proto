@@ -702,4 +702,23 @@ public class TokenIteratorTest {
         assertEqualsLiteral("lovely \\ rita \n meter \t maid \r\n", ti.next());
         assertFalse(ti.hasNext());
     }
+
+    @Test
+    public void testCharacterLiteralSpecial() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings("#\\(#\\)", "#\\)");
+        assertEqualsLiteral('(', ti.next());
+        assertEqualsLiteral(')', ti.next());
+        assertEqualsLiteral(')', ti.next());
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void testCharacterLiteralSpecialEtAl() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings("qualche #\\(", "tt #\\(");
+        assertEqualsNormal("qualche", ti.next());
+        assertEqualsLiteral('(', ti.next());
+        assertEqualsNormal("tt", ti.next());
+        assertEqualsLiteral('(', ti.next());
+        assertFalse(ti.hasNext());
+    }
 }

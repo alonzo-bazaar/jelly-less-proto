@@ -2,7 +2,7 @@ package org.jelly.eval;
 
 
 import org.jelly.eval.evaluable.ConstantEvaluable;
-import org.jelly.eval.evaluable.IfForm;
+import org.jelly.eval.evaluable.IfEvaluable;
 import org.jelly.eval.runtime.Environment;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +25,7 @@ public class IfEvaluableTest {
     }
     @Test
     public void testIfT() {
-        IfForm iffer = new IfForm(new ConstantEvaluable(Constants.TRUE),
+        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(Constants.TRUE),
                                             new ConstantEvaluable((1)),
                                             new ConstantEvaluable((2)));
         assertEquals(1, (int)(iffer.eval(env)));
@@ -33,7 +33,7 @@ public class IfEvaluableTest {
 
     @Test
     public void testIfNonNilString() {
-        IfForm iffer = new IfForm(new ConstantEvaluable("stringa"),
+        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable("stringa"),
                                             new ConstantEvaluable(1),
                                             new ConstantEvaluable(2));
         assertEquals(1, (int)(iffer.eval(env)));
@@ -41,7 +41,7 @@ public class IfEvaluableTest {
 
     @Test
     public void testIfNonNilInt() {
-        IfForm iffer = new IfForm(new ConstantEvaluable(0),
+        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(0),
                                             new ConstantEvaluable(1),
                                             new ConstantEvaluable(2));
         assertEquals(1, (int)(iffer.eval(env)));
@@ -49,7 +49,7 @@ public class IfEvaluableTest {
 
     @Test
     public void testIfFalse() {
-        IfForm iffer = new IfForm(new ConstantEvaluable(Constants.FALSE),
+        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(Constants.FALSE),
                                             new ConstantEvaluable((1)),
                                             new ConstantEvaluable((2)));
         assertEquals(2, (int)(iffer.eval(env)));
@@ -57,7 +57,7 @@ public class IfEvaluableTest {
 
     @Test
     public void testIfNil() {
-        IfForm iffer = new IfForm(new ConstantEvaluable(Constants.NIL),
+        IfEvaluable iffer = new IfEvaluable(new ConstantEvaluable(Constants.NIL),
                                             new ConstantEvaluable(1),
                                             new ConstantEvaluable(2));
         assertEquals(1, (int)(iffer.eval(env)));

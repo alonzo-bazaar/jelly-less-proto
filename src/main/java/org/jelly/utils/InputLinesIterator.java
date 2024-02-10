@@ -1,4 +1,4 @@
-package org.jelly.app;
+package org.jelly.utils;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

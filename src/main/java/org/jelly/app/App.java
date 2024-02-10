@@ -5,11 +5,12 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.Iterator;
 
-import org.jelly.eval.runtime.Runtime;
+import org.jelly.eval.runtime.JellyRuntime;
 import org.jelly.parse.errors.ParsingException;
-import org.jelly.parse.expression.ExpressionIterator;
+import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
 import org.jelly.parse.token.TokenIterator;
 import org.jelly.parse.token.Token;
+import org.jelly.utils.InputLinesIterator;
 
 /**
  * the jellyt package contains some sort of package level façade
@@ -19,7 +20,7 @@ import org.jelly.parse.token.Token;
 public class App 
 {
 
-    private static Runtime runtime = new Runtime();
+    private static JellyRuntime runtime = new JellyRuntime();
     public static void main( String[] args ) {
         // currently debugging like an ass 
         System.out.println(args.length);
@@ -82,7 +83,7 @@ public class App
         Scanner scan = new Scanner(System.in);
         Iterator<String> lines = new InputLinesIterator();
         Iterator<Token> tokens = new TokenIterator(lines);
-        Iterator<Object> expressions = new ExpressionIterator(tokens);
+        Iterator<Object> expressions = new SyntaxTreeIterator(tokens);
 
         while (true) {
             try {

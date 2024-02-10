@@ -10,7 +10,7 @@ import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.Constants;
 import org.jelly.lang.data.LispList;
 
-public class Utils {
+public class ListUtils {
     public static Pair<LispList, Object> splitLast(Cons c) {
         return new Pair<>(cutLast(c), c.last());
     }

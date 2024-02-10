@@ -18,7 +18,7 @@ public class TokenIterator implements Iterator<Token> {
 
     public TokenIterator(Iterator<String> lines) {
         this.sourceLines = lines;
-        currentLine = lines.next();
+        currentLine = null; // per adesso, si fa lazy loading nel next
     }
 
     @Override

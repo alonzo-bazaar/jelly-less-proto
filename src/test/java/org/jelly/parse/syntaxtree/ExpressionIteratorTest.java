@@ -1,4 +1,4 @@
-package org.jelly.parse.expression;
+package org.jelly.parse.syntaxtree;
 
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.Constants;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ExpressionIteratorTest {
     @Test
     public void someSymbols() throws ParsingException {
-        ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("mamma mia");
+        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("mamma mia");
         Object o;
         LispSymbol ls;
 
@@ -28,7 +28,7 @@ public class ExpressionIteratorTest {
 
     @Test
     public void someNumbers() throws ParsingException {
-        ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("20 30 0");
+        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("20 30 0");
         Object o;
 
         o = ei.next();
@@ -45,14 +45,14 @@ public class ExpressionIteratorTest {
 
     @Test
     public void consesLength() throws ParsingException {
-        ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("(ei fu siccome immobile)");
+        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("(ei fu siccome immobile)");
         Object o = ei.next();
         assertEquals(4, ((Cons)o).length());
     }
 
     @Test
     public void consesContents() throws ParsingException {
-        ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("(define x 20)");
+        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("(define x 20)");
         // in cons fa (cons define (cons x (cons 20 nil))),
         // stiamo testando contro questa struttura
         Object o = ei.next();
@@ -70,7 +70,7 @@ public class ExpressionIteratorTest {
 
     @Test
     public void someNestedConses() throws ParsingException {
-        ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("((ok))");
+        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("((ok))");
         // in cons fa (cons (cons ok nil) nil),
         // stiamo testando contro questa struttura
         Object outer = ei.next();
@@ -88,51 +88,51 @@ public class ExpressionIteratorTest {
     public void testUnclosedParentheses () {
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    ExpressionIterator ei = DebuggingUtils.expressionsFromStrings(")");
+                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings(")");
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("))");
+                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("))");
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("())");
-                    ei.next();
-                    ei.next();
-                });
-
-        assertThrows(UnbalancedParenthesesException.class,
-                () -> {
-                    ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("()))");
+                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("())");
                     ei.next();
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("(");
+                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("()))");
+                    ei.next();
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("((");
+                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("(");
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("(()");
+                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("((");
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    ExpressionIterator ei = DebuggingUtils.expressionsFromStrings("((()");
+                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("(()");
+                    ei.next();
+                });
+
+        assertThrows(UnbalancedParenthesesException.class,
+                () -> {
+                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("((()");
                     ei.next();
                 });
     }

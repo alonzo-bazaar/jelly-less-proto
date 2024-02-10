@@ -1,4 +1,4 @@
-package org.jelly.parse.expression;
+package org.jelly.parse.syntaxtree;
 
 import java.util.Iterator;
 import java.util.Stack;
@@ -11,11 +11,11 @@ import org.jelly.parse.errors.UnbalancedParenthesesException;
 import org.jelly.parse.token.*;
 
 
-public class ExpressionIterator implements Iterator<Object> {
+public class SyntaxTreeIterator implements Iterator<Object> {
     private final Iterator<Token> tokens;
     private final Stack<ListBuilder> stack = new Stack<>();
 
-    public ExpressionIterator(Iterator<Token> tokens) {
+    public SyntaxTreeIterator(Iterator<Token> tokens) {
         this.tokens = tokens;
     }
 
