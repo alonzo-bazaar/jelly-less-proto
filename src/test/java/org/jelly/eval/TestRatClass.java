@@ -16,4 +16,26 @@ public class TestRatClass {
         b += (a + c);
         return b;
     }
+
+    public void thrower() throws Exception {
+        throw new Exception("except");
+    }
+
+    public void runtimeThrower() throws RuntimeException {
+        throw new RuntimeException("runtime except");
+    }
+
+    public int returningThrower(int n) throws Exception {
+        if(n%2==0) {
+            return n+2;
+        }
+        else throw new Exception("return except");
+    }
+
+    public int returningRuntimeThrower(int n) throws RuntimeException {
+        if(n%2==0) {
+            return n+2;
+        }
+        else throw new RuntimeException("runtime return except");
+    }
 }

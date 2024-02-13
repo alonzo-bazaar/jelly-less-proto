@@ -25,12 +25,12 @@ import java.util.HashMap;
 public class ForeignMethodCaller {
     private final static PrimitiveWrapperHandler wrap = new PrimitiveWrapperHandler();
 
-    public static Result<Object, ReflectiveOperationException>
+    public static Result<Object, Throwable>
         tryCall(Object caller, String methName, Object[] args) {
         return tryClassObjectCall(caller.getClass(), caller, methName, args);
     }
 
-    public static Result<Object, ReflectiveOperationException>
+    public static Result<Object, Throwable>
         tryCallStatic(Class<?> callerClass, String methName, Object[] args) {
         return tryClassObjectCall(callerClass, null, methName, args);
     }
@@ -55,26 +55,26 @@ public class ForeignMethodCaller {
     }
 
 
-    private static Result<Object, ReflectiveOperationException>
+    private static Result<Object, Throwable>
         tryClassObjectCall(Class<?> callerClass, Object caller, String methName, Object[] args) {
         try {
             Method meth = lookupMethod(callerClass, methName, typeArray(args));
             return new GoodResult<>(meth.invoke(caller, args));
         }
-        catch(ReflectiveOperationException ex) {
+        catch(Throwable t) {
             // ex can be: no such method exception, illegal access exception, or invocation target exception
-            return new BadResult<>(ex);
+            return new BadResult<>(t);
         }
     }
 
-    private static Result<Object, ReflectiveOperationException>
+    private static Result<Object, Throwable>
         tryConstruct(Class<?> cls, Object[] args) {
         try {
             Constructor<?> c = lookupConstructor(cls, typeArray(args));
             return new GoodResult<>(c.newInstance(args));
         }
-        catch(ReflectiveOperationException ex) {
-            return new BadResult<>(ex);
+        catch(Throwable t) {
+            return new BadResult<>(t);
         }
     }
 

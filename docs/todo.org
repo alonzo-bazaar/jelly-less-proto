@@ -1,0 +1,10 @@
+* Doc
+- [ ] aggiorna class diagram
+- [ ] package diagram
+- [ ] conferma dai bro
+
+* test
+- [ ] varianti di form
+- [ ] letterali
+  - [ ] carattere
+  - [ ] numero

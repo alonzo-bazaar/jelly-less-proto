@@ -13,7 +13,6 @@ import org.jelly.lang.errors.CompilationError;
 import org.jelly.eval.procedure.Procedure;
 import org.jelly.eval.evaluable.compile.Compiler;
 import org.jelly.eval.evaluable.Evaluable;
-import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.eval.runtime.errors.VariableDoesNotExistException;
 
 import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
@@ -38,7 +37,7 @@ public class JellyRuntime {
         return ev.eval(env);
     }
 
-    public Object evalString(String s) throws CompilationError, MalformedFormException {
+    public Object evalString(String s) throws CompilationError {
         Iterator<Object> ei = DebuggingUtils.expressionsFromStrings(s);
         while (ei.hasNext()) {
             Object le = ei.next();
@@ -52,10 +51,7 @@ public class JellyRuntime {
     }
 
     public Object evalFile(File f) throws FileNotFoundException, CompilationError {
-        Iterator<Object> expressions =
-            new SyntaxTreeIterator
-            (new TokenIterator
-             (new FileLineIterator(f)));
+        Iterator<Object> expressions = new SyntaxTreeIterator(new TokenIterator (new FileLineIterator(f)));
 
         while(expressions.hasNext()) {
             Object expr = expressions.next();
@@ -92,6 +88,7 @@ public class JellyRuntime {
          * per quanto l'assunzione sia abbastanza sensata
          * (al momento non ci sono environment multipli)
          * mi preme di specificarla, in caso esploda qualcosa a causa di essa
+         * (poi magari se implemento i package lo faccio con environment multipli, quindi non si sa mai)
          *
          * ora che funcall evaluable chiama evlist di suo non c'è bisogno di farlo qui
          * le funzioni saranno chiamte sui valori, e non sugli argomenti (simboli et al)
@@ -107,12 +104,12 @@ public class JellyRuntime {
             });
 
         env.define(new LispSymbol("null?"), (Procedure) values -> {
-                Utils.ensureSizeExactly("null",1,values);
+                Utils.ensureSizeExactly("null? check",1,values);
                 return values.get(0) == Constants.NIL;
             });
 
         env.define(new LispSymbol("equal?"), (Procedure) values -> {
-                Utils.ensureSizeExactly("equal?",2,values);
+                Utils.ensureSizeExactly("equal? check",2,values);
                 return values.get(0).equals(values.get(1));
             });
 
@@ -135,6 +132,12 @@ public class JellyRuntime {
 
         env.define(new LispSymbol("call"),(Procedure) FFI::call);
         env.define(new LispSymbol("callStatic"),(Procedure) FFI::callStatic);
+
+        env.define(new LispSymbol("tryCall"),(Procedure) FFI::tryCall);
+        env.define(new LispSymbol("tryCallStatic"),(Procedure) FFI::tryCallStatic);
+
+        // env.define(new LispSymbol("tryCall"),(Procedure) FFI::tryCall);
+        // env.define(new LispSymbol("tryCallStatic"),(Procedure) FFI::tryCallStatic);
 
         env.define(new LispSymbol("print"), (Procedure) values -> {
                 // fatto per interagire un po' da subito

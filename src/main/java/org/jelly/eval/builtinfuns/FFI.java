@@ -2,6 +2,7 @@ package org.jelly.eval.builtinfuns;
 
 import org.jelly.eval.errors.IncorrectArgumentsException;
 import org.jelly.lang.javaffi.ForeignMethodCaller;
+import org.jelly.lang.javaffi.Result;
 
 import java.util.List;
 
@@ -24,7 +25,9 @@ public final class FFI {
     public static Object call(List<Object> args) throws IncorrectArgumentsException {
         Utils.ensureSizeAtLeast("call", 2, args);
         Utils.ensureSingleOfType("call", 1, String.class, args);
+
         Object[] argsArr = args.subList(2, args.size()).toArray();
+
         return ForeignMethodCaller.call(args.get(0), (String)args.get(1), argsArr);
     }
 
@@ -32,7 +35,28 @@ public final class FFI {
         Utils.ensureSizeAtLeast("callStatic", 2, args);
         Utils.ensureSingleOfType("callStatic", 0, Class.class, args);
         Utils.ensureSingleOfType("callStatic", 1, String.class, args);
+
         Object[] argsArr = args.subList(2, args.size()).toArray();
+
         return ForeignMethodCaller.callStatic((Class<?>)args.get(0), (String)args.get(1), argsArr);
+    }
+
+    public static Result<?,?> tryCall(List<Object> args) throws IncorrectArgumentsException {
+        Utils.ensureSizeAtLeast("call", 2, args);
+        Utils.ensureSingleOfType("call", 1, String.class, args);
+
+        Object[] argsArr = args.subList(2, args.size()).toArray();
+
+        return ForeignMethodCaller.tryCall(args.get(0), (String)args.get(1), argsArr);
+    }
+
+    public static Result<?,?> tryCallStatic(List<Object> args) throws IncorrectArgumentsException {
+        Utils.ensureSizeAtLeast("callStatic", 2, args);
+        Utils.ensureSingleOfType("callStatic", 0, Class.class, args);
+        Utils.ensureSingleOfType("callStatic", 1, String.class, args);
+
+        Object[] argsArr = args.subList(2, args.size()).toArray();
+
+        return ForeignMethodCaller.tryCallStatic((Class<?>)args.get(0), (String)args.get(1), argsArr);
     }
 }

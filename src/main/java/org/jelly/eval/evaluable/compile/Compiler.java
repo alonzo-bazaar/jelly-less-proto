@@ -75,7 +75,7 @@ public class Compiler {
         compilerForForm(c).check();
     }
 
-    static Evaluable fromAtom(Object exp) {
+    private static Evaluable fromAtom(Object exp) {
         if (exp instanceof LispSymbol sym)
             return new LookupEvaluable(sym);
         else
