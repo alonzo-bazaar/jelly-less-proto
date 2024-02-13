@@ -61,9 +61,9 @@ public class TokenIteratorTest {
 
     @Test
     public void getSpecialWhite() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings("(  kitemmuort  )");
+        TokenIterator ti = DebuggingUtils.tokensFromStrings("(  prova  )");
         assertEqualsPunctuation("(", ti.next());
-        assertEqualsNormal("kitemmuort", ti.next());
+        assertEqualsNormal("prova", ti.next());
         assertEqualsPunctuation(")", ti.next());
         assertFalse(ti.hasNext());
     }
@@ -98,8 +98,8 @@ public class TokenIteratorTest {
 
     @Test
     public void bothWhitespace() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings("   kitemmuort       ");
-        assertEqualsNormal("kitemmuort", ti.next());
+        TokenIterator ti = DebuggingUtils.tokensFromStrings("   prova       ");
+        assertEqualsNormal("prova", ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -170,11 +170,11 @@ public class TokenIteratorTest {
 
     @Test
     public void whitestHour() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings("mannaggia:  kite", "\t mmuort", "\t");
+        TokenIterator ti = DebuggingUtils.tokensFromStrings("mannaggia:  anna", "\t montemurro", "\t");
         assertEqualsNormal("mannaggia", ti.next());
         assertEqualsPunctuation(":", ti.next());
-        assertEqualsNormal("kite", ti.next());
-        assertEqualsNormal("mmuort", ti.next());
+        assertEqualsNormal("anna", ti.next());
+        assertEqualsNormal("montemurro", ti.next());
         assertFalse(ti.hasNext());
     }
 
@@ -250,15 +250,15 @@ public class TokenIteratorTest {
 
     @Test
     public void stringsAndSpecials() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings("(strcat\"kite\"\"mmurt\" \"mannaggia \\\"\" bello bello\"mannaggia\")");
+        TokenIterator ti = DebuggingUtils.tokensFromStrings("(strcat\"walu\"\"igi\" \"mannaggia \\\"\" bello bello\"forse\")");
         assertEqualsPunctuation("(", ti.next());
         assertEqualsNormal("strcat", ti.next());
-        assertEqualsLiteral("kite", ti.next());
-        assertEqualsLiteral("mmurt", ti.next());
+        assertEqualsLiteral("walu", ti.next());
+        assertEqualsLiteral("igi", ti.next());
         assertEqualsLiteral("mannaggia \"", ti.next());
         assertEqualsNormal("bello", ti.next());
         assertEqualsNormal("bello", ti.next());
-        assertEqualsLiteral("mannaggia", ti.next());
+        assertEqualsLiteral("forse", ti.next());
         assertEqualsPunctuation(")", ti.next());
         assertFalse(ti.hasNext());
     }
@@ -410,10 +410,10 @@ public class TokenIteratorTest {
          * questo dovrebbe essere in grado di ignorare i commenti dati
          * controllo giusto in caso
          */
-        TokenIterator ti = DebuggingUtils.tokensFromStrings("ti voglio ;; bastonare", "benissimo; muori", "<3");
-        assertEqualsNormal("ti", ti.next());
-        assertEqualsNormal("voglio", ti.next());
-        assertEqualsNormal("benissimo", ti.next());
+        TokenIterator ti = DebuggingUtils.tokensFromStrings("ei fu ;; siccome", "immobile; (morto)", "<3");
+        assertEqualsNormal("ei", ti.next());
+        assertEqualsNormal("fu", ti.next());
+        assertEqualsNormal("immobile", ti.next());
         assertEqualsNormal("<3", ti.next());
         assertFalse(ti.hasNext());
     }
