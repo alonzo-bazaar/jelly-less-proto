@@ -1,4 +1,4 @@
-package org.jelly.eval;
+package org.jelly.eval.evaluable;
 
 public class TestRatClass {
     // simple class on which to test foreign method calls

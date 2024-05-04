@@ -3,7 +3,7 @@ package org.jelly.eval.procedure;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jelly.eval.BaseEvaluableTest;
+import org.jelly.eval.evaluable.BaseEvaluableTest;
 import org.jelly.eval.runtime.EnvFrame;
 import org.jelly.lang.data.LispSymbol;
 import org.jelly.lang.data.Constants;

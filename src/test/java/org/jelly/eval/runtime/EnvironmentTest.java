@@ -1,6 +1,5 @@
-package org.jelly.eval;
+package org.jelly.eval.runtime;
 
-import org.jelly.eval.runtime.Environment;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNull;
 

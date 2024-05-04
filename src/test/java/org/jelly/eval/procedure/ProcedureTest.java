@@ -1,5 +1,6 @@
-package org.jelly.eval;
+package org.jelly.eval.procedure;
 
+import org.jelly.eval.evaluable.BaseEvaluableTest;
 import org.jelly.lang.data.LispList;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +10,7 @@ import org.jelly.parse.errors.ParsingException;
 
 public class ProcedureTest extends BaseEvaluableTest {
     @Test
-    public void testLambdaUsingBuiltins() throws ParsingException {
+    public void testLambda() throws ParsingException {
         fromString("(define bigger-than-10" +
                    "(lambda (x) (if (> x 10) \"yes\" \"no\")))").eval(env);
 
@@ -19,7 +20,7 @@ public class ProcedureTest extends BaseEvaluableTest {
     }
 
     @Test
-    public void testLambdaImmediateBuiltins() throws ParsingException {
+    public void testLambdaImmediate() throws ParsingException {
         assertEquals("no", (String)fromString
                      ("((lambda (x) (if (> x 10) \"yes\" \"no\")) 9)")
                      .eval(env));

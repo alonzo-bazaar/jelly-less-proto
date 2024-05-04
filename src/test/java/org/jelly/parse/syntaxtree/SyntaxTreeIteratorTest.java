@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ExpressionIteratorTest {
+public class SyntaxTreeIteratorTest {
     @Test
-    public void someSymbols() throws ParsingException {
+    public void testSymbols() throws ParsingException {
         SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("mamma mia");
         Object o;
         LispSymbol ls;
@@ -27,7 +27,7 @@ public class ExpressionIteratorTest {
     }
 
     @Test
-    public void someNumbers() throws ParsingException {
+    public void testIntegers() throws ParsingException {
         SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("20 30 0");
         Object o;
 
@@ -44,14 +44,14 @@ public class ExpressionIteratorTest {
     }
 
     @Test
-    public void consesLength() throws ParsingException {
+    public void testConsLenght() throws ParsingException {
         SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("(ei fu siccome immobile)");
         Object o = ei.next();
         assertEquals(4, ((Cons)o).length());
     }
 
     @Test
-    public void consesContents() throws ParsingException {
+    public void testConsContents() throws ParsingException {
         SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("(define x 20)");
         // in cons fa (cons define (cons x (cons 20 nil))),
         // stiamo testando contro questa struttura
@@ -69,7 +69,7 @@ public class ExpressionIteratorTest {
     }
 
     @Test
-    public void someNestedConses() throws ParsingException {
+    public void testNestedConses() throws ParsingException {
         SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("((ok))");
         // in cons fa (cons (cons ok nil) nil),
         // stiamo testando contro questa struttura
@@ -85,7 +85,7 @@ public class ExpressionIteratorTest {
     }
 
     @Test
-    public void testUnclosedParentheses () {
+    public void testThrowsOnUnbalancedParentheses () {
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
                     SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings(")");

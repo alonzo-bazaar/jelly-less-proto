@@ -1,4 +1,4 @@
-package org.jelly.eval;
+package org.jelly.eval.evaluable;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.jelly.parse.errors.ParsingException;
 
 
-public class ArithEvaluableTest extends BaseEvaluableTest {
+public class ArithFuncallTest extends BaseEvaluableTest {
 
     @Test
     public void testAdd() throws ParsingException {

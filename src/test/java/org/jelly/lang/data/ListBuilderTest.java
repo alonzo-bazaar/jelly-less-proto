@@ -1,9 +1,5 @@
-package org.jelly.lang;
+package org.jelly.lang.data;
 
-import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.Constants;
-import org.jelly.lang.data.LispList;
-import org.jelly.lang.data.ListBuilder;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 public class ListBuilderTest {

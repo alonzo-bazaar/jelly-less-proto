@@ -1,4 +1,4 @@
-package org.jelly.eval;
+package org.jelly.eval.evaluable;
 
 import org.jelly.eval.procedure.Procedure;
 import org.jelly.eval.runtime.Environment;

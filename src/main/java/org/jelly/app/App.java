@@ -20,7 +20,7 @@ import org.jelly.utils.InputLinesIterator;
 public class App 
 {
 
-    private static JellyRuntime runtime = new JellyRuntime();
+    private static final JellyRuntime runtime = new JellyRuntime();
     public static void main( String[] args ) {
         // currently debugging like an ass 
         System.out.println(args.length);
@@ -51,7 +51,7 @@ public class App
                 loadFile(new File(rn.getFilename()));
             }
             else
-                System.out.println("OK DUDE WHAT THE FUCK");
+                System.out.println("BRO WHAT?");
             break;
         default:
             System.out.println("I HAVE NO IDEA WHAT JUST HAPPENED BUT IT'S NOT GOOD");

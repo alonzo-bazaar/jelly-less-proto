@@ -37,21 +37,21 @@ public class TokenIteratorTest {
 
 
     @Test
-    public void justOneChar() {
+    public void testJustOneChar() {
         TokenIterator nti = DebuggingUtils.tokensFromStrings("a");
         assertEqualsNormal("a", nti.next());
         assertFalse(nti.hasNext());
     }
 
     @Test
-    public void justOneCharMultiline() {
+    public void testJustOneCharMultiline() {
         TokenIterator nti = DebuggingUtils.tokensFromStrings("a", "b");
         assertEqualsNormal("a", nti.next());
         assertEqualsNormal("b", nti.next());
         assertFalse(nti.hasNext());
     }
     @Test
-    public void getSpecialNonWhite() {
+    public void testExtractSpecialNonWhite() {
         TokenIterator nti = DebuggingUtils.tokensFromStrings("(prova)");
         assertEqualsPunctuation("(", nti.next());
         assertEqualsNormal("prova", nti.next());
@@ -60,7 +60,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void getSpecialWhite() {
+    public void testExtractSpecialWhite() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("(  prova  )");
         assertEqualsPunctuation("(", ti.next());
         assertEqualsNormal("prova", ti.next());
@@ -69,49 +69,49 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void trailingWhitespace() {
+    public void testTrailingWhitespace() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("fat       ");
         assertEqualsNormal("fat", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void leadingWhiteSpace() {
+    public void testLeadingWhiteSpace() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("      fat");
         assertEqualsNormal("fat", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void leadingWhiteSpaceSpecial() {
+    public void testLeadingWhiteSpaceSpecial() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("      ::");
         assertEqualsPunctuation("::", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void trailingWhitespaceSpecial() {
+    public void testTrailingWhitespaceSpecial() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings(":::       ");
         assertEqualsPunctuation(":::", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void bothWhitespace() {
+    public void testBothWhitespace() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("   prova       ");
         assertEqualsNormal("prova", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void bothWhitespaceSpecial() {
+    public void testBothWhitespaceSpecial() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("   :       ");
         assertEqualsPunctuation(":", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void getsBiggestSpecial() {
+    public void testGetsBiggestSpecial() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings(":::::::::::");
         assertEqualsPunctuation(":::", ti.next());
         assertEqualsPunctuation(":::", ti.next());
@@ -121,7 +121,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void noCommentAllParen() {
+    public void testSymbolsAndParens() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("(when (that (fat old sun)) in (the sky))");
         assertEqualsPunctuation("(", ti.next());
         assertEqualsNormal("when", ti.next());
@@ -143,8 +143,8 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void CommentNoSpacesAllSpecial() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings("(when(that(fat:old::sun)):::in::(the#||#sky))");
+    public void testSymbolsAndParensComments() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings("(when(that(fat:old::sun)):::in::(the#||#sky)); ok, done");
         assertEqualsPunctuation("(", ti.next());
         assertEqualsNormal("when", ti.next());
         assertEqualsPunctuation("(", ti.next());
@@ -169,7 +169,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void whitestHour() {
+    public void testLotsOfWhitespaces() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("mannaggia:  anna", "\t montemurro", "\t");
         assertEqualsNormal("mannaggia", ti.next());
         assertEqualsPunctuation(":", ti.next());
@@ -179,7 +179,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void specialWhite() { // non il dentifricio
+    public void testSpecialWhite() { // non il dentifricio
         TokenIterator ti = DebuggingUtils.tokensFromStrings("kono: dio :da");
         assertEqualsNormal("kono", ti.next());
         assertEqualsPunctuation(":", ti.next());
@@ -190,28 +190,35 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void string() {
+    public void testString() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("\"stringus\"");
         assertEqualsLiteral("stringus", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void stringStartingWithWhitespace() {
+    public void testStringStartingWithWhitespace() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("\"    stringus\"");
         assertEqualsLiteral("    stringus", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void stringEndingWithWhitespace() {
+    public void testStringEndingWithWhitespace() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("\"stringus      \"");
         assertEqualsLiteral("stringus      ", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void stringBeforeTokens() {
+    public void testStringBothEndsWithWhitespace() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings("\"  stringus      \"");
+        assertEqualsLiteral("  stringus      ", ti.next());
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void testStringBeforeTokens() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("\"something\"in the way  ");
         assertEqualsLiteral("something", ti.next());
         assertEqualsNormal("in", ti.next());
@@ -221,7 +228,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void stringAfterTokens() {
+    public void testStringAfterTokens() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("çeci est une\"stringa\"");
         assertEqualsNormal("çeci", ti.next());
         assertEqualsNormal("est", ti.next());
@@ -231,7 +238,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void multipleStrings() {
+    public void testMultipleStrings() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("\"jojo\" \"bizarre\" \"strings\"");
         assertEqualsLiteral("jojo", ti.next());
         assertEqualsLiteral("bizarre", ti.next());
@@ -240,7 +247,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void multipleAttachedStrings() {
+    public void testMultipleAttachedStrings() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("\"jojo\"\"bizarre\"\"strings\"");
         assertEqualsLiteral("jojo", ti.next());
         assertEqualsLiteral("bizarre", ti.next());
@@ -249,7 +256,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void stringsAndSpecials() {
+    public void testStringsAndSpecials() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("(strcat\"walu\"\"igi\" \"mannaggia \\\"\" bello bello\"forse\")");
         assertEqualsPunctuation("(", ti.next());
         assertEqualsNormal("strcat", ti.next());
@@ -264,14 +271,14 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void emptyString() {
+    public void testEmptyString() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("\"\"");
         assertEqualsLiteral("", ti.next());
         assertFalse(ti.hasNext());
     }
     
     @Test
-    public void multipleEmptyStrings() {
+    public void testMultipleEmptyStrings() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("\"\"\"\"\"\"");
         assertEqualsLiteral("", ti.next());
         assertEqualsLiteral("", ti.next());
@@ -280,7 +287,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void gettingStupid() {
+    public void testVariousParentheses() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("((((((((((((((((((((");
         assertEqualsPunctuation("(", ti.next());
         assertEqualsPunctuation("(", ti.next());
@@ -306,7 +313,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void gettingStupidWhitespace() {
+    public void testVariousParenthesesWhitespace() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings(" ((    ((((((((((((((((((  ");
         assertEqualsPunctuation("(", ti.next());
         assertEqualsPunctuation("(", ti.next());
@@ -332,7 +339,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void gettingStupider() {
+    public void testVariousMatchingParentheses() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("()()()()()()()()()()");
         assertEqualsPunctuation("(", ti.next());
         assertEqualsPunctuation(")", ti.next());
@@ -358,7 +365,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void gettingStupiderWhitespace() {
+    public void testVariousMatchingParenthesesWhitespace() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("() ( )()()()(  )()()()() ");
         assertEqualsPunctuation("(", ti.next());
         assertEqualsPunctuation(")", ti.next());
@@ -384,7 +391,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void ignoresInlinedMultlineComments() {
+    public void testIgnoresInlinedMultlineComments() {
         /* visto che si usa un SignificantCharsIterator,
          * questo dovrebbe essere in grado di ignorare i commenti dati
          * controllo giusto in caso
@@ -396,7 +403,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void ignoresMultilineComments() {
+    public void testIgnoresMultilineComments() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("ti voglio #| bene", " |# bastonare");
         assertEqualsNormal("ti", ti.next());
         assertEqualsNormal("voglio", ti.next());
@@ -405,7 +412,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void ignoresInlineComments() {
+    public void testIgnoresInlineComments() {
         /* visto che si usa un SignificantCharsIterator,
          * questo dovrebbe essere in grado di ignorare i commenti dati
          * controllo giusto in caso
@@ -419,7 +426,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void newlineBreaksTokensNormal() {
+    public void testNewlineBreaksTokensNormal() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("lovely",
                                           "rita",
                                           "meter",
@@ -431,7 +438,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void newlineBreaksTokensNormalWithWhitespace() {
+    public void testNewlineBreaksTokensNormalWhitespace() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("lovely  ",
                 "rita",
                 "meter ",
@@ -443,7 +450,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void newlineBreaksTokensNormalWithComments() {
+    public void testNewlineBreaksTokensNormalComments() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("lovely ;; adjective",
                 "rita #| name |#",
                 "meter",
@@ -454,8 +461,52 @@ public class TokenIteratorTest {
         assertEqualsNormal("maid", ti.next());
     }
 
+
+
     @Test
-    public void inlineCommentFinisher() {
+    public void testJustInlineComment() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings(" ;; comment");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void testJustInlineCommentBarebone() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings(";");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void testJustInlineComments() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings(" ;; comment", "; and another comment", ";;; now for no comment", ";");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void testJustMultilineComment() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings(" #| comment", " and comment still |#");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void testJustMultilineCommentBarebone() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings(" #||#");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void testJustMultilineCommentBareboneNewlineWrapper() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings(" #|","","|#");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void testJustMultilineComments() {
+        TokenIterator ti = DebuggingUtils.tokensFromStrings(" #| comment", " still another |#", "#| now for no comment|#", "#||#", "");
+        assertFalse(ti.hasNext());
+    }
+
+    @Test
+    public void testInlineCommentFinisher() {
         // bug earlier where skipInlineComment() wouldn't signal eof and set currentLine() to the next() of an iterator
         // that didn't hasNext(), ergo, null
         TokenIterator ti = DebuggingUtils.tokensFromStrings("hello ;; comment");
@@ -463,65 +514,22 @@ public class TokenIteratorTest {
         assertFalse(ti.hasNext());
     }
 
-
     @Test
-    public void justInlineComment() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings(" ;; comment");
-        assertFalse(ti.hasNext());
-    }
-
-    @Test
-    public void justInlineCommentBarebone() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings(";");
-        assertFalse(ti.hasNext());
-    }
-
-    @Test
-    public void justInlineComments() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings(" ;; comment", "; and another comment", ";;; now for no comment", ";");
-        assertFalse(ti.hasNext());
-    }
-
-    @Test
-    public void justMultilineComment() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings(" #| comment", " and comment still |#");
-        assertFalse(ti.hasNext());
-    }
-
-    @Test
-    public void justMultilineCommentBarebone() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings(" #||#");
-        assertFalse(ti.hasNext());
-    }
-
-    @Test
-    public void justMultilineCommentBareboneNewlineHugger() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings(" #|","","|#");
-        assertFalse(ti.hasNext());
-    }
-
-    @Test
-    public void justMultilineComments() {
-        TokenIterator ti = DebuggingUtils.tokensFromStrings(" #| comment", " still another |#", "#| now for no comment|#", "#||#", "");
-        assertFalse(ti.hasNext());
-    }
-
-    @Test
-    public void multilineCommentFinisher() {
+    public void testMultilineCommentFinisher() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("lovely #| rita |#");
         assertEqualsNormal("lovely", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void multilineCommentMultilineComment() {
+    public void testMultilineCommentMultilineComment() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("lovely #| #| rita #| |#");
         assertEqualsNormal("lovely", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void newlineBreaksTokensNumbers() {
+    public void testNewlineBreaksTokensNumbers() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("lovely",
                                           "100",
                                           "meter",
@@ -533,7 +541,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void normalCharacterLiterals() {
+    public void testNormalCharacterLiterals() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("#\\a",
                                           "#\\b",
                                           "#\\c");
@@ -544,7 +552,7 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void specialCharacterLiterals() {
+    public void testSpecialCharacterLiterals() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("#\\Space",
                                           "#\\Newline",
                                           "#\\Tab");
@@ -555,14 +563,14 @@ public class TokenIteratorTest {
     }
 
     @Test
-    public void stringEscapeSequences() {
+    public void testStringEscapeSequences() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("\"lovely \\n rita \\t meter\"");
         assertEqualsLiteral("lovely \n rita \t meter", ti.next());
         assertFalse(ti.hasNext());
     }
 
     @Test
-    public void newlineTokenSeparators() {
+    public void testNewlineTokenSeparators() {
         TokenIterator ti = DebuggingUtils.tokensFromStrings("made\nin\theaven");
         assertEqualsNormal("made", ti.next());
         assertEqualsNormal("in", ti.next());

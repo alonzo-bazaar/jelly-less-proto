@@ -1,8 +1,5 @@
-package org.jelly.eval;
+package org.jelly.eval.evaluable;
 
-import org.jelly.eval.evaluable.AndEvaluable;
-import org.jelly.eval.evaluable.Evaluable;
-import org.jelly.eval.evaluable.OrEvaluable;
 import org.jelly.lang.data.LispSymbol;
 import org.jelly.lang.data.LispList;
 
