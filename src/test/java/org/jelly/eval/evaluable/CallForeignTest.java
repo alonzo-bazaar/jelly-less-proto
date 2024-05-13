@@ -45,7 +45,7 @@ public class CallForeignTest extends BaseEvaluableTest {
             assertEquals("string", (String)fromString("(call testObj \"testMeth\")").eval(env));
         }
         catch(Exception e) {
-            throw new AssertionError("fuck you", e);
+            throw new AssertionError("oops", e);
         }
     }
 
@@ -60,7 +60,7 @@ public class CallForeignTest extends BaseEvaluableTest {
             assertEquals(60, (int)fromString("(call testObj \"mixal\" 10 20 30)").eval(env));
         }
         catch(Exception e) {
-            throw new AssertionError("fuck you", e);
+            throw new AssertionError("oops", e);
         }
     }
     @Test
@@ -75,12 +75,15 @@ public class CallForeignTest extends BaseEvaluableTest {
 
     @Test
     public void testCallStaticIntegerParse() {
-        assertEquals(10, (int) fromString("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"10\")").eval(env));
+        assertEquals(10, (int)fromString("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"10\")").eval(env));
     }
 
-    // questo non funziona perchè tutti i tipi primitivi in jelly sono sostituiti da tipi boxed
-    // ma getMethod per fare la foreign function interface si aspettta un match esastto dei tipi
-    // quindi se voglio chiamare una funzoine che utilizza tipi primitivi devo inventarmi qualcos'altro
+    /* questo non funziona perchè tutti i tipi primitivi in jelly sono
+     * sostituiti da tipi boxed ma getMethod per fare la foreign
+     * function interface si aspettta un match esastto dei tipi
+     * quindi se voglio chiamare una funzoine che utilizza tipi
+     * primitivi devo inventarmi qualcos'altro
+     */
     @Test
     public void testCallStaticIntegerParseMoreArgs() {
         assertEquals(255, (int)fromString("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"ff\" 16)").eval(env));

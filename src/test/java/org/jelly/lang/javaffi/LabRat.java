@@ -25,6 +25,20 @@ public class LabRat {
         return this.x;
     }
 
+    public int canThrow(int i) throws Exception {
+        if(i == 0) {
+            throw new Exception("exception");
+        }
+        else return x;
+    }
+
+    public static int canThrowStatic(int i) throws Exception {
+        if(i == 0) {
+            throw new Exception("exception");
+        }
+        else return i;
+    }
+
     public int get() {
         return this.x;
     }

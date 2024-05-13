@@ -61,6 +61,9 @@ public class ForeignMethodCaller {
             Method meth = lookupMethod(callerClass, methName, typeArray(args));
             return new GoodResult<>(meth.invoke(caller, args));
         }
+        catch(InvocationTargetException ite) {
+            return new BadResult<>(ite.getCause());
+        }
         catch(Throwable t) {
             // ex can be: no such method exception, illegal access exception, or invocation target exception
             return new BadResult<>(t);

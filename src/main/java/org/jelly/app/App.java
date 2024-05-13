@@ -19,10 +19,8 @@ import org.jelly.utils.InputLinesIterator;
  */
 public class App 
 {
-
     private static final JellyRuntime runtime = new JellyRuntime();
     public static void main( String[] args ) {
-        // currently debugging like an ass 
         System.out.println(args.length);
         for (String arg : args) {
             System.out.println(arg);

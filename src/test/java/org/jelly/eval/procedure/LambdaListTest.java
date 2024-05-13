@@ -38,7 +38,6 @@ public class LambdaListTest extends BaseEvaluableTest {
         assertEquals(10, frame.lookup(new LispSymbol("a")));
         assertEquals(20, frame.lookup(new LispSymbol("b")));
         assertEquals(30, frame.lookup(new LispSymbol("c")));
-        assertEquals(30, frame.lookup(new LispSymbol("c")));
         assertSame(Constants.NIL, frame.lookup(new LispSymbol("d")));
     }
 

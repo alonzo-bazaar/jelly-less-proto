@@ -2,7 +2,6 @@ package org.jelly.eval.procedure;
 
 import java.util.List;
 
-import jdk.jshell.execution.Util;
 import org.jelly.eval.procedure.errors.BadParameterBindException;
 import org.jelly.eval.runtime.EnvFrame;
 import org.jelly.eval.builtinfuns.Utils;

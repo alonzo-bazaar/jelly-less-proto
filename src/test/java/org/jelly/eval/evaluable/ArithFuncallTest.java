@@ -201,4 +201,10 @@ public class ArithFuncallTest extends BaseEvaluableTest {
         });
     }
 
+    @Test
+    public void testMixedTypesAdd() {
+        assertEquals(3.0, (double)fromString("(+ 1.0 2)").eval(env), 0.00001);
+        assertEquals(3.0, (double)fromString("(+ 1 2.0)").eval(env), 0.00001);
+        assertEquals(3.0, (double)fromString("(+ 1 1.0 1)").eval(env), 0.00001);
+    }
 }

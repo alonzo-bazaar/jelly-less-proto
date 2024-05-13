@@ -52,7 +52,7 @@ public class ProcedureTest extends BaseEvaluableTest {
     }
 
     @Test
-    public void testHigherOrderProcedureParametersDefinedAfter() throws ParsingException {
+    public void testHigherOrderProcedureFunctionParameter() throws ParsingException {
         fromString("(define twice (lambda (fn x) (fn (fn x))))").eval(env);
         fromString("(define square (lambda (x) (* x x)))").eval(env);
 
@@ -65,7 +65,7 @@ public class ProcedureTest extends BaseEvaluableTest {
     }
 
     @Test
-    public void testHigherOrderProcedureParametersDefinedBefore() throws ParsingException {
+    public void testHigherOrderProcedureFunctionParameter_parameterDefinedBefore() throws ParsingException {
         fromString("(define square (lambda (x) (* x x)))").eval(env);
         fromString("(define twice (lambda (fn x) (fn (fn x))))").eval(env);
 
@@ -76,18 +76,19 @@ public class ProcedureTest extends BaseEvaluableTest {
 
 
     @Test
-    public void testHigherOrderProcedureLambdaDefinedBefore() throws ParsingException {
-        fromString("(define square (lambda (x) (* x x)))").eval(env);
+    public void testHigherOrderProcedureFunctionReturn() throws ParsingException {
         fromString("(define twice (lambda (fn) (lambda (x) (fn (fn x)))))").eval(env);
+        fromString("(define square (lambda (x) (* x x)))").eval(env);
 
         assertEquals(16, (int)fromString("((twice square) 2)").eval(env));
         assertEquals("ok",
                      (String)fromString("((twice cdr) (cons 1 (cons 2 \"ok\")))").eval(env));
     }
+
     @Test
-    public void testHigherOrderProcedureLambdaDefinedAfter() throws ParsingException {
-        fromString("(define twice (lambda (fn) (lambda (x) (fn (fn x)))))").eval(env);
+    public void testHigherOrderProcedureFunctionReturn_parameterDefinedBefore() throws ParsingException {
         fromString("(define square (lambda (x) (* x x)))").eval(env);
+        fromString("(define twice (lambda (fn) (lambda (x) (fn (fn x)))))").eval(env);
 
         assertEquals(16, (int)fromString("((twice square) 2)").eval(env));
         assertEquals("ok",
