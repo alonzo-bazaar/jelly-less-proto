@@ -1,9 +1,9 @@
-package org.jelly.eval.runtime;
+package org.jelly.eval.environment;
 
 import java.util.List;
 
 import org.jelly.eval.ErrorFormatter;
-import org.jelly.eval.runtime.errors.VariableDoesNotExistException;
+import org.jelly.eval.environment.errors.VariableDoesNotExistException;
 import org.jelly.lang.data.LispSymbol;
 
 public class Environment {
@@ -83,13 +83,13 @@ public class Environment {
         this.tail = null;
     }
 
-    void dump() {
+    public void dump() {
         head.dump();
-        System.out.println("---------");
+        System.out.println("-- next frame: --");
         if (tail != null)
             tail.dump();
         else
-            System.out.println("-THE END-");
+            System.out.println("-- the end --");
     }
 }
 

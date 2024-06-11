@@ -9,6 +9,7 @@ package org.jelly.utils;
   (the class was modified the one found in the original question)
  */
 import java.util.Locale;
+
 public final class OsUtils {
     public enum OSType {
         Windows, MacOS, Linux, Other

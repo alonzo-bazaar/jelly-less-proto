@@ -1,6 +1,6 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.environment.Environment;
 import org.jelly.lang.data.LispSymbol;
 import org.jelly.lang.data.Constants;
 

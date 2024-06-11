@@ -1,13 +1,13 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.environment.Environment;
 import org.jelly.eval.utils.ListUtils;
 
 
 public class IfEvaluable implements Evaluable {
-    private Evaluable condition;
-    private Evaluable ifPart;
-    private Evaluable elsePart;
+    private final Evaluable condition;
+    private final Evaluable ifPart;
+    private final Evaluable elsePart;
 
     public IfEvaluable(Evaluable condition,
                        Evaluable ifPart,

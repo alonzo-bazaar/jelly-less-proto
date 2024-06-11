@@ -4,10 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jelly.eval.evaluable.BaseEvaluableTest;
-import org.jelly.eval.runtime.EnvFrame;
+import org.jelly.eval.environment.EnvFrame;
+import org.jelly.eval.evaluable.procedure.LambdaList;
 import org.jelly.lang.data.LispSymbol;
 import org.jelly.lang.data.Constants;
-import org.jelly.lang.data.LispLists;
+import org.jelly.utils.LispLists;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;

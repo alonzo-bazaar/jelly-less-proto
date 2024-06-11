@@ -3,7 +3,7 @@ package org.jelly.eval.evaluable.compile;
 import org.jelly.eval.evaluable.AndEvaluable;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.LispLists;
+import org.jelly.utils.LispLists;
 
 public class AndFormCompiler implements FormCompiler {
     private final Cons form;

@@ -1,5 +1,6 @@
 package org.jelly.lang;
 
+import org.jelly.lang.arith.Arith;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -7,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ArithTest {
     @Test
     public void testAdd() {
-        assertEquals(2, (int)Arith.add(1,1));
+        assertEquals(2, (int) Arith.add(1,1));
         assertEquals(0, (int)Arith.add(1,-1));
         assertEquals(2.000, (double)Arith.add(1.0,1.0), 0.00001);
         assertEquals(0.000, (double)Arith.add(1.0,-1.0), 0.00001);

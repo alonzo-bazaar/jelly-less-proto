@@ -3,6 +3,8 @@ target/
 scripts/
 # cartella con script per testare su jshell
 jshell-scripts/
+# cartella con doc un pochino...
+docs/vicariato/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup

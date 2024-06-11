@@ -45,7 +45,7 @@ public class ParameterTest
     public void defaultFileTest() {
         String[] s = { "file" };
         RunningParameters rn = RunningParameters.fromArgs(s);
-        assertEquals(RunningMode.REPL_MODE, rn.getRunningMode());
+        assertEquals(RunningMode.BATCH_MODE, rn.getRunningMode());
         assertTrue(rn.hasFile());
         assertEquals("file", rn.getFilename());
     }

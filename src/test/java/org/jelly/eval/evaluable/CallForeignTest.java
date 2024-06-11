@@ -1,7 +1,7 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.eval.procedure.Procedure;
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.evaluable.procedure.Procedure;
+import org.jelly.eval.environment.Environment;
 import org.jelly.eval.runtime.JellyRuntime;
 import org.jelly.eval.builtinfuns.Utils;
 import org.junit.jupiter.api.Test;
@@ -21,15 +21,6 @@ public class CallForeignTest extends BaseEvaluableTest {
     @BeforeEach
     public void refreshEnv() {
         env = new JellyRuntime().buildInitialEnvironment();
-        env.define(new LispSymbol("findClass"), (Procedure) args -> {
-            try {
-                Utils.ensureSizeExactly("getClass", 1, args);
-                Utils.ensureSingleOfType("getClass", 0, String.class, args);
-                return Class.forName((String) args.get(0));
-            } catch (ClassNotFoundException e) {
-                return null;
-            }
-        });
     }
 
     @AfterEach

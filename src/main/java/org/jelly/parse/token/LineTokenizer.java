@@ -10,8 +10,8 @@ public class LineTokenizer {
     /**
      * tokenizza la riga
      * in caso di enti multiline (stringa o commento multiline) estrae fino al suddetto ente (incluso)
-     * e con questo ho solo spostato il macigno di NewTokenIterator in un'altra classe, bene o male
-     * TODO spezzetta sto tumore, stai facendo una mezza god class
+     * e con questo ho solo spostato il macigno di TokenIterator in un'altra classe, bene o male
+     * TODO spezzetta sto tumore, stai facendo una god class
      */
     private String currentLine;
     private final Iterator<String> otherLines;

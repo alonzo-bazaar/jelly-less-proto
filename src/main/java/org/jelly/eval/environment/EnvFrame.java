@@ -1,4 +1,4 @@
-package org.jelly.eval.runtime;
+package org.jelly.eval.environment;
 
 import org.jelly.lang.data.LispSymbol;
 

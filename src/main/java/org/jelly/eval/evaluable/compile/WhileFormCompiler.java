@@ -5,7 +5,7 @@ import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.LispList;
-import org.jelly.lang.data.LispLists;
+import org.jelly.utils.LispLists;
 
 public class WhileFormCompiler implements FormCompiler {
     private final Cons form;

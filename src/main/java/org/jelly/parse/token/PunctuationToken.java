@@ -7,7 +7,7 @@ public final class PunctuationToken extends Token {
     public enum PunctuationType {
         PAREN_OPEN, PAREN_CLOSE, SQUARE_OPEN, SQUARE_CLOSE, CURLY_OPEN, CURLY_CLOSE,
         COMMA, QUOTE, BACKTICK,
-        COLON, DOUBLE_COLON, TRIPLE_COLON //there were just added to make the testcases harder
+        COLON, DOUBLE_COLON, TRIPLE_COLON // added just to make the test cases harder
     };
     private static final PunctuationTypeTeller ptl = new PunctuationTypeTeller();
 

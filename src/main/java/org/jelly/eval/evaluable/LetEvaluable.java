@@ -2,8 +2,8 @@ package org.jelly.eval.evaluable;
 
 import java.util.List;
 
-import org.jelly.eval.runtime.EnvFrame;
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.environment.EnvFrame;
+import org.jelly.eval.environment.Environment;
 import org.jelly.lang.data.LispSymbol;
 
 public class LetEvaluable implements Evaluable {

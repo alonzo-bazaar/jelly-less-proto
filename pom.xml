@@ -14,9 +14,9 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>jellyt</groupId>
-  <artifactId>jellyt</artifactId>
-  <version>1.0-SNAPshot</version>
+  <groupId>jelly</groupId>
+  <artifactId>jelly</artifactId>
+  <version>1.0</version>
 
   <name>jellyt</name>
   <!-- FIXME change it to the project's website -->
@@ -43,12 +43,12 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
       <version>5.10.0</version>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.jetbrains</groupId>
-          <artifactId>annotations</artifactId>
-          <version>24.0.1</version>
-          <scope>compile</scope>
-      </dependency>
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>24.0.1</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -173,16 +173,47 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
         </plugin>
       </plugins>
     </pluginManagement>
-      <plugins>
-          <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <configuration>
-                  <source>21</source>
-                  <target>21</target>
-              </configuration>
-          </plugin>
-      </plugins>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>21</source>
+          <target>21</target>
+        </configuration>
+      </plugin>
+
+      <!-- idk the tutorial told me to use it to build -->
+      <!-- https://www.baeldung.com/executable-jar-with-maven -->
+      <!-- https://stackoverflow.com/questions/574594/how-can-i-create-an-executable-runnable-jar-with-dependencies-using-maven -->
+      <!-- https://maven.apache.org/plugins/maven-assembly-plugin/usage.html -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <!-- <version>3.3.0</version> -->
+        <configuration>
+          <descriptorRefs>
+	        <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>libs/</classpathPrefix>
+              <mainClass>org.jelly.app.App</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
   <reporting>
@@ -201,5 +232,4 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
       </plugin>
     </plugins>
   </reporting>
-
 </project>

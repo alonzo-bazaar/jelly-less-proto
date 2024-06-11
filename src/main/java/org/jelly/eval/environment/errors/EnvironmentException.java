@@ -1,4 +1,4 @@
-package org.jelly.eval.runtime.errors;
+package org.jelly.eval.environment.errors;
 
 public class EnvironmentException extends Exception {
     public EnvironmentException(String s) {

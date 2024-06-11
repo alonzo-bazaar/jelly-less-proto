@@ -3,7 +3,7 @@ package org.jelly.eval.evaluable.compile;
 import org.jelly.eval.evaluable.OrEvaluable;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.LispLists;
+import org.jelly.utils.LispLists;
 import org.jetbrains.annotations.NotNull;
 
 public class OrFormCompiler implements FormCompiler {

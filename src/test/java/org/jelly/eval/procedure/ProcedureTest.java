@@ -108,4 +108,19 @@ public class ProcedureTest extends BaseEvaluableTest {
         assertEquals(4, (int)((LispList)lst).nth(1));
         assertEquals(9, (int)((LispList)lst).nth(2));
     }
+
+    @Test
+    public void testCallNoParams() throws ParsingException {
+        fromString("(define (noparam) (+ 1 2))").eval(env);
+        assertEquals(3, (int)fromString("(noparam)").eval(env));
+    }
+
+    @Test
+    public void testJustRest() throws ParsingException {
+        fromString("(define (length lst) (if (null? lst) 0 (+ 1 (length (cdr lst)))))").eval(env);
+        fromString("(define (nargs &rest args) (length args))").eval(env);
+        assertEquals(0, (int)fromString("(nargs)").eval(env));
+        assertEquals(1, (int)fromString("(nargs 0)").eval(env));
+        assertEquals(2, (int)fromString("(nargs 0 0)").eval(env));
+    }
 }

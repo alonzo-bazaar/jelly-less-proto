@@ -1,23 +1,11 @@
 package org.jelly.app;
 
-enum RunningMode {BATCH_MODE, REPL_MODE};
+enum RunningMode {BATCH_MODE, REPL_MODE}
 
 class RunningParameters {
     boolean withFile = false;
     String filename = "";
     RunningMode runningMode;
-    private static RunningMode defaultRunningMode = RunningMode.REPL_MODE;
-
-    private RunningParameters() {}
-    private RunningParameters setFilename(String filename) {
-        this.withFile = true;
-        this.filename = filename;
-        return this;
-    }
-    private RunningParameters setRunningMode(RunningMode rn) {
-        this.runningMode = rn;
-        return this;
-    }
 
     public static RunningParameters fromArgs(String[] args) {
         /* usage:
@@ -35,12 +23,35 @@ class RunningParameters {
         }
     }
 
+    public boolean hasFile() {
+        return this.withFile;
+    }
+
+    public String getFilename() {
+        return this.filename;
+    }
+
+    public RunningMode getRunningMode() {
+        return this.runningMode;
+    }
+
+    private RunningParameters() {}
+    private RunningParameters setFilename(String filename) {
+        this.withFile = true;
+        this.filename = filename;
+        return this;
+    }
+    private RunningParameters setRunningMode(RunningMode rn) {
+        this.runningMode = rn;
+        return this;
+    }
+
     private static boolean hasFile(String[] args) {
         if (args.length == 0)
             return false;
         if(specifiesRunningMode(args[0]))
             return args.length >= 2;
-        return args.length >= 1;
+        return true;
     }
 
     private static String argsFilename(String[] args) {
@@ -55,21 +66,8 @@ class RunningParameters {
 
     private static RunningMode argsRunningMode(String[] args) {
         if (args.length == 0)
-            return RunningParameters.defaultRunningMode;
+            return RunningMode.REPL_MODE;
         return args[0].equals("repl") ? RunningMode.REPL_MODE
-            : args[0].equals("batch") ? RunningMode.BATCH_MODE
-            : RunningParameters.defaultRunningMode;
-    }
-
-    public boolean hasFile() {
-        return this.withFile;
-    }
-
-    public String getFilename() {
-        return this.filename;
-    }
-
-    public RunningMode getRunningMode() {
-        return this.runningMode;
+            : RunningMode.BATCH_MODE;
     }
 }

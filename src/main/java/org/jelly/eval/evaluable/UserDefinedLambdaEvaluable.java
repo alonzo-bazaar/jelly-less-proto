@@ -2,8 +2,8 @@ package org.jelly.eval.evaluable;
 
 import java.util.List;
 
-import org.jelly.eval.procedure.UserDefinedProcedure;
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.evaluable.procedure.UserDefinedProcedure;
+import org.jelly.eval.environment.Environment;
 import org.jelly.lang.data.LispSymbol;
 
 public class UserDefinedLambdaEvaluable implements Evaluable, LambdaEvaluable {

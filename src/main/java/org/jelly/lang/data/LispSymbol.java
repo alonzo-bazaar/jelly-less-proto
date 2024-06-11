@@ -19,7 +19,6 @@ public class LispSymbol {
         return ~(name.hashCode());
     }
 
-    // VERE EMPORTANT
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof LispSymbol ls) {

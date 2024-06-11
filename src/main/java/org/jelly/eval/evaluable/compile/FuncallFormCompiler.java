@@ -5,7 +5,7 @@ import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.LispList;
-import org.jelly.lang.data.LispLists;
+import org.jelly.utils.LispLists;
 import org.jelly.lang.data.LispSymbol;
 
 public class FuncallFormCompiler implements FormCompiler {
@@ -26,12 +26,12 @@ public class FuncallFormCompiler implements FormCompiler {
 
     private static void checkAST(Cons c) throws MalformedFormException {
         if(c.getCar() instanceof LispSymbol) {
-            Utils.checkSequenceList(LispLists.requireCons(c.getCdr()));
+            Utils.checkSequenceList(LispLists.requireList(c.getCdr()));
         }
         else {
             // LambdaFormCompiler.checkAST(LispLists.requireCons(c.getCar()));
             Compiler.checkExpression(c.getCar());
-            Utils.checkSequenceList(LispLists.requireCons(c.getCdr()));
+            Utils.checkSequenceList(LispLists.requireList(c.getCdr()));
         }
     }
 

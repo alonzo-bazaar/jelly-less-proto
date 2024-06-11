@@ -1,6 +1,6 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.environment.Environment;
 
 public class ConstantEvaluable implements Evaluable {
     private final Object exp;

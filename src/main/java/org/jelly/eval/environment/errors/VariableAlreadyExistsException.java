@@ -1,4 +1,4 @@
-package org.jelly.eval.runtime.errors;
+package org.jelly.eval.environment.errors;
 
 public class VariableAlreadyExistsException extends EnvironmentException {
     public VariableAlreadyExistsException(String s) {

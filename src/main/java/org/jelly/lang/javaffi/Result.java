@@ -5,5 +5,5 @@ public sealed interface Result<T, E extends Throwable> permits GoodResult, BadRe
     T get();
     String getErrorMessage();
     Throwable getCause();
-    StackTraceElement[] getStackTrace ();
+    StackTraceElement[] getStackTrace();
 }

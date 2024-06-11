@@ -1,8 +1,8 @@
-package org.jelly.eval.procedure;
+package org.jelly.eval.evaluable.procedure;
 
 import java.util.List;
 
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.environment.Environment;
 import org.jelly.eval.evaluable.SequenceEvaluable;
 import org.jelly.lang.data.LispSymbol;
 

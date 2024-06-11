@@ -3,8 +3,8 @@ package org.jelly.eval.evaluable;
 import java.security.InvalidParameterException;
 import java.util.List;
 
-import org.jelly.eval.procedure.Procedure;
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.evaluable.procedure.Procedure;
+import org.jelly.eval.environment.Environment;
 import org.jelly.eval.builtinfuns.Utils;
 
 public class FuncallEvaluable implements Evaluable {

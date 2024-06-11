@@ -1,29 +1,34 @@
-package org.jelly.eval.runtime;
+package org.jelly.eval.environment;
 
-import org.jelly.eval.runtime.errors.EnvironmentException;
+import org.jelly.eval.environment.errors.EnvironmentException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 
+import java.util.HashMap;
+
 import org.jelly.lang.data.LispSymbol;
 import org.jelly.lang.data.Constants;
 
-public class EnvironmentInitAndExtendTest {
+public class EnvironmentInitWithFramesTest {
     private Environment env;
     @BeforeEach
-    public void initializeAndExtend() throws EnvironmentException {
-        Environment env0 = new Environment();
-        env0.define(new LispSymbol("nope"), Constants.NIL);
+    public void initializeWithFrames() {
+        HashMap<LispSymbol, Object> m0 = new HashMap<>();
+        m0.put(new LispSymbol("nope"), Constants.NIL);
+        EnvFrame env0 = new EnvFrame(m0);
 
-        Environment env1 = env0.extend();
-        env1.define(new LispSymbol("yee"), Constants.TRUE);
+        HashMap<LispSymbol, Object> m1 = new HashMap<>();
+        m1.put(new LispSymbol("yee"), Constants.TRUE);
+        EnvFrame env1 = new EnvFrame(m1);
 
-        Environment env2 = env1.extend();
-        env2.define(new LispSymbol("yoo"), 42);
+        HashMap<LispSymbol, Object> m2 = new HashMap<>();
+        m2.put(new LispSymbol("yoo"), 42);
+        EnvFrame env2 = new EnvFrame(m2);
 
-        env = env2;
+        env = new Environment(env2, new Environment(env1, new Environment(env0)));
     }
 
     @Test

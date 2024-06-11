@@ -2,7 +2,7 @@ package org.jelly.eval.builtinfuns;
 
 import org.jelly.eval.evaluable.compile.Compiler;
 import org.jelly.lang.data.LispList;
-import org.jelly.lang.data.ListBuilder;
+import org.jelly.utils.ListBuilder;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.jelly.eval.errors.IncorrectArgumentListException;
 import org.jelly.eval.errors.IncorrectTypeException;
 
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.environment.Environment;
 
 public class Utils {
     // these checks are done so many times I might as well

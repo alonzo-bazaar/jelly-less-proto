@@ -29,6 +29,6 @@ public class UnlessFormCompiler implements FormCompiler {
     }
 
     private void checkAST(Cons c) throws MalformedFormException {
-        Utils.checkFlatFixed(c, "when", new String[]{"condition", "alternative"});
+        Utils.checkFlatFixed(c, "unless", new String[]{"condition", "alternative"});
     }
 }

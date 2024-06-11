@@ -1,7 +1,7 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.eval.procedure.Procedure;
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.evaluable.procedure.Procedure;
+import org.jelly.eval.environment.Environment;
 
 public interface LambdaEvaluable extends Evaluable {
     /* evaluating a lambda expression

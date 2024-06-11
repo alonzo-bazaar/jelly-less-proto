@@ -1,4 +1,4 @@
-package org.jelly.lang;
+package org.jelly.lang.arith;
 import java.util.Arrays;
 
 import org.jelly.lang.errors.InvalidTypeException;

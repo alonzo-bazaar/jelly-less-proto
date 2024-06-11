@@ -7,7 +7,8 @@
       (cons (car lst) (append-element elt (cdr lst)))))
 
 (define (reverse lst)
-  (if (null? lst) (list)
+  (if (null? lst)
+      lst
       (append-element (car lst) (reverse (cdr lst)))))
 
 (define (sierpinsky n)

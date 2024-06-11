@@ -7,6 +7,9 @@ import java.io.File;
 import org.jelly.eval.ErrorFormatter;
 import org.jelly.eval.runtime.JellyRuntime;
 import org.jelly.lang.data.Constants;
+import org.jelly.lang.data.LispList;
+
+import org.jelly.eval.utils.FileSystemUtils;
 
 public class Files {
     public static Object loadFile(JellyRuntime r, List<Object> args) {
@@ -20,10 +23,5 @@ public class Files {
             ErrorFormatter.warn("cannot find " + filename + ", no such file or directory");
             return Constants.NIL;
         }
-    }
-
-    public static String getWorkingDirectory(List<Object> args) {
-        Utils.ensureSizeExactly("loadfile", 0, args);
-        return System.getProperty("user.dir");
     }
 }

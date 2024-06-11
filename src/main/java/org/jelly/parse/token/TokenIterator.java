@@ -9,7 +9,6 @@ import java.util.List;
 
 public class TokenIterator implements Iterator<Token> {
     private Iterator<String> sourceLines;
-    // private final Queue<Token> precomputed = new LinkedList<Token>();
     private int lineNumber = 0;
     private int indexInLine = 0;
     private String currentLine;
@@ -39,7 +38,7 @@ public class TokenIterator implements Iterator<Token> {
         try {
             while (buffer.isEmpty()) {
                 /* TODO fa un po' schifo,
-                 * ma per funzionare con un repl bisogna essere lazy sul souurceLines.next();
+                 * ma per funzionare con un repl bisogna essere lazy sul sourceLines.next();
                  * visto che se si chiama next() a caso, questo next potrebbe richiedere user interaction
                  * e bloccare l'applicazione in momenti poco desiderabili
                  * va wrappato in qualche modo, ma intanto vediamo se funziona

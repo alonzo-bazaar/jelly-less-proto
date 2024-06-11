@@ -1,8 +1,7 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.evaluable.compile.Compiler;
-import org.jelly.eval.runtime.Environment;
+import org.jelly.eval.environment.Environment;
 import org.jelly.eval.runtime.JellyRuntime;
 import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
 import org.jelly.utils.DebuggingUtils;

@@ -1,4 +1,4 @@
-package org.jelly.eval.runtime.errors;
+package org.jelly.eval.environment.errors;
 
 public class VariableDoesNotExistException extends EnvironmentException {
     public VariableDoesNotExistException(String s) {
