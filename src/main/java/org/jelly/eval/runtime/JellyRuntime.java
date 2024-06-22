@@ -147,12 +147,12 @@ public class JellyRuntime {
         env.define(new LispSymbol("not"), (Procedure) values -> {
                 Utils.ensureSizeExactly("not",1,values);
                 return values.getFirst() == Constants.FALSE;
-            });
+        });
 
         env.define(new LispSymbol("null?"), (Procedure) values -> {
                 Utils.ensureSizeExactly("null? check",1,values);
                 return values.getFirst() == Constants.NIL;
-            });
+        });
 
         env.define(new LispSymbol("cons?"), (Procedure) values -> {
             Utils.ensureSizeExactly("cons? check",1,values);
@@ -182,7 +182,7 @@ public class JellyRuntime {
         env.define(new LispSymbol("equal?"), (Procedure) values -> {
                 Utils.ensureSizeExactly("equal? check",2,values);
                 return values.getFirst().equals(values.get(1));
-            });
+        });
 
         env.define(new LispSymbol("car"), (Procedure) ListProcessing::car);
         env.define(new LispSymbol("cdr"), (Procedure) ListProcessing::cdr);
@@ -215,19 +215,6 @@ public class JellyRuntime {
                     Utils.ensureSizeExactly("display", 1, values);
                     System.out.print(values.getFirst());
                     return Constants.NIL;
-        });
-
-        env.define(new LispSymbol("print"), (Procedure) values -> {
-                // fatto per interagire un po' da subito
-                Utils.printList(values, "");
-                return Constants.NIL;
-        });
-
-        env.define(new LispSymbol("println"), (Procedure) values -> {
-                // fatto per interagire un po' da subito
-                Utils.printList(values, "");
-                System.out.println();
-                return Constants.NIL;
         });
 
         env.define(new LispSymbol("printty"), (Procedure) values -> {
