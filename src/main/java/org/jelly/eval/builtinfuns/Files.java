@@ -17,7 +17,7 @@ public class Files {
         Utils.ensureSingleOfType("laodfile", 0, String.class, args);
         String filename = (String)args.getFirst();
         try {
-            File f = new File((String) args.getFirst());
+            File f = new File(r.resolvePath(filename).toString());
             return r.evalFile(f);
         } catch(FileNotFoundException ffe) {
             ErrorFormatter.warn("cannot find " + filename + ", no such file or directory");

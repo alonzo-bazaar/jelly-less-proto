@@ -13,3 +13,8 @@
 
 (define (flatmap fn lst)
   (flatten (map fn lst)))
+
+(define (contains? elt lst)
+  (do ((iter lst (cdr iter)))
+      ((equal? elt (car iter)) #t))
+  #f)

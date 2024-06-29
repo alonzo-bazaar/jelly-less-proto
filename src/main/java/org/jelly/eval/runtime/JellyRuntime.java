@@ -104,11 +104,18 @@ public class JellyRuntime {
         } catch(Throwable ignored) {}
         finally {
             cwd = oldCwd;
-            // (si spera) unreachable
         }
+        // (si spera) unreachable
         return null;
     }
 
+    public Path resolvePath(String path) {
+        Path res = cwd;
+        for(String sub : path.split("/")) {
+            res = res.resolve(sub);
+        }
+        return res;
+    }
 
     public Object get(String name) {
         return env.lookup(new LispSymbol(name));
@@ -211,23 +218,15 @@ public class JellyRuntime {
         env.define(new LispSymbol("tryCall"),(Procedure) FFI::tryCall);
         env.define(new LispSymbol("tryCallStatic"),(Procedure) FFI::tryCallStatic);
 
+        env.define(new LispSymbol("toObject"),(Procedure) values -> {
+                    Utils.ensureSizeExactly("toObject", 1, values);
+                    return (Object)values.getFirst();
+        });
+
         env.define(new LispSymbol("display"), (Procedure) values -> {
                     Utils.ensureSizeExactly("display", 1, values);
                     System.out.print(values.getFirst());
                     return Constants.NIL;
-        });
-
-        env.define(new LispSymbol("printty"), (Procedure) values -> {
-                // fatto per interagire un po' da subito
-                Utils.printListWithTypes(values, ", ");
-                return Constants.NIL;
-        });
-
-        env.define(new LispSymbol("printtyln"), (Procedure) values -> {
-                // fatto per interagire un po' da subito
-                Utils.printListWithTypes(values, ", ");
-                System.out.println();
-                return Constants.NIL;
         });
 
         env.define(new LispSymbol("loadFile"), (Procedure) values -> Files.loadFile(this, values));
@@ -268,6 +267,15 @@ public class JellyRuntime {
                 Utils.ensureSingleOfType("getClass", 0, String.class, args);
                 return Class.forName((String) args.getFirst());
             } catch (ClassNotFoundException e) {
+                return new UndefinedValue();
+            }
+        });
+
+        env.define(new LispSymbol("objectCast"), (Procedure) args -> {
+            try {
+                Utils.ensureSizeExactly("objectCast", 1, args);
+                return (Object)args.getFirst();
+            } catch (Throwable e) {
                 return new UndefinedValue();
             }
         });
