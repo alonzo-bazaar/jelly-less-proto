@@ -191,12 +191,13 @@ public class JellyRuntime {
                 return values.getFirst().equals(values.get(1));
         });
 
-        env.define(new LispSymbol("car"), (Procedure) ListProcessing::car);
-        env.define(new LispSymbol("cdr"), (Procedure) ListProcessing::cdr);
+        // env.define(new LispSymbol("car"), (Procedure) ListProcessing::car);
+        // env.define(new LispSymbol("cdr"), (Procedure) ListProcessing::cdr);
 
         env.define(new LispSymbol("set-car!"), (Procedure) ListProcessing::setCar);
         env.define(new LispSymbol("set-cdr!"), (Procedure) ListProcessing::setCdr);
 
+        // da mettere nella stdlib quando aggiungo i costruttori
         env.define(new LispSymbol("cons"), (Procedure) ListProcessing::cons);
 
         env.define(new LispSymbol("list"), (Procedure) Utils::javaListToCons);
@@ -263,10 +264,20 @@ public class JellyRuntime {
 
         env.define(new LispSymbol("findClass"), (Procedure) args -> {
             try {
-                Utils.ensureSizeExactly("getClass", 1, args);
-                Utils.ensureSingleOfType("getClass", 0, String.class, args);
+                Utils.ensureSizeExactly("findClass", 1, args);
+                Utils.ensureSingleOfType("findClass", 0, String.class, args);
                 return Class.forName((String) args.getFirst());
             } catch (ClassNotFoundException e) {
+                return new UndefinedValue();
+            }
+        });
+
+
+        env.define(new LispSymbol("classOf"), (Procedure) args -> {
+            try {
+                Utils.ensureSizeExactly("classOf", 1, args);
+                return args.getFirst().getClass();
+            } catch (Throwable t) {
                 return new UndefinedValue();
             }
         });
