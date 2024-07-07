@@ -1,14 +1,14 @@
 package org.jelly.eval.environment;
 
+import org.jelly.eval.environment.errors.UnboundVariableException;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.jelly.lang.data.LispSymbol;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EnvironmentTest {
     private void hcf(String s) {
@@ -27,15 +27,15 @@ public class EnvironmentTest {
     }
 
     @Test
-    public void testNullOnEmpty() {
+    public void testNotFoundOnEmpty() {
         Environment e = new Environment();
-        assertNull(e.lookup(new LispSymbol("mamma")));
-        assertNull(e.lookup(new LispSymbol("")));
-        assertNull(e.lookup(new LispSymbol("mannaggia")));
+        assertThrows(UnboundVariableException.class, () -> e.lookup(new LispSymbol("mamma")));
+        assertThrows(UnboundVariableException.class, () -> e.lookup(new LispSymbol("")));
+        assertThrows(UnboundVariableException.class, () -> e.lookup(new LispSymbol("mannaggia")));
     }
 
     @Test
-    public void testNullOnWrongOneFrame() {
+    public void testNotFoundOnWrongOneFrame() {
         Environment e = new Environment();
         try {
             e.define(new LispSymbol("mamma"),"mia");
@@ -43,8 +43,7 @@ public class EnvironmentTest {
             hcf("bruh");
         }
 
-        Object le = e.lookup(new LispSymbol("mamaaaaaaa"));
-        assertNull(le);
+        assertThrows(UnboundVariableException.class, () -> e.lookup(new LispSymbol("mamaaaaaaa")));
     }
 
     @Test

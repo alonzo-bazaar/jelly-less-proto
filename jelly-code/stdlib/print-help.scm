@@ -7,41 +7,51 @@
       (display sep))))
 
 (define (printSep sep &rest args)
-  (printSepLst sep args))
+  (printSepList sep args))
+
+(define (printtySepList tySep eltSep lst)
+  (do ((l lst (cdr l)))
+      ((null? l) nil)
+    (displayty (car l) tySep)
+    (unless (null? (cdr l))
+      (display eltSep))))
+
+(define (printtySep tySep eltSep &rest args)
+  (do ((a args (cdr a)))
+      ((null? a) nil)
+    (displayty (car a) tySep)
+    (unless (null? (cdr a))
+      (display eltSep))))
 
 (define (print &rest args)
-  (printSepList " " args))
+  (printSepList "" args))
+
+(define (println &rest args)
+  (printSepList "" args)
+  (newline))
 
 (define (displayty arg separator)
   (display arg)
   (display separator)
-  (display (call (call arg "") "getCanonicalName")))
-
-(define (printtySepList sep lst)
-  (do ((l lst (cdr l)))
-      ((null? l) nil)
-    (displayty (car l) #\:)
-    (unless (null? (cdr l))
-      (display sep))))
-
-(define (printtySep sep &rest args)
-  (do ((a args (cdr a)))
-      ((null? a) nil)
-    (displayty (car a))
-    (unless (null? (cdr a))
-      (display sep))))
+  (display (call (classOf arg) "getCanonicalName")))
 
 (define (printty &rest args)
-  (printtySepList " " args))
+  (printtySepList #\: "" args))
 
-(define (println &rest args)
-  (dolist-fn display args)
-  (terpri))
+(define (printtyln &rest args)
+  (printtySepList #\: "" args)
+  (newline))
 
-(define (terpri)
-  (dispalay #\Newline))
+(define (newline) (display #\Newline))
+
+(define terpri newline)
 
 (define (printList lst)
   (display "(")
   (printSepList " " lst)
+  (display ")"))
+
+(define (printtyList lst)
+  (display "(")
+  (printtySepList #\: #\Space lst)
   (display ")"))

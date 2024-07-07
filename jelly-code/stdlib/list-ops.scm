@@ -8,13 +8,17 @@
       lst2
       (cons (car lst1) (append (cdr lst1) lst2))))
 
-(define (flatten lst)
-  (reduce append lst nil))
+(define (reverse-range start end)
+  (let ((acc nil))
+    (do ((i start (+ i 1)))
+        ((>= i end) acc)
+      (set! acc (cons i acc)))))
 
-(define (flatmap fn lst)
-  (flatten (map fn lst)))
+(define (range start end)
+  (reverse (reverse-range start end)))
 
-(define (contains? elt lst)
-  (do ((iter lst (cdr iter)))
-      ((equal? elt (car iter)) #t))
-  #f)
+(define (car c) (call c "getCar"))
+(define (cdr c) (call c "getCdr"))
+(define (nth lst n) (call lst "nth" n))
+(define (nthCdr lst n) (call lst "nth" n))
+(define (length lst) (call lst "length"))

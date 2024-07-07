@@ -7,9 +7,10 @@
             (set! balance (- balance amount))
             balance)))))
 
-(define make-withdraw (lambda (balance)
-                        (lambda (amount)
-                          (if (>= balance amount)
-                              (begin (set! balance (- balance amount))
-                                     balance)
-                              "insufficient funds"))))
+(define make-withdraw
+  (lambda (balance)
+    (lambda (amount)
+      (if (>= balance amount)
+          (begin (set! balance (- balance amount))
+                 balance)
+          "insufficient funds"))))

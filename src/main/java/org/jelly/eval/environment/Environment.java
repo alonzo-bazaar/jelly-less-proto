@@ -3,6 +3,7 @@ package org.jelly.eval.environment;
 import java.util.List;
 
 import org.jelly.eval.ErrorFormatter;
+import org.jelly.eval.environment.errors.UnboundVariableException;
 import org.jelly.eval.environment.errors.VariableDoesNotExistException;
 import org.jelly.lang.data.LispSymbol;
 
@@ -28,16 +29,13 @@ public class Environment {
     }
 
     public Object lookup(LispSymbol name) {
-        // mi spiace per il null ma non vedo come altro esprimere
-        // "hai cercato un valore che non esisteva"
-        // non ha troppo senso tirare un'eccezione qui, è un comportamento previsto(?)
-        Object h = head.lookup(name);
-        if (h == null) {
-            if (tail == null)
-                return null;
-            return tail.lookup(name);
+        for(Environment env = this; env!=null; env = env.tail) {
+            Object o = env.head.lookup(name);
+            if(o != null) {
+                return o;
+            }
         }
-        return h;
+        throw new UnboundVariableException("variable " + name.getName() + " is not bound");
     }
 
     public Environment extend() {

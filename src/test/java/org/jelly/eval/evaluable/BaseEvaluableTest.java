@@ -14,23 +14,30 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.jelly.parse.errors.ParsingException;
+import org.jelly.eval.evaluable.compile.Compiler;
 
 public class BaseEvaluableTest {
-    protected Environment env = new Environment();
+    private JellyRuntime jr;
 
-    protected Evaluable fromString(String s) throws ParsingException {
-        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings(s);
-        Object le = ei.next();
-        return Compiler.compileExpression(le);
+    protected Object eval(String s) {
+        return jr.evalString(s);
+    }
+
+    protected Object lookup(String s) {
+        return jr.get(s);
+    }
+
+    protected void define(String name, Object val) {
+        jr.define(name, val);
     }
 
     @BeforeEach
     public void refreshEnv() {
-        env = new JellyRuntime().buildInitialEnvironment();
+        jr = new JellyRuntime();
     }
 
     @AfterEach
     public void resetEnvironment() {
-        env.reset();
+        jr = null;
     }
 }

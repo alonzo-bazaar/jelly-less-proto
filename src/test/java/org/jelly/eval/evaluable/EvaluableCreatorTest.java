@@ -14,36 +14,28 @@ import org.jelly.parse.errors.ParsingException;
 public class EvaluableCreatorTest extends BaseEvaluableTest {
     @Test
     public void testQuoteSymbol() throws ParsingException {
-        Evaluable ev = fromString("(quote a)");
-        Object o = ev.eval(env);
-        assertEquals("a", ((LispSymbol)o).getName());
+        assertEquals("a", ((LispSymbol)eval("(quote a)")).getName());
     }
 
     @Test
     public void testQuoteSymbolDoesNotLookup() throws ParsingException {
-        Evaluable ev = fromString("(let ((a 10)) (quote a))");
-        Object o = ev.eval(env);
-        assertEquals("a", ((LispSymbol)o).getName());
+        assertEquals("a",
+                     ((LispSymbol)eval("(let ((a 10)) (quote a))")).getName());
     }
 
     @Test
     public void testQuoteNumber() throws ParsingException {
-        Evaluable ev = fromString("(+ (quote 3) (quote 4))");
-        Object o = ev.eval(env);
-        assertEquals(7, (int)o);
+        assertEquals(7, eval("(+ (quote 3) (quote 4))"));
     }
 
     @Test
     public void testQuoteString() throws ParsingException {
-        Evaluable ev = fromString("(quote \"waluigi\")");
-        Object o = ev.eval(env);
-        assertEquals("waluigi", (String)o);
+        assertEquals("waluigi", eval("(quote \"waluigi\")"));
     }
 
     @Test
     public void testQuoteList() throws ParsingException {
-        Evaluable ev = fromString("(quote (1 2 3))");
-        Object o = ev.eval(env);
+        Object o = eval("(quote (1 2 3))");
         assertEquals(1, (int)((LispList)o).nth(0));
         assertEquals(2, (int)((LispList)o).nth(1));
         assertEquals(3, (int)((LispList)o).nth(2));
@@ -51,8 +43,7 @@ public class EvaluableCreatorTest extends BaseEvaluableTest {
 
     @Test
     public void testQuoteListDynamicallyTypedThing() throws ParsingException {
-        Evaluable ev = fromString("(quote (1 \"test\" yee))");
-        Object o = ev.eval(env);
+        Object o = eval("(quote (1 \"test\" yee))");
         assertEquals(1, (int)((LispList)o).nth(0));
         assertEquals("test", (String)((LispList)o).nth(1));
         assertEquals("yee", ((LispSymbol)(((LispList)o).nth(2))).getName());
@@ -60,49 +51,44 @@ public class EvaluableCreatorTest extends BaseEvaluableTest {
 
     @Test
     public void testIf() throws ParsingException {
-        Evaluable ev = fromString("(if #f 10 20)");
-        Object o = ev.eval(env);
+        Object o = eval("(if #f 10 20)");
         assertEquals(20, (int) o);
     }
 
     @Test
     public void testWhile() throws ParsingException {
-        Evaluable ev = fromString
-            ("(let ((a 0) (b 0))" +
-             "(while (< a 10) (set! a (+ a 1)) (set! b (+ 2 b)))" +
-             "b)");
-        Object o = ev.eval(env);
+        Object o = eval ("(let ((a 0) (b 0))" +
+                         "(while (< a 10) (set! a (+ a 1)) (set! b (+ 2 b)))" +
+                         "b)");
         assertEquals(20, (int) o);
     }
 
     @Test
     public void testSequenceReturn() throws ParsingException {
-        Evaluable ev = fromString("(begin 10 20 30)");
-        Object o = ev.eval(env);
+        Object o = eval("(begin 10 20 30)");
         assertEquals(30, (int) o);
     }
 
     @Test
     public void testSequenceSideEffect() throws ParsingException {
-        Evaluable ev = fromString("(let ((a 1)) (begin (set! a 2) a))");
-        Object o = ev.eval(env);
+        Object o = eval("(let ((a 1)) (begin (set! a 2) a))");
         assertEquals(2, (int) o);
     }
 
     @Test
     public void testDefineVariable() throws ParsingException {
-        fromString("(define x 10)").eval(env);
-        Object o = fromString("x").eval(env);
+        eval("(define x 10)");
+        Object o = eval("x");
         assertEquals(10, (int) o);
     }
 
     @Test
     public void testDefineFunctionLambda() throws ParsingException {
-        fromString("(define str (lambda (x) (if x \"yes\" \"no\")))").eval(env);
-        Object yes = fromString("(str 10)").eval(env);
-        Object yesT = fromString("(str #t)").eval(env);
-        Object yesNil = fromString("(str nil)").eval(env);
-        Object no = fromString("(str #f)").eval(env);
+        eval("(define str (lambda (x) (if x \"yes\" \"no\")))");
+        Object yes = eval("(str 10)");
+        Object yesT = eval("(str #t)");
+        Object yesNil = eval("(str nil)");
+        Object no = eval("(str #f)");
 
         assertEquals("yes", yes);
         assertEquals("yes", yesT);
@@ -112,11 +98,11 @@ public class EvaluableCreatorTest extends BaseEvaluableTest {
 
     @Test
     public void testDefineFunction() throws ParsingException {
-        fromString("(define (str x) (if x \"yes\" \"no\"))").eval(env);
-        Object yes = fromString("(str 10)").eval(env);
-        Object yesT = fromString("(str #t)").eval(env);
-        Object yesNil = fromString("(str nil)").eval(env);
-        Object no = fromString("(str #f)").eval(env);
+        eval("(define (str x) (if x \"yes\" \"no\"))");
+        Object yes = eval("(str 10)");
+        Object yesT = eval("(str #t)");
+        Object yesNil = eval("(str nil)");
+        Object no = eval("(str #f)");
 
         assertEquals("yes", yes);
         assertEquals("yes", yesT);
@@ -126,71 +112,57 @@ public class EvaluableCreatorTest extends BaseEvaluableTest {
 
     @Test
     public void testArithCall() throws ParsingException {
-        Object o = fromString("(+ 2 3)").eval(env);
+        Object o = eval("(+ 2 3)");
         assertEquals(5, (int) o);
     }
 
     @Test
     public void testArithCallSymbols() throws ParsingException {
-        Object o = fromString("(let ((a 2)) (+ a 3))").eval(env);
+        Object o = eval("(let ((a 2)) (+ a 3))");
         assertEquals(5, (int) o);
     }
 
     @Test
     public void testArithCallSubexpressions() throws ParsingException {
-        Object o = fromString("(let ((a 2)) (+ a (+ a 3)))").eval(env);
+        Object o = eval("(let ((a 2)) (+ a (+ a 3)))");
         assertEquals(7, (int) o);
     }
 
     @Test
     public void testJustLambda() throws ParsingException {
-        Object o = fromString("((lambda (x) x) 3)").eval(env);
+        Object o = eval("((lambda (x) x) 3)");
         assertEquals(3, (int) o);
     }
 
     @Test
     public void testLetLambda() throws ParsingException {
-        Object o = fromString("(let ((a (lambda (x) x))) (a 3))").eval(env);
+        Object o = eval("(let ((a (lambda (x) x))) (a 3))");
         assertEquals(3, (int) o);
     }
 
     @Test
     public void testFuncallImmediate() throws ParsingException {
-        Object o = fromString("((lambda (x y) (+ x (* 2 y))) 1 2)").eval(env);
+        Object o = eval("((lambda (x y) (+ x (* 2 y))) 1 2)");
         assertEquals(5, (int) o);
     }
 
     @Test
     public void testLessThan() throws ParsingException {
-        Evaluable less = fromString("(> 10 10.1)");
-        assertFalse((boolean)less.eval(env));
+        assertFalse((boolean)eval("(> 10 10.1)"));
     }
 
     @Test
     public void testMoreThan() throws ParsingException {
-        Evaluable more = fromString("(< 10 10.1)");
-        assertTrue((boolean)more.eval(env));
+        assertTrue((boolean)eval("(< 10 10.1)"));
     }
 
     @Test
     public void testCarCons() throws ParsingException {
-        assertEquals(1, (int)(fromString("(car (cons 1 2))").eval(env)));
+        assertEquals(1, (int)(eval("(car (cons 1 2))")));
     }
 
     @Test
     public void testCdrCons() throws ParsingException {
-        assertEquals(2, (int)(fromString("(cdr (cons 1 2))").eval(env)));
-    }
-
-    @Test
-    public void testAnd() throws ParsingException {
-        assertEquals((int)(fromString("(and 1 2)").eval(env)), 2);
-        assertInstanceOf(AndEvaluable.class, fromString("(and 1 2)"));
-    }
-
-    @Test
-    public void testOr() throws ParsingException {
-        assertEquals(2, (int)(fromString("(or 2 3)").eval(env)));
-        assertInstanceOf(OrEvaluable.class, fromString("(or 2 3)"));
+        assertEquals(2, (int)(eval("(cdr (cons 1 2))")));
     }
 }

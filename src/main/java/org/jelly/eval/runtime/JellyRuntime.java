@@ -6,11 +6,15 @@ import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidParameterException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.jelly.eval.builtinfuns.*;
 import org.jelly.eval.environment.Environment;
+import org.jelly.eval.errors.IncorrectArgumentListException;
+import org.jelly.eval.errors.IncorrectTypeException;
+import org.jelly.eval.runtime.error.JellyError;
 import org.jelly.lang.data.*;
 import org.jelly.lang.errors.CompilationError;
 
@@ -25,16 +29,15 @@ import org.jelly.parse.token.TokenIterator;
 import org.jelly.utils.FileLineIterator;
 import org.jelly.utils.DebuggingUtils;
 
-import org.jelly.lang.javaffi.Result;
-
 import org.jelly.eval.utils.FileSystemUtils;
+import org.jelly.utils.LispLists;
 import org.jelly.utils.OsUtils;
 
 
 public class JellyRuntime {
     // outside interface to the underlying "lisp machine"
     /*
-     * java code will use the a Runtime object to call lisp code and lisp functionalities
+     * java code will use the Runtime object to call lisp code and lisp functionalities
      * and it will also use a Runtime methods to fetch the results
      * Runtime is not a singleton, multiple lisp Runtime objects can coexist,
      * representing different lisp "sessions"
@@ -43,6 +46,10 @@ public class JellyRuntime {
     private final Environment env = buildInitialEnvironment();
 
     public JellyRuntime() {
+        loadStandardLibrary();
+    }
+
+    private void loadStandardLibrary () {
         Path home = Paths.get(System.getProperty("user.home"));
         // TODO magari falla funzionare un po' meglio
         // TODO comunque non si installa in automatico sto file, quindi eh...
@@ -133,6 +140,15 @@ public class JellyRuntime {
         env.define(new LispSymbol(name), value);
     }
 
+    public Object call(String funName, Object... args) {
+        List<Object> arglist = Arrays.stream(args).toList();
+        Object o = get(funName);
+        if(o instanceof Procedure p) {
+            return p.call(arglist);
+        }
+        throw new InvalidParameterException(funName + " is not a function, and thus cannot be called");
+    }
+
     public Environment buildInitialEnvironment() {
         Environment env = new Environment();
         /* il funzionamento di tutte questa funzioni dipende un po' tanto
@@ -163,27 +179,27 @@ public class JellyRuntime {
 
         env.define(new LispSymbol("cons?"), (Procedure) values -> {
             Utils.ensureSizeExactly("cons? check",1,values);
-            return values.get(0) instanceof Cons;
+            return values.getFirst() instanceof Cons;
         });
 
         env.define(new LispSymbol("list?"), (Procedure) values -> {
             Utils.ensureSizeExactly("cons? check",1,values);
-            return values.get(0) instanceof LispList;
+            return values.getFirst() instanceof LispList;
         });
 
         env.define(new LispSymbol("number?"), (Procedure) values -> {
             Utils.ensureSizeExactly("cons? check",1,values);
-            return values.get(0) instanceof Number;
+            return values.getFirst() instanceof Number;
         });
 
         env.define(new LispSymbol("integer?"), (Procedure) values -> {
             Utils.ensureSizeExactly("cons? check",1,values);
-            return values.get(0) instanceof Integer;
+            return values.getFirst() instanceof Integer;
         });
 
         env.define(new LispSymbol("double?"), (Procedure) values -> {
             Utils.ensureSizeExactly("cons? check",1,values);
-            return values.get(0) instanceof Double;
+            return values.getFirst() instanceof Double;
         });
 
         env.define(new LispSymbol("equal?"), (Procedure) values -> {
@@ -200,7 +216,7 @@ public class JellyRuntime {
         // da mettere nella stdlib quando aggiungo i costruttori
         env.define(new LispSymbol("cons"), (Procedure) ListProcessing::cons);
 
-        env.define(new LispSymbol("list"), (Procedure) Utils::javaListToCons);
+        env.define(new LispSymbol("list"), (Procedure) LispLists::javaListToCons);
         env.define(new LispSymbol("+"), (Procedure) Arith::sum);
         env.define(new LispSymbol("-"), (Procedure) Arith::diff);
         env.define(new LispSymbol("*"), (Procedure) Arith::prod);
@@ -219,11 +235,6 @@ public class JellyRuntime {
         env.define(new LispSymbol("tryCall"),(Procedure) FFI::tryCall);
         env.define(new LispSymbol("tryCallStatic"),(Procedure) FFI::tryCallStatic);
 
-        env.define(new LispSymbol("toObject"),(Procedure) values -> {
-                    Utils.ensureSizeExactly("toObject", 1, values);
-                    return (Object)values.getFirst();
-        });
-
         env.define(new LispSymbol("display"), (Procedure) values -> {
                     Utils.ensureSizeExactly("display", 1, values);
                     System.out.print(values.getFirst());
@@ -236,7 +247,7 @@ public class JellyRuntime {
             try {
                 Utils.ensureSizeExactly("getCwd", 0, values);
                 List<String> cwdList = FileSystemUtils.pathList(this.cwd);
-                return Utils.javaListToCons(cwdList.stream().map(a -> (Object)a).toList());
+                return LispLists.javaListToCons(cwdList.stream().map(a -> (Object)a).toList());
             } catch (Throwable ignored) {
                 return new UndefinedValue();
             }
@@ -251,11 +262,7 @@ public class JellyRuntime {
             }
         });
 
-        // principalmente per debugging
-        // al momento lo stato del runtime non è molto ispezionabile
-        // quindi per debuggare un po' meglio eh... eccolo
-        // TODO poi ci starebbe un dumpEnv più ispezioanible da jelly, tipo una lista di frame,
-        // con ogni frame rappresentato con un alist, je ne sais pas
+        // TODO potresti rendere il dumpenv una struttura più ispezionabile per facilitare l'utilizzo di questa per debugging
         env.define(new LispSymbol("dumpenv"), (Procedure) values -> {
                 env.dump();
                 // env.dump() non ha effetti sullo stato dell'environment
@@ -282,12 +289,13 @@ public class JellyRuntime {
             }
         });
 
-        env.define(new LispSymbol("objectCast"), (Procedure) args -> {
+        env.define(new LispSymbol("error"), (Procedure) args -> {
             try {
-                Utils.ensureSizeExactly("objectCast", 1, args);
-                return (Object)args.getFirst();
-            } catch (Throwable e) {
-                return new UndefinedValue();
+                Utils.ensureSizeExactly("error", 1, args);
+                Utils.ensureSingleOfType("error", 0, String.class, args);
+                throw new JellyError((String)args.getFirst());
+            } catch(IncorrectTypeException | IncorrectArgumentListException t) {
+                throw new JellyError("error occured, message not specified");
             }
         });
 

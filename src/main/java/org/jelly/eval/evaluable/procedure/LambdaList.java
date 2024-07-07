@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.jelly.eval.evaluable.procedure.errors.BadParameterBindException;
 import org.jelly.eval.environment.EnvFrame;
-import org.jelly.eval.builtinfuns.Utils;
 import org.jelly.lang.data.Constants;
 import org.jelly.lang.data.LispSymbol;
 import org.jelly.parse.errors.SynthaxTreeParsingException;
+import org.jelly.utils.LispLists;
 
 public class LambdaList {
     private List<LispSymbol> positional;
@@ -53,7 +53,7 @@ public class LambdaList {
             }
             else { // vals.size() > positional.size()
                 EnvFrame frame = new EnvFrame(this.positional,vals.subList(0, positional.size()));
-                frame.bind(restSym, Utils.javaListToCons(vals.subList(positional.size(), vals.size())));
+                frame.bind(restSym, LispLists.javaListToCons(vals.subList(positional.size(), vals.size())));
                 return frame;
             }
         }

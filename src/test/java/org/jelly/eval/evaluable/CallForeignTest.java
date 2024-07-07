@@ -1,7 +1,6 @@
 package org.jelly.eval.evaluable;
 
 import org.jelly.eval.evaluable.procedure.Procedure;
-import org.jelly.eval.environment.Environment;
 import org.jelly.eval.runtime.JellyRuntime;
 import org.jelly.eval.builtinfuns.Utils;
 import org.junit.jupiter.api.Test;
@@ -16,24 +15,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 
 public class CallForeignTest extends BaseEvaluableTest {
-    private Environment env = new Environment();
-
-    @BeforeEach
-    public void refreshEnv() {
-        env = new JellyRuntime().buildInitialEnvironment();
-    }
-
-    @AfterEach
-    public void resetEnvironment() {
-        env.reset();
-    }
-
     @Test
     public void testClass() {
         try {
             TestRatClass testObj = new TestRatClass();
-            env.define(new LispSymbol("testObj"), testObj);
-            assertEquals("string", (String)fromString("(call testObj \"testMeth\")").eval(env));
+            define("testObj", testObj);
+            assertEquals("string", (String)eval("(call testObj \"testMeth\")"));
         }
         catch(Exception e) {
             throw new AssertionError("oops", e);
@@ -44,11 +31,11 @@ public class CallForeignTest extends BaseEvaluableTest {
     public void testClassWithParams() {
         try {
             TestRatClass testObj = new TestRatClass();
-            env.define(new LispSymbol("testObj"), testObj);
-            assertEquals("stringugo", (String)fromString("(call testObj \"testMeth\" \"ugo\")").eval(env));
-            assertEquals("ugostring10", (String)fromString("(call testObj \"testMeth\" \"ugo\" 10)").eval(env));
+            define("testObj", testObj);
+            assertEquals("stringugo", (String)eval("(call testObj \"testMeth\" \"ugo\")"));
+            assertEquals("ugostring10", (String)eval("(call testObj \"testMeth\" \"ugo\" 10)"));
 
-            assertEquals(60, (int)fromString("(call testObj \"mixal\" 10 20 30)").eval(env));
+            assertEquals(60, (int)eval("(call testObj \"mixal\" 10 20 30)"));
         }
         catch(Exception e) {
             throw new AssertionError("oops", e);
@@ -56,17 +43,17 @@ public class CallForeignTest extends BaseEvaluableTest {
     }
     @Test
     public void testCallStringLength() {
-        assertEquals(5, (int)fromString("(call \"hello\" \"length\")").eval(env));
+        assertEquals(5, (int)eval("(call \"hello\" \"length\")"));
     }
 
     @Test
     public void testCallEmptyStringLength() {
-        assertEquals(0, (int)fromString("(call \"\" \"length\")").eval(env));
+        assertEquals(0, (int)eval("(call \"\" \"length\")"));
     }
 
     @Test
     public void testCallStaticIntegerParse() {
-        assertEquals(10, (int)fromString("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"10\")").eval(env));
+        assertEquals(10, (int)eval("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"10\")"));
     }
 
     /* questo non funziona perchè tutti i tipi primitivi in jelly sono
@@ -77,7 +64,7 @@ public class CallForeignTest extends BaseEvaluableTest {
      */
     @Test
     public void testCallStaticIntegerParseMoreArgs() {
-        assertEquals(255, (int)fromString("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"ff\" 16)").eval(env));
+        assertEquals(255, (int)eval("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"ff\" 16)"));
     }
 }
 

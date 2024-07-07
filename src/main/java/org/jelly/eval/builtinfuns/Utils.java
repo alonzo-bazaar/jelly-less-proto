@@ -2,7 +2,6 @@ package org.jelly.eval.builtinfuns;
 
 import org.jelly.eval.evaluable.compile.Compiler;
 import org.jelly.lang.data.LispList;
-import org.jelly.utils.ListBuilder;
 
 import java.util.List;
 import java.util.Optional;
@@ -88,13 +87,5 @@ public class Utils {
                 .stream()
                 .map(o -> Compiler.compileExpression(o).eval(env))
                 .toList();
-    }
-
-    public static LispList javaListToCons(List<Object> lst) {
-        ListBuilder lb = new ListBuilder();
-        for (Object o : lst) {
-            lb.addLast(o);
-        }
-        return lb.get();
     }
 }

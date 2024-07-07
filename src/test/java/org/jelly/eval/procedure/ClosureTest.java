@@ -1,5 +1,6 @@
 package org.jelly.eval.procedure;
 
+import org.jelly.eval.environment.errors.UnboundVariableException;
 import org.jelly.eval.evaluable.BaseEvaluableTest;
 import org.jelly.parse.errors.ParsingException;
 
@@ -7,9 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import org.jelly.lang.data.LispSymbol;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ClosureTest extends BaseEvaluableTest {
     /* esempio da sicp (pagina 298 della versione texinfo, pagina 326 del pdf
@@ -20,34 +19,34 @@ public class ClosureTest extends BaseEvaluableTest {
 
     @Test
     public void testSicpWithdrawGlobal() throws ParsingException {
-        fromString("(define balance 100)").eval(env);
+        eval("(define balance 100)");
         
-        fromString("(define (withdraw amount)" +
+        eval("(define (withdraw amount)" +
                    "      (if (>= balance amount)" +
                    "          (begin (set! balance (- balance amount))" +
                    "                 balance)" +
-                   "          \"Insufficient funds\"))").eval(env);
+                   "          \"Insufficient funds\"))");
 
-        assertEquals((int)fromString("(withdraw 25)").eval(env), 75);
-        assertEquals((int)fromString("(withdraw 25)").eval(env), 50);
-        assertEquals((String)fromString("(withdraw 60)").eval(env), "Insufficient funds");
-        assertEquals((int)fromString("(withdraw 15)").eval(env), 35);
+        assertEquals((int)eval("(withdraw 25)"), 75);
+        assertEquals((int)eval("(withdraw 25)"), 50);
+        assertEquals((String)eval("(withdraw 60)"), "Insufficient funds");
+        assertEquals((int)eval("(withdraw 15)"), 35);
     }
 
     @Test
     public void testSicpWithdrawGlobalLambda() throws ParsingException {
-        fromString("(define balance 100)").eval(env);
+        eval("(define balance 100)");
         
-        fromString("(define withdraw (lambda (amount)" +
+        eval("(define withdraw (lambda (amount)" +
                    "      (if (>= balance amount)" +
                    "          (begin (set! balance (- balance amount))" +
                    "                 balance)" +
-                   "          \"Insufficient funds\")))").eval(env);
+                   "          \"Insufficient funds\")))");
 
-        assertEquals(75, (int)fromString("(withdraw 25)").eval(env));
-        assertEquals(50, (int)fromString("(withdraw 25)").eval(env));
-        assertEquals("Insufficient funds", (String)fromString("(withdraw 60)").eval(env));
-        assertEquals(35, (int)fromString("(withdraw 15)").eval(env));
+        assertEquals(75, (int)eval("(withdraw 25)"));
+        assertEquals(50, (int)eval("(withdraw 25)"));
+        assertEquals("Insufficient funds", (String)eval("(withdraw 60)"));
+        assertEquals(35, (int)eval("(withdraw 15)"));
     }
 
 
@@ -55,62 +54,61 @@ public class ClosureTest extends BaseEvaluableTest {
      */
     @Test
     public void testSicpWithdrawLocal() throws ParsingException {
-        fromString("(define new-withdraw " +
+        eval("(define new-withdraw " +
                    "  (let ((balance 100)) " +
                    "    (lambda (amount) " +
                    "      (if (>= balance amount) " +
                    "          (begin (set! balance (- balance amount)) " +
                    "                 balance) " +
-                   "          \"Insufficient funds\")))) " +
-                   "        assertTrue(true); ").eval(env);
+                   "          \"Insufficient funds\"))))");
 
-        assertEquals(75, (int)fromString("(new-withdraw 25)").eval(env));
-        assertEquals(50, (int)fromString("(new-withdraw 25)").eval(env));
-        assertEquals("Insufficient funds", (String)fromString("(new-withdraw 60)").eval(env));
-        assertEquals(35, (int)fromString("(new-withdraw 15)").eval(env));
+        assertEquals(75, (int)eval("(new-withdraw 25)"));
+        assertEquals(50, (int)eval("(new-withdraw 25)"));
+        assertEquals("Insufficient funds", (String)eval("(new-withdraw 60)"));
+        assertEquals(35, (int)eval("(new-withdraw 15)"));
 
-        assertNull(env.lookup(new LispSymbol("balance")));
+        assertThrows(UnboundVariableException.class, () -> lookup("balance"));
     }
 
     /* pagina 301, (329 del pdf)
      */
     @Test
     public void testSicpMakeWithdraw() throws ParsingException {
-        fromString("(define (make-withdraw balance) " +
+        eval("(define (make-withdraw balance) " +
                    " (lambda (amount) " +
                    "  (if (>= balance amount) " +
                    "      (begin (set! balance (- balance amount)) " +
                    "       balance) " +
-                   "       \"Insufficient funds\"))) ").eval(env);
+                   "       \"Insufficient funds\"))) ");
         
-        fromString("(define W1 (make-withdraw 100))").eval(env);
-        fromString("(define W2 (make-withdraw 100))").eval(env);
+        eval("(define W1 (make-withdraw 100))");
+        eval("(define W2 (make-withdraw 100))");
 
-        assertEquals(50, (int)fromString("(W1 50)").eval(env));
-        assertEquals(30, (int)fromString("(W2 70)").eval(env));
-        assertEquals("Insufficient funds", (String)fromString("(W2 40)").eval(env));
-        assertEquals(10, (int)fromString("(W1 40)").eval(env));
+        assertEquals(50, (int)eval("(W1 50)"));
+        assertEquals(30, (int)eval("(W2 70)"));
+        assertEquals("Insufficient funds", (String)eval("(W2 40)"));
+        assertEquals(10, (int)eval("(W1 40)"));
     }
 
     /* pagina 301, (329 del pdf)
      */
     @Test
     public void testSicpMakeWithdrawLambda() throws ParsingException {
-        fromString("(define make-withdraw " +
+        eval("(define make-withdraw " +
                    "(lambda (balance) " +
                    " (lambda (amount) " +
                    "  (if (>= balance amount) " +
                    "      (begin (set! balance (- balance amount)) " +
                    "       balance) " +
-                   "       \"Insufficient funds\")))) ").eval(env);
+                   "       \"Insufficient funds\")))) ");
         
-        fromString("(define W1 (make-withdraw 100))").eval(env);
-        fromString("(define W2 (make-withdraw 100))").eval(env);
+        eval("(define W1 (make-withdraw 100))");
+        eval("(define W2 (make-withdraw 100))");
 
-        assertEquals(50, (int)fromString("(W1 50)").eval(env));
-        assertEquals(30, (int)fromString("(W2 70)").eval(env));
-        assertEquals("Insufficient funds", (String)fromString("(W2 40)").eval(env));
-        assertEquals(10, (int)fromString("(W1 40)").eval(env));
+        assertEquals(50, (int)eval("(W1 50)"));
+        assertEquals(30, (int)eval("(W2 70)"));
+        assertEquals("Insufficient funds", (String)eval("(W2 40)"));
+        assertEquals(10, (int)eval("(W1 40)"));
     }
 
 }

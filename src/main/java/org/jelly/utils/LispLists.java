@@ -5,6 +5,8 @@ import org.jelly.lang.data.Constants;
 import org.jelly.lang.data.LispList;
 import org.jelly.lang.data.NilValue;
 
+import java.util.List;
+
 public class LispLists {
     public static Cons requireCons(Object o) {
         if(o instanceof Cons c) {
@@ -33,5 +35,13 @@ public class LispLists {
 
     public static Object nthCdr(Object o, int i) {
         return requireList(o).nthCdr(i);
+    }
+
+     public static <T> LispList javaListToCons(List<T> lst) {
+        ListBuilder lb = new ListBuilder();
+        for (T o : lst) {
+            lb.addLast((Object)o);
+        }
+        return lb.get();
     }
 }

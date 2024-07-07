@@ -11,5 +11,5 @@
 
 (let ((divides 0))
   (while (< divides 30)
-         (print (fizzbuzz divides))
+         (println (fizzbuzz divides))
          (set! divides (+ 1 divides))))

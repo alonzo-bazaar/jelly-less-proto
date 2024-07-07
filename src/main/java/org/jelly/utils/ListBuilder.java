@@ -12,7 +12,7 @@ public class ListBuilder {
         this.initial = Constants.NIL;
     }
 
-    public void addLast(Object o) {
+    public ListBuilder addLast(Object o) {
         if (initial == Constants.NIL) {
             singleVal(o);
         }
@@ -20,15 +20,17 @@ public class ListBuilder {
             lastCons.setCdr(new Cons(o, Constants.NIL));
             lastCons = (Cons)lastCons.getCdr();
         }
+        return this;
     }
 
-    public void addFirst(Object o) {
+    public ListBuilder addFirst(Object o) {
         if (initial == Constants.NIL) {
             singleVal(o);
         }
         else {
             initial = new Cons(o, initial);
         }
+        return this;
     }
 
     void singleVal(Object o) {

@@ -10,29 +10,29 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 public class SequenceEvaluableTest extends BaseEvaluableTest {
     @Test
     public void testEmptySequenceIsUndefined() {
-        assertInstanceOf(UndefinedValue.class, fromString("(begin)").eval(env));
+        assertInstanceOf(UndefinedValue.class, eval("(begin)"));
     }
 
     @Test
     public void test_whenBeginIsBound_emptySequenceIsUndefined() {
         // weird bug because I forgot to specify a cdr
-        env.define(new LispSymbol("begin"), 5);
-        assertInstanceOf(UndefinedValue.class, fromString("(begin)").eval(env));
+        define("begin", 5);
+        assertInstanceOf(UndefinedValue.class, eval("(begin)"));
     }
 
     @Test
     public void testUnarySequence() {
-        assertEquals(5, (int)fromString("(begin 5)").eval(env));
+        assertEquals(5, (int)eval("(begin 5)"));
     }
 
     @Test
     public void testLastValue() {
-        assertEquals(5, (int)fromString("(begin 4 5)").eval(env));
+        assertEquals(5, (int)eval("(begin 4 5)"));
     }
 
     @Test
     public void testLastValueSideEffects() {
-        env.define(new LispSymbol("a"), 10);
-        assertEquals(15, (int)fromString("(begin (set! a (+ a 5)) a)").eval(env));
+        define("a", 10);
+        assertEquals(15, (int)eval("(begin (set! a (+ a 5)) a)"));
     }
 }

@@ -7,17 +7,17 @@ public class WhileLoopEvaluableTest extends BaseEvaluableTest {
 
     @Test
     public void testNeverRuns() {
-        assertEquals(10, (int)fromString( "(let ((a 10))" +
+        assertEquals(10, (int)eval( "(let ((a 10))" +
                 "(while (< 30 20)" +
                 "(set! a (+ 1 a)))" +
-                "a)").eval(env));
+                "a)"));
     }
 
     @Test
     public void testRunsWhile() {
-        assertEquals(20, (int)fromString( "(let ((a 10))" +
+        assertEquals(20, (int)eval( "(let ((a 10))" +
                 "(while (< a 20)" +
                 "(set! a (+ 1 a)))" +
-                "a)").eval(env));
+                "a)"));
     }
 }

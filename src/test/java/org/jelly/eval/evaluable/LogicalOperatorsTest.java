@@ -12,84 +12,84 @@ import org.jelly.lang.data.LispSymbol;
 public class LogicalOperatorsTest extends BaseEvaluableTest {
     @Test
     public void testAndPositive() throws ParsingException {
-        assertEquals(10, (int)fromString("(and #t nil 10)").eval(env));
+        assertEquals(10, (int)eval("(and #t nil 10)"));
     }
 
     @Test
     public void testOrPositive() throws ParsingException {
-        assertEquals(Constants.NIL, fromString("(or nil #t 10)").eval(env));
-        assertEquals(10, (int)fromString("(or 10 nil #t 10)").eval(env));
+        assertEquals(Constants.NIL, eval("(or nil #t 10)"));
+        assertEquals(10, (int)eval("(or 10 nil #t 10)"));
     }
 
     @Test
     public void testAndEmpty() throws ParsingException {
-        assertEquals(Constants.TRUE, fromString("(and)").eval(env));
+        assertEquals(Constants.TRUE, eval("(and)"));
     }
 
     @Test
     public void testOrEmpty() throws ParsingException {
-        assertEquals(Constants.FALSE, fromString("(or)").eval(env));
+        assertEquals(Constants.FALSE, eval("(or)"));
     }
 
     @Test
     public void testAndSinglePositive() throws ParsingException {
-        assertEquals(1, (int)fromString("(and 1)").eval(env));
+        assertEquals(1, (int)eval("(and 1)"));
     }
 
     @Test
     public void testOrSinglePositive() throws ParsingException {
-        assertEquals(1, (int)fromString("(or 1)").eval(env));
+        assertEquals(1, (int)eval("(or 1)"));
     }
 
     @Test
     public void testAndSingleNegative() throws ParsingException {
-        assertEquals(Constants.FALSE, fromString("(and #f)").eval(env));
+        assertEquals(Constants.FALSE, eval("(and #f)"));
     }
 
     @Test
     public void testOrSingleNegative() throws ParsingException {
-        assertEquals(Constants.FALSE, fromString("(or #f)").eval(env));
+        assertEquals(Constants.FALSE, eval("(or #f)"));
     }
 
     @Test
     public void testAndNegative() throws ParsingException {
-        assertEquals(Constants.FALSE, fromString("(and #t nil #f)").eval(env));
+        assertEquals(Constants.FALSE, eval("(and #t nil #f)"));
     }
 
     @Test
     public void testOrNegative() throws ParsingException {
-        assertEquals(Constants.FALSE, fromString("(and #f #t nil 10)").eval(env));
-        assertEquals(Constants.FALSE, fromString("(and #t #f nil 10)").eval(env));
-        assertEquals(Constants.FALSE, fromString("(and #t nil #f 10)").eval(env));
-        assertEquals(Constants.FALSE, fromString("(and #t nil 10 #f)").eval(env));
+        assertEquals(Constants.FALSE, eval("(and #f #t nil 10)"));
+        assertEquals(Constants.FALSE, eval("(and #t #f nil 10)"));
+        assertEquals(Constants.FALSE, eval("(and #t nil #f 10)"));
+        assertEquals(Constants.FALSE, eval("(and #t nil 10 #f)"));
     }
 
     @Test
     public void testAndShortCircuits() throws ParsingException {
-        fromString("(define a 10)").eval(env);
-        fromString("(and #t (set! a 20))").eval(env);
-        assertEquals(20, env.lookup(new LispSymbol("a")));
+        eval("(define a 10)");
+        eval("(and #t (set! a 20))");
+        assertEquals(20, lookup("a"));
 
     }
 
     @Test
     public void testAndContinues() throws ParsingException {
-        fromString("(define a 10)").eval(env);
-        fromString("(and #f (set! a 20))").eval(env);
-        assertEquals(10, env.lookup(new LispSymbol("a")));
+        eval("(define a 10)");
+        eval("(and #f (set! a 20))");
+        assertEquals(10, lookup("a"));
     }
 
     @Test
     public void testOrShortCircuits() throws ParsingException {
-        fromString("(define a 10)").eval(env);
-        fromString("(or #f (set! a 20))").eval(env);
-        assertEquals(20, env.lookup(new LispSymbol("a")));
+        eval("(define a 10)");
+        eval("(or #f (set! a 20))");
+        assertEquals(20, lookup("a"));
     }
 
     @Test
     public void testOrContinues() throws ParsingException {
-        fromString("(define a 10)").eval(env);
-        fromString("(or #t (set! a 20))").eval(env);
-        assertEquals(10, env.lookup(new LispSymbol("a")));
+        eval("(define a 10)");
+        eval("(or #t (set! a 20))");
+        assertEquals(10, lookup("a"));
     }
 }

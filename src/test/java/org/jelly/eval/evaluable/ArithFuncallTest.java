@@ -17,194 +17,194 @@ public class ArithFuncallTest extends BaseEvaluableTest {
 
     @Test
     public void testAdd() throws ParsingException {
-        assertEquals(3, (int)fromString("(+ 1 2)").eval(env));
+        assertEquals(3, (int)eval("(+ 1 2)"));
     }
 
     @Test
     public void testSub() throws ParsingException {
-        assertEquals(-1, (int)fromString("(- 1 2)").eval(env));
+        assertEquals(-1, eval("(- 1 2)"));
     }
 
     @Test
     public void testMul() throws ParsingException {
-        assertEquals(2, (int)fromString("(* 1 2)").eval(env));
+        assertEquals(2, (int)eval("(* 1 2)"));
     }
 
     @Test
     public void testDiv() throws ParsingException {
-        assertEquals(0.5, (double)fromString("(/ 1 2)").eval(env), 0.00001);
+        assertEquals(0.5, (double)eval("(/ 1 2)"), 0.00001);
     }
 
     @Test
     public void testGreater() throws ParsingException {
-        assertTrue((boolean)fromString("(> 2 1)").eval(env));
-        assertFalse((boolean)fromString("(> 1 1)").eval(env));
-        assertFalse((boolean)fromString("(> 1 2)").eval(env));
+        assertTrue((boolean)eval("(> 2 1)"));
+        assertFalse((boolean)eval("(> 1 1)"));
+        assertFalse((boolean)eval("(> 1 2)"));
 
-        assertTrue((boolean)fromString("(> 2.0 1)").eval(env));
-        assertFalse((boolean)fromString("(> 1.0 1)").eval(env));
-        assertFalse((boolean)fromString("(> 1.0 2)").eval(env));
+        assertTrue((boolean)eval("(> 2.0 1)"));
+        assertFalse((boolean)eval("(> 1.0 1)"));
+        assertFalse((boolean)eval("(> 1.0 2)"));
 
-        assertTrue((boolean)fromString("(> 2 1.0)").eval(env));
-        assertFalse((boolean)fromString("(> 1 1.0)").eval(env));
-        assertFalse((boolean)fromString("(> 1 2.0)").eval(env));
+        assertTrue((boolean)eval("(> 2 1.0)"));
+        assertFalse((boolean)eval("(> 1 1.0)"));
+        assertFalse((boolean)eval("(> 1 2.0)"));
 
-        assertTrue((boolean)fromString("(> 2.0 1.0)").eval(env));
-        assertFalse((boolean)fromString("(> 1.0 1.0)").eval(env));
-        assertFalse((boolean)fromString("(> 1.0 2.0)").eval(env));
+        assertTrue((boolean)eval("(> 2.0 1.0)"));
+        assertFalse((boolean)eval("(> 1.0 1.0)"));
+        assertFalse((boolean)eval("(> 1.0 2.0)"));
     }
 
     @Test
     public void testLess() throws ParsingException {
-        assertFalse((boolean)fromString("(< 2 1)").eval(env));
-        assertFalse((boolean)fromString("(< 1 1)").eval(env));
-        assertTrue((boolean)fromString("(< 1 2)").eval(env));
+        assertFalse((boolean)eval("(< 2 1)"));
+        assertFalse((boolean)eval("(< 1 1)"));
+        assertTrue((boolean)eval("(< 1 2)"));
 
-        assertFalse((boolean)fromString("(< 2 1.0)").eval(env));
-        assertFalse((boolean)fromString("(< 1 1.0)").eval(env));
-        assertTrue((boolean)fromString("(< 1 2.0)").eval(env));
+        assertFalse((boolean)eval("(< 2 1.0)"));
+        assertFalse((boolean)eval("(< 1 1.0)"));
+        assertTrue((boolean)eval("(< 1 2.0)"));
 
-        assertFalse((boolean)fromString("(< 2.0 1)").eval(env));
-        assertFalse((boolean)fromString("(< 1.0 1)").eval(env));
-        assertTrue((boolean)fromString("(< 1.0 2)").eval(env));
+        assertFalse((boolean)eval("(< 2.0 1)"));
+        assertFalse((boolean)eval("(< 1.0 1)"));
+        assertTrue((boolean)eval("(< 1.0 2)"));
 
-        assertFalse((boolean)fromString("(< 2.0 1.0)").eval(env));
-        assertFalse((boolean)fromString("(< 1.0 1.0)").eval(env));
-        assertTrue((boolean)fromString("(< 1.0 2.0)").eval(env));
+        assertFalse((boolean)eval("(< 2.0 1.0)"));
+        assertFalse((boolean)eval("(< 1.0 1.0)"));
+        assertTrue((boolean)eval("(< 1.0 2.0)"));
     }
 
     @Test
     public void testGreaterEq() throws ParsingException {
-        assertTrue((boolean)fromString("(>= 2 1)").eval(env));
-        assertTrue((boolean)fromString("(>= 1 1)").eval(env));
-        assertFalse((boolean)fromString("(>= 1 2)").eval(env));
+        assertTrue((boolean)eval("(>= 2 1)"));
+        assertTrue((boolean)eval("(>= 1 1)"));
+        assertFalse((boolean)eval("(>= 1 2)"));
 
-        assertTrue((boolean)fromString("(>= 2 1.0)").eval(env));
-        assertTrue((boolean)fromString("(>= 1 1.0)").eval(env));
-        assertFalse((boolean)fromString("(>= 1 2.0)").eval(env));
+        assertTrue((boolean)eval("(>= 2 1.0)"));
+        assertTrue((boolean)eval("(>= 1 1.0)"));
+        assertFalse((boolean)eval("(>= 1 2.0)"));
 
-        assertTrue((boolean)fromString("(>= 2.0 1)").eval(env));
-        assertTrue((boolean)fromString("(>= 1.0 1)").eval(env));
-        assertFalse((boolean)fromString("(>= 1.0 2)").eval(env));
+        assertTrue((boolean)eval("(>= 2.0 1)"));
+        assertTrue((boolean)eval("(>= 1.0 1)"));
+        assertFalse((boolean)eval("(>= 1.0 2)"));
 
-        assertTrue((boolean)fromString("(>= 2.0 1.0)").eval(env));
-        assertTrue((boolean)fromString("(>= 1.0 1.0)").eval(env));
-        assertFalse((boolean)fromString("(>= 1.0 2.0)").eval(env));
+        assertTrue((boolean)eval("(>= 2.0 1.0)"));
+        assertTrue((boolean)eval("(>= 1.0 1.0)"));
+        assertFalse((boolean)eval("(>= 1.0 2.0)"));
     }
 
     @Test
     public void testLessEq() throws ParsingException {
-        assertFalse((boolean)fromString("(<= 2 1)").eval(env));
-        assertTrue((boolean)fromString("(<= 1 1)").eval(env));
-        assertTrue((boolean)fromString("(<= 1 2)").eval(env));
+        assertFalse((boolean)eval("(<= 2 1)"));
+        assertTrue((boolean)eval("(<= 1 1)"));
+        assertTrue((boolean)eval("(<= 1 2)"));
 
-        assertFalse((boolean)fromString("(<= 2 1.0)").eval(env));
-        assertTrue((boolean)fromString("(<= 1 1.0)").eval(env));
-        assertTrue((boolean)fromString("(<= 1 2.0)").eval(env));
+        assertFalse((boolean)eval("(<= 2 1.0)"));
+        assertTrue((boolean)eval("(<= 1 1.0)"));
+        assertTrue((boolean)eval("(<= 1 2.0)"));
 
-        assertFalse((boolean)fromString("(<= 2.0 1)").eval(env));
-        assertTrue((boolean)fromString("(<= 1.0 1)").eval(env));
-        assertTrue((boolean)fromString("(<= 1.0 2)").eval(env));
+        assertFalse((boolean)eval("(<= 2.0 1)"));
+        assertTrue((boolean)eval("(<= 1.0 1)"));
+        assertTrue((boolean)eval("(<= 1.0 2)"));
 
-        assertFalse((boolean)fromString("(<= 2.0 1.0)").eval(env));
-        assertTrue((boolean)fromString("(<= 1.0 1.0)").eval(env));
-        assertTrue((boolean)fromString("(<= 1.0 2.0)").eval(env));
+        assertFalse((boolean)eval("(<= 2.0 1.0)"));
+        assertTrue((boolean)eval("(<= 1.0 1.0)"));
+        assertTrue((boolean)eval("(<= 1.0 2.0)"));
     }
 
     @Test
     public void testThrowNonNumericPlus() throws ParsingException {
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(+ (quote b) 1)").eval(env);
+            eval("(+ (quote b) 1)");
         });
 
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(+ 1 (quote a))").eval(env);
+            eval("(+ 1 (quote a))");
         });
 
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(+ (quote b) (quote a))").eval(env);
+            eval("(+ (quote b) (quote a))");
         });
     }
 
     @Test
     public void testThrowNonNumericMinus() throws ParsingException {
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(- (quote b) 1)").eval(env);
+            eval("(- (quote b) 1)");
         });
 
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(- 1 (quote a))").eval(env);
+            eval("(- 1 (quote a))");
         });
 
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(- (quote b) (quote a))").eval(env);
+            eval("(- (quote b) (quote a))");
         });
     }
 
     @Test
     public void testThrowNonNumericMultiply() throws ParsingException {
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(* (quote b) 1)").eval(env);
+            eval("(* (quote b) 1)");
         });
 
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(* 1 (quote a))").eval(env);
+            eval("(* 1 (quote a))");
         });
 
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(* (quote b) (quote a))").eval(env);
+            eval("(* (quote b) (quote a))");
         });
     }
 
     @Test
     public void testThrowNonNumericDivision() throws ParsingException {
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(/ (quote b) 1)").eval(env);
+            eval("(/ (quote b) 1)");
         });
 
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(/ 1 (quote a))").eval(env);
+            eval("(/ 1 (quote a))");
         });
 
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(/ (quote b) (quote a))").eval(env);
+            eval("(/ (quote b) (quote a))");
         });
     }
 
     @Test
     public void testThrowNonNumericComparison() throws ParsingException {
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(> (quote b) 1)").eval(env);
+            eval("(> (quote b) 1)");
         });
 
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(> 1 (quote a))").eval(env);
+            eval("(> 1 (quote a))");
         });
 
         assertThrows(IncorrectTypeException.class, () -> {
-            fromString("(> (quote b) (quote a))").eval(env);
+            eval("(> (quote b) (quote a))");
         });
     }
 
     @Test
     void throwIfWrongArgSizeComparison() throws ParsingException {
         assertThrows(IncorrectArgumentListException.class, () -> {
-            fromString("(> 1)").eval(env);
+            eval("(> 1)");
         });
 
         assertThrows(IncorrectArgumentListException.class, () -> {
-            fromString("(> 1 2 3)").eval(env);
+            eval("(> 1 2 3)");
         });
 
         assertThrows(IncorrectArgumentListException.class, () -> {
-            fromString("(> 1 2 3 4 5)").eval(env);
+            eval("(> 1 2 3 4 5)");
         });
     }
 
     @Test
     public void testMixedTypesAdd() {
-        assertEquals(3.0, (double)fromString("(+ 1.0 2)").eval(env), 0.00001);
-        assertEquals(3.0, (double)fromString("(+ 1 2.0)").eval(env), 0.00001);
-        assertEquals(3.0, (double)fromString("(+ 1 1.0 1)").eval(env), 0.00001);
+        assertEquals(3.0, (double)eval("(+ 1.0 2)"), 0.00001);
+        assertEquals(3.0, (double)eval("(+ 1 2.0)"), 0.00001);
+        assertEquals(3.0, (double)eval("(+ 1 1.0 1)"), 0.00001);
     }
 }
