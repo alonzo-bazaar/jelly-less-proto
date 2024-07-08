@@ -210,8 +210,8 @@ public class JellyRuntime {
         // env.define(new LispSymbol("car"), (Procedure) ListProcessing::car);
         // env.define(new LispSymbol("cdr"), (Procedure) ListProcessing::cdr);
 
-        env.define(new LispSymbol("set-car!"), (Procedure) ListProcessing::setCar);
-        env.define(new LispSymbol("set-cdr!"), (Procedure) ListProcessing::setCdr);
+        env.define(new LispSymbol("setCar!"), (Procedure) ListProcessing::setCar);
+        env.define(new LispSymbol("setCdr!"), (Procedure) ListProcessing::setCdr);
 
         // da mettere nella stdlib quando aggiungo i costruttori
         env.define(new LispSymbol("cons"), (Procedure) ListProcessing::cons);

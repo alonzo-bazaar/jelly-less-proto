@@ -6,6 +6,7 @@ import org.jelly.lang.data.LispList;
 import org.jelly.lang.data.NilValue;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class LispLists {
     public static Cons requireCons(Object o) {
@@ -43,5 +44,15 @@ public class LispLists {
             lb.addLast((Object)o);
         }
         return lb.get();
+    }
+
+    public static List<Object> lispListToJava(LispList ll) {
+        List<Object> res = new ArrayList<>();
+        Object d = ll;
+        while(d instanceof Cons dl) {
+            res.add(dl.getCar());
+            d = dl.getCdr();
+        }
+        return res;
     }
 }
