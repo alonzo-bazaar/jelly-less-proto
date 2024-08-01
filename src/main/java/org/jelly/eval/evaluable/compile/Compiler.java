@@ -44,6 +44,7 @@ public class Compiler {
                 case "and" -> new AndFormCompiler(c);
                 case "or" -> new OrFormCompiler(c);
                 case "define-library" -> new LibraryDefinitionCompiler(c);
+                case "import" -> new ImportCompiler(c);
 
                 // altrimenti è una chiamata a funzione
                 default -> new FuncallFormCompiler(c);

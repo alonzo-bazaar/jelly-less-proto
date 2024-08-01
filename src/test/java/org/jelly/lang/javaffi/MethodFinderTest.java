@@ -62,9 +62,9 @@ public class MethodFinderTest {
     @Test
     public void testFindsMethodGivenInterface() {
         try {
-            Method m1 = MethodFinder.findMethod(ConsUtils.class, "lispListToJava", (new Class<?>[]{Cons.class}));
-            Method m2 = MethodFinder.findMethod(ConsUtils.class, "lispListToJava", (new Class<?>[]{Nil.class}));
-            Method m3 = MethodFinder.findMethod(ConsUtils.class, "lispListToJava", (new Class<?>[]{ConsList.class}));
+            Method m1 = MethodFinder.findMethod(ConsUtils.class, "toList", (new Class<?>[]{Cons.class}));
+            Method m2 = MethodFinder.findMethod(ConsUtils.class, "toList", (new Class<?>[]{Nil.class}));
+            Method m3 = MethodFinder.findMethod(ConsUtils.class, "toList", (new Class<?>[]{ConsList.class}));
             assertEquals(m1, m2);
             assertEquals(m1, m3);
         } catch(NoSuchMethodException e) {

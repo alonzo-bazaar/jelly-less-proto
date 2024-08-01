@@ -14,4 +14,7 @@ public class Registry {
     public static Library getLibrary(ConsList ll) {
         return registry.get(ll);
     }
+    public static void reset() {
+        registry.clear();
+    }
 }
