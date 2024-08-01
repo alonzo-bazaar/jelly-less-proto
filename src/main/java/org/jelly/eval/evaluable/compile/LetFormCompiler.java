@@ -5,9 +5,9 @@ import org.jelly.eval.evaluable.*;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.LispList;
-import org.jelly.utils.LispLists;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.ConsList;
+import org.jelly.utils.ConsUtils;
+import org.jelly.lang.data.Symbol;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -30,14 +30,14 @@ public class LetFormCompiler implements FormCompiler {
 
     @NotNull
     private static LetEvaluable fromCheckedAST(Cons c) {
-        Cons frames = LispLists.requireCons(c.nth(1));
-        LispList body = LispLists.requireList(c.nthCdr(2));
-        List<LispSymbol> names = ListUtils.toStream(frames)
-                .map(LispLists::requireCons)
-                .map(bind -> (LispSymbol)bind.nth(0))
+        Cons frames = ConsUtils.requireCons(c.nth(1));
+        ConsList body = ConsUtils.requireList(c.nthCdr(2));
+        List<Symbol> names = ListUtils.toStream(frames)
+                .map(ConsUtils::requireCons)
+                .map(bind -> (Symbol)bind.nth(0))
                 .toList();
         List<Evaluable> vals = ListUtils.toStream(frames)
-                .map(LispLists::requireCons)
+                .map(ConsUtils::requireCons)
                 .map(bind -> Compiler.compileExpression(bind.nth(1)))
                 .toList();
         return new LetEvaluable(names, vals, Utils.sequenceFromConsList(body));
@@ -47,8 +47,8 @@ public class LetFormCompiler implements FormCompiler {
         if(!Utils.startsWithSym(c, "let"))
             throw new RuntimeException("let let let");
         try {
-            checkBindingsAST(LispLists.requireList(c.nth(1))); // bindings
-            Utils.checkSequenceList(LispLists.requireList(c.nthCdr(2)));
+            checkBindingsAST(ConsUtils.requireList(c.nth(1))); // bindings
+            Utils.checkSequenceList(ConsUtils.requireList(c.nthCdr(2)));
         } catch(ClassCastException cce) {
             throw new MalformedFormException("let form is malformed because child element has the wrong type, likely some subform has incorrect nesting, check the parentheses", cce);
         } catch(MalformedFormException mfe) {
@@ -56,13 +56,13 @@ public class LetFormCompiler implements FormCompiler {
         }
     }
 
-    private static void checkBindingsAST(LispList ll) throws MalformedFormException {
+    private static void checkBindingsAST(ConsList ll) throws MalformedFormException {
         List<Object> binds = ListUtils.toJavaList(ll);
         for(Object bind : binds) {
-            Cons c = LispLists.requireCons(bind);
+            Cons c = ConsUtils.requireCons(bind);
             if(c.length() != 2)
                 throw new MalformedFormException("let variable binding must have exactly two elements (<var-name> <var-value>)");
-            if(!(c.getCar() instanceof LispSymbol))
+            if(!(c.getCar() instanceof Symbol))
                 throw new MalformedFormException("let variable binding must starts valid variable name (with a symbol), " + c.getCar() + " is not a valid variable name");
             Compiler.checkExpression(c.nth(1));
         }

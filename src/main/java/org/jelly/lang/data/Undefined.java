@@ -1,7 +1,7 @@
 package org.jelly.lang.data;
 
-public class UndefinedValue {
-    public UndefinedValue() {
+public class Undefined {
+    public Undefined() {
         // niente
     }
 

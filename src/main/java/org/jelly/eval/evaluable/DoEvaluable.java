@@ -6,17 +6,17 @@ import org.jelly.eval.environment.EnvFrame;
 import org.jelly.eval.environment.Environment;
 import org.jelly.eval.environment.errors.VariableDoesNotExistException;
 import org.jelly.eval.utils.ListUtils;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Symbol;
 
 public class DoEvaluable implements Evaluable {
-    private List<LispSymbol> vars;
+    private List<Symbol> vars;
     private List<Evaluable> initForms;
     private List<Evaluable> updateForms;
     private SequenceEvaluable body;
     private Evaluable stopCondition;
     private Evaluable returnOnStop;
 
-    public DoEvaluable(List<LispSymbol> vars,
+    public DoEvaluable(List<Symbol> vars,
                        List<Evaluable> initForms,
                        List<Evaluable> updateForms,
                        SequenceEvaluable body,

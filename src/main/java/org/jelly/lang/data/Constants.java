@@ -5,8 +5,8 @@ public class Constants {
      * che a volte uso anche nel codice per boh
      * e non sapevo dove metterle nel package
      */
-    public static final NilValue NIL = new NilValue();
-    public static final UndefinedValue UNDEFINED = new UndefinedValue();
+    public static final Nil NIL = new Nil();
+    public static final Undefined UNDEFINED = new Undefined();
     public static final Boolean TRUE = Boolean.TRUE;
     public static final Boolean FALSE = Boolean.FALSE;
 }

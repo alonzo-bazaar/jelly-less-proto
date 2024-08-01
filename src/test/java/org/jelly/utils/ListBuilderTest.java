@@ -2,8 +2,7 @@ package org.jelly.utils;
 
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.Constants;
-import org.jelly.lang.data.LispList;
-import org.jelly.utils.ListBuilder;
+import org.jelly.lang.data.ConsList;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 public class ListBuilderTest {
@@ -17,7 +16,7 @@ public class ListBuilderTest {
     public void testAddLastOne() {
         ListBuilder ll = new ListBuilder();
         ll.addLast(10);
-        LispList o = ll.get();
+        ConsList o = ll.get();
         assertInstanceOf(Cons.class, o);
         assertEquals((int) o.getCar(), 10);
         assertSame(o.getCdr(), Constants.NIL);
@@ -27,7 +26,7 @@ public class ListBuilderTest {
     public void testAddFirstOne() {
         ListBuilder ll = new ListBuilder();
         ll.addFirst(10);
-        LispList o = ll.get();
+        ConsList o = ll.get();
         assertInstanceOf(Cons.class, o);
         assertEquals((int) o.getCar(), 10);
         assertSame(o.getCdr(), Constants.NIL);
@@ -39,7 +38,7 @@ public class ListBuilderTest {
         ll.addLast(10);
         ll.addLast(20);
         ll.addLast(30);
-        LispList o = ll.get();
+        ConsList o = ll.get();
         assertInstanceOf(Cons.class, o);
         assertEquals((int) o.nth(0), 10);
         assertEquals((int) o.nth(1), 20);
@@ -55,7 +54,7 @@ public class ListBuilderTest {
         ll.addFirst(10);
         ll.addFirst(20);
         ll.addFirst(30);
-        LispList o = ll.get();
+        ConsList o = ll.get();
         assertInstanceOf(Cons.class, o);
         assertEquals((int) o.nth(0), 30);
         assertEquals((int) o.nth(1), 20);
@@ -69,7 +68,7 @@ public class ListBuilderTest {
         ll.addFirst(10);
         ll.addFirst(20);
         ll.addLast(0);
-        LispList o = ll.get();
+        ConsList o = ll.get();
         assertInstanceOf(Cons.class, o);
         assertEquals((int) o.nth(0), 20);
         assertEquals((int) o.nth(1), 10);
@@ -83,7 +82,7 @@ public class ListBuilderTest {
         ll.addLast(10);
         ll.addLast(20);
         ll.addFirst(0);
-        LispList o = ll.get();
+        ConsList o = ll.get();
         assertInstanceOf(Cons.class, o);
         assertEquals((int) o.nth(0), 0);
         assertEquals((int) o.nth(1), 10);

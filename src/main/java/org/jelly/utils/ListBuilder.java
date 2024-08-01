@@ -2,10 +2,10 @@ package org.jelly.utils;
 
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.Constants;
-import org.jelly.lang.data.LispList;
+import org.jelly.lang.data.ConsList;
 
 public class ListBuilder {
-    LispList initial;
+    ConsList initial;
     Cons lastCons;
 
     public ListBuilder() {
@@ -38,7 +38,7 @@ public class ListBuilder {
         lastCons = (Cons)initial;
     }
 
-    public LispList get() {
+    public ConsList get() {
         return initial;
     }
 }

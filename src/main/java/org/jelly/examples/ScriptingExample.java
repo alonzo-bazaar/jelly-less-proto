@@ -1,7 +1,6 @@
 package org.jelly.examples;
 
 import org.jelly.eval.runtime.JellyRuntime;
-import org.jelly.lang.data.LispList;
 
 import java.io.File;
 import java.io.FileNotFoundException;

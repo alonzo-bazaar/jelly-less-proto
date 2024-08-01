@@ -1,7 +1,7 @@
 package org.jelly.eval.procedure;
 
 import org.jelly.eval.evaluable.BaseEvaluableTest;
-import org.jelly.lang.data.LispList;
+import org.jelly.lang.data.ConsList;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -98,9 +98,9 @@ public class ProcedureTest extends BaseEvaluableTest {
         eval("(define square (lambda (x) (* x x)))");
 
         Object lst = eval("(map square (quote (1 2 3)))");
-        assertEquals(1, (int)((LispList)lst).nth(0));
-        assertEquals(4, (int)((LispList)lst).nth(1));
-        assertEquals(9, (int)((LispList)lst).nth(2));
+        assertEquals(1, (int)((ConsList)lst).nth(0));
+        assertEquals(4, (int)((ConsList)lst).nth(1));
+        assertEquals(9, (int)((ConsList)lst).nth(2));
     }
 
     @Test

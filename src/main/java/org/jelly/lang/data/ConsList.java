@@ -1,6 +1,6 @@
 package org.jelly.lang.data;
 
-public interface LispList {
+public interface ConsList {
     public Object getCar();
     public Object getCdr();
 

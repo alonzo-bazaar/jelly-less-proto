@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jelly.eval.environment.Environment;
 import org.jelly.eval.evaluable.SequenceEvaluable;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Symbol;
 
 public class UserDefinedProcedure implements Procedure {
     // TODO to be refined into a LambdaList class
@@ -14,7 +14,7 @@ public class UserDefinedProcedure implements Procedure {
     private final SequenceEvaluable functionBody;
 
     public UserDefinedProcedure(Environment definitionEnvironment,
-                                List<LispSymbol> formalParameters,
+                                List<Symbol> formalParameters,
                                 SequenceEvaluable functionBody) {
         this.definitionEnvironment = definitionEnvironment;
         this.formalParameters = LambdaList.fromList(formalParameters);
@@ -25,7 +25,7 @@ public class UserDefinedProcedure implements Procedure {
      * @params values the values of the arguments with which the procedure is called
      */
     @Override
-    public Object call(List<Object> values) {
+    public Object apply(List<Object> values) {
         return functionBody.eval(definitionEnvironment.extend(formalParameters.bind(values)));
     }
 }

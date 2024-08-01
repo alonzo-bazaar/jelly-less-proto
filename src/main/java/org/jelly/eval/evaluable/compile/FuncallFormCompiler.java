@@ -4,9 +4,9 @@ import org.jelly.eval.evaluable.FuncallEvaluable;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.LispList;
-import org.jelly.utils.LispLists;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.ConsList;
+import org.jelly.utils.ConsUtils;
+import org.jelly.lang.data.Symbol;
 
 public class FuncallFormCompiler implements FormCompiler {
     private final Cons form;
@@ -25,17 +25,17 @@ public class FuncallFormCompiler implements FormCompiler {
     }
 
     private static void checkAST(Cons c) throws MalformedFormException {
-        if(c.getCar() instanceof LispSymbol) {
-            Utils.checkSequenceList(LispLists.requireList(c.getCdr()));
+        if(c.getCar() instanceof Symbol) {
+            Utils.checkSequenceList(ConsUtils.requireList(c.getCdr()));
         }
         else {
             // LambdaFormCompiler.checkAST(LispLists.requireCons(c.getCar()));
             Compiler.checkExpression(c.getCar());
-            Utils.checkSequenceList(LispLists.requireList(c.getCdr()));
+            Utils.checkSequenceList(ConsUtils.requireList(c.getCdr()));
         }
     }
 
     private static FuncallEvaluable fromCheckedAST(Cons c) {
-        return new FuncallEvaluable(Compiler.compileExpression(c.getCar()), ListUtils.toJavaList((LispList)c.getCdr()));
+        return new FuncallEvaluable(Compiler.compileExpression(c.getCar()), ListUtils.toJavaList((ConsList)c.getCdr()));
     }
 }

@@ -1,7 +1,6 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.lang.data.LispSymbol;
-import org.jelly.lang.data.UndefinedValue;
+import org.jelly.lang.data.Undefined;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,14 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 public class SequenceEvaluableTest extends BaseEvaluableTest {
     @Test
     public void testEmptySequenceIsUndefined() {
-        assertInstanceOf(UndefinedValue.class, eval("(begin)"));
+        assertInstanceOf(Undefined.class, eval("(begin)"));
     }
 
     @Test
     public void test_whenBeginIsBound_emptySequenceIsUndefined() {
         // weird bug because I forgot to specify a cdr
         define("begin", 5);
-        assertInstanceOf(UndefinedValue.class, eval("(begin)"));
+        assertInstanceOf(Undefined.class, eval("(begin)"));
     }
 
     @Test

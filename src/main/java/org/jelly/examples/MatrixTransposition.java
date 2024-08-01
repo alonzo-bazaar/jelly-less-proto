@@ -1,8 +1,8 @@
 package org.jelly.examples;
 
 import org.jelly.eval.runtime.JellyRuntime;
-import org.jelly.lang.data.LispList;
-import org.jelly.utils.LispLists;
+import org.jelly.lang.data.ConsList;
+import org.jelly.utils.ConsUtils;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -51,12 +51,12 @@ public class MatrixTransposition {
                          "      (map column (range 0 (length (car llst))))" +
                          "      (error \"invalid input matrix, cannot transpose : TRASPOSTA\")))");
 
-        LispList ll = LispLists.javaListToCons(matrix.stream().map(LispLists::javaListToCons).toList());
-        LispList trl = (LispList)jr.call("trasposta", ll);
+        ConsList ll = ConsUtils.toCons(matrix.stream().map(ConsUtils::toCons).toList());
+        ConsList trl = (ConsList)jr.call("trasposta", ll);
 
-        return LispLists.lispListToJava(trl)
+        return ConsUtils.toList(trl)
                 .stream()
-                .map(a -> LispLists.lispListToJava((LispList)a).stream().map(b->(Integer)b).toList())
+                .map(a -> ConsUtils.toList((ConsList)a).stream().map(b->(Integer)b).toList())
                 .toList();
     }
 

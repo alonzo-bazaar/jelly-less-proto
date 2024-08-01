@@ -6,8 +6,6 @@ import org.jelly.parse.errors.ParsingException;
 
 import org.junit.jupiter.api.Test;
 
-import org.jelly.lang.data.LispSymbol;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ClosureTest extends BaseEvaluableTest {

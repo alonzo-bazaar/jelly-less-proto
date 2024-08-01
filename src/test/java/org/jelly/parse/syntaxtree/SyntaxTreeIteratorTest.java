@@ -2,7 +2,7 @@ package org.jelly.parse.syntaxtree;
 
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.Constants;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Symbol;
 import org.jelly.parse.errors.ParsingException;
 import org.jelly.parse.errors.UnbalancedParenthesesException;
 import org.jelly.utils.DebuggingUtils;
@@ -15,13 +15,13 @@ public class SyntaxTreeIteratorTest {
     public void testSymbols() throws ParsingException {
         SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("mamma mia");
         Object o;
-        LispSymbol ls;
+        Symbol ls;
 
         o = ei.next();
-        assertEquals("mamma", ((LispSymbol)o).getName());
+        assertEquals("mamma", ((Symbol)o).name());
 
         o = ei.next();
-        assertEquals("mia", ((LispSymbol)o).getName());
+        assertEquals("mia", ((Symbol)o).name());
 
         assertFalse(ei.hasNext());
     }
@@ -63,8 +63,8 @@ public class SyntaxTreeIteratorTest {
         Object le1 = c.nth(1);
         Object le2 = c.nth(2);
 
-        assertEquals("define", ((LispSymbol)le0).getName());
-        assertEquals("x", ((LispSymbol)le1).getName());
+        assertEquals("define", ((Symbol)le0).name());
+        assertEquals("x", ((Symbol)le1).name());
         assertEquals(20, (int)le2);
     }
 
@@ -81,7 +81,7 @@ public class SyntaxTreeIteratorTest {
         assertSame(Constants.NIL, (((Cons)midder).getCdr()));
 
         Object inner = ((Cons) midder).getCar();
-        assertEquals("ok", ((LispSymbol) inner).getName());
+        assertEquals("ok", ((Symbol) inner).name());
     }
 
     @Test

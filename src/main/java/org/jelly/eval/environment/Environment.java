@@ -5,7 +5,7 @@ import java.util.List;
 import org.jelly.eval.ErrorFormatter;
 import org.jelly.eval.environment.errors.UnboundVariableException;
 import org.jelly.eval.environment.errors.VariableDoesNotExistException;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Symbol;
 
 public class Environment {
     // definizione abbastanza poco implicita come lista concatenata
@@ -28,14 +28,14 @@ public class Environment {
         this.tail = tail;
     }
 
-    public Object lookup(LispSymbol name) {
+    public Object lookup(Symbol name) {
         for(Environment env = this; env!=null; env = env.tail) {
             Object o = env.head.lookup(name);
             if(o != null) {
                 return o;
             }
         }
-        throw new UnboundVariableException("variable " + name.getName() + " is not bound");
+        throw new UnboundVariableException("variable " + name.name() + " is not bound");
     }
 
     public Environment extend() {
@@ -46,11 +46,11 @@ public class Environment {
         return new Environment(frame, this);
     }
 
-    public Environment extend(List<LispSymbol> ls, List<Object> le) {
+    public Environment extend(List<Symbol> ls, List<Object> le) {
         return this.extend(new EnvFrame(ls, le));
     }
 
-    public void set(LispSymbol sym, Object val)
+    public void set(Symbol sym, Object val)
         throws VariableDoesNotExistException
     {
         Environment e = this;
@@ -63,15 +63,15 @@ public class Environment {
         }
         // se si arriva a null allora
         throw new VariableDoesNotExistException
-                ("cannot assign symbol " + sym.getName()
-                 + " as there is no variable " + sym.getName() +
+                ("cannot assign symbol " + sym.name()
+                 + " as there is no variable " + sym.name() +
                  " in the environment");
     }
 
-    public void define(LispSymbol sym, Object val)
+    public void define(Symbol sym, Object val)
     {
         if(head.hasSymbol(sym))
-            ErrorFormatter.warn("redefining variable " + sym.getName());
+            ErrorFormatter.warn("redefining variable " + sym.name());
 
         head.bind(sym, val);
     }

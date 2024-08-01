@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.jelly.eval.environment.EnvFrame;
 import org.jelly.eval.environment.Environment;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Symbol;
 
 public class LetEvaluable implements Evaluable {
-    private final List<LispSymbol> names;
+    private final List<Symbol> names;
     private final List<Evaluable> uncomputedVals;
     private final SequenceEvaluable body;
 
-    public LetEvaluable(List<LispSymbol> names,
+    public LetEvaluable(List<Symbol> names,
                         List<Evaluable> evals,
                         SequenceEvaluable body) {
         this.names = names;

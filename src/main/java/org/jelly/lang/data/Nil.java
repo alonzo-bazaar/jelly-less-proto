@@ -1,7 +1,7 @@
 package org.jelly.lang.data;
 
-public class NilValue implements LispList {
-    public NilValue() {
+public class Nil implements ConsList {
+    public Nil() {
         // niente
     }
     @Override

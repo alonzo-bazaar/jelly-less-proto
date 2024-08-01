@@ -1,7 +1,7 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.lang.data.LispSymbol;
-import org.jelly.lang.data.LispList;
+import org.jelly.lang.data.Symbol;
+import org.jelly.lang.data.ConsList;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,13 +14,13 @@ import org.jelly.parse.errors.ParsingException;
 public class EvaluableCreatorTest extends BaseEvaluableTest {
     @Test
     public void testQuoteSymbol() throws ParsingException {
-        assertEquals("a", ((LispSymbol)eval("(quote a)")).getName());
+        assertEquals("a", ((Symbol)eval("(quote a)")).name());
     }
 
     @Test
     public void testQuoteSymbolDoesNotLookup() throws ParsingException {
         assertEquals("a",
-                     ((LispSymbol)eval("(let ((a 10)) (quote a))")).getName());
+                     ((Symbol)eval("(let ((a 10)) (quote a))")).name());
     }
 
     @Test
@@ -36,17 +36,17 @@ public class EvaluableCreatorTest extends BaseEvaluableTest {
     @Test
     public void testQuoteList() throws ParsingException {
         Object o = eval("(quote (1 2 3))");
-        assertEquals(1, (int)((LispList)o).nth(0));
-        assertEquals(2, (int)((LispList)o).nth(1));
-        assertEquals(3, (int)((LispList)o).nth(2));
+        assertEquals(1, (int)((ConsList)o).nth(0));
+        assertEquals(2, (int)((ConsList)o).nth(1));
+        assertEquals(3, (int)((ConsList)o).nth(2));
     }
 
     @Test
     public void testQuoteListDynamicallyTypedThing() throws ParsingException {
         Object o = eval("(quote (1 \"test\" yee))");
-        assertEquals(1, (int)((LispList)o).nth(0));
-        assertEquals("test", (String)((LispList)o).nth(1));
-        assertEquals("yee", ((LispSymbol)(((LispList)o).nth(2))).getName());
+        assertEquals(1, (int)((ConsList)o).nth(0));
+        assertEquals("test", (String)((ConsList)o).nth(1));
+        assertEquals("yee", ((Symbol)(((ConsList)o).nth(2))).name());
     }
 
     @Test

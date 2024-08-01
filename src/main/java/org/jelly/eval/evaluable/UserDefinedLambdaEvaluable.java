@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jelly.eval.evaluable.procedure.UserDefinedProcedure;
 import org.jelly.eval.environment.Environment;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Symbol;
 
 public class UserDefinedLambdaEvaluable implements Evaluable, LambdaEvaluable {
     /* evaluating a lambda expression
@@ -16,10 +16,10 @@ public class UserDefinedLambdaEvaluable implements Evaluable, LambdaEvaluable {
      * save for the fact computing the values is left to the returned procedure
      */
 
-    private final List<LispSymbol> formalParameters;
+    private final List<Symbol> formalParameters;
     private final SequenceEvaluable body;
 
-    public UserDefinedLambdaEvaluable(List<LispSymbol> formalParameters,
+    public UserDefinedLambdaEvaluable(List<Symbol> formalParameters,
                                       SequenceEvaluable body) {
         this.formalParameters = formalParameters;
         this.body = body;

@@ -5,18 +5,18 @@ import java.util.List;
 import org.jelly.eval.evaluable.procedure.errors.BadParameterBindException;
 import org.jelly.eval.environment.EnvFrame;
 import org.jelly.lang.data.Constants;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Symbol;
 import org.jelly.parse.errors.SynthaxTreeParsingException;
-import org.jelly.utils.LispLists;
+import org.jelly.utils.ConsUtils;
 
 public class LambdaList {
-    private List<LispSymbol> positional;
-    private LispSymbol restSym;
+    private List<Symbol> positional;
+    private Symbol restSym;
 
-    public static LambdaList fromList(List<LispSymbol> ll) {
+    public static LambdaList fromList(List<Symbol> ll) {
         LambdaList res = new LambdaList();
-        res.positional = ll.stream().takeWhile(a -> !(a.getName().equals("&rest"))).toList();
-        List<LispSymbol> restSyms = ll.stream().dropWhile(a -> !(a.getName().equals("&rest"))).toList();
+        res.positional = ll.stream().takeWhile(a -> !(a.name().equals("&rest"))).toList();
+        List<Symbol> restSyms = ll.stream().dropWhile(a -> !(a.name().equals("&rest"))).toList();
 
         // restSyms should be empty or (&rest ...), if ... is just one symbol then we have rest, otherwise it's an error
         switch(restSyms.size()) {
@@ -53,7 +53,7 @@ public class LambdaList {
             }
             else { // vals.size() > positional.size()
                 EnvFrame frame = new EnvFrame(this.positional,vals.subList(0, positional.size()));
-                frame.bind(restSym, LispLists.javaListToCons(vals.subList(positional.size(), vals.size())));
+                frame.bind(restSym, ConsUtils.toCons(vals.subList(positional.size(), vals.size())));
                 return frame;
             }
         }

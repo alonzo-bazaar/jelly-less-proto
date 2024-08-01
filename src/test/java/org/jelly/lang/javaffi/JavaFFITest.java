@@ -5,6 +5,8 @@ package org.jelly.lang.javaffi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JavaFFITest {
@@ -62,6 +64,21 @@ public class JavaFFITest {
         Object res = ForeignMethodCaller.tryCallStatic(LabRat.class, "canThrowStatic", new Object[]{1});
         assertInstanceOf(GoodResult.class, res);
         assertEquals(1, ((GoodResult<?,?>)res).get());
+    }
+
+    @Test
+    public void testCallStaticMethodTakingIntAndString() {
+        try {
+            assertEquals(255,
+                    MethodFinder.findMethod(Integer.class, "parseInt", (new Class<?>[]{String.class, int.class}))
+                            .invoke(null, (new Object[] {"ff", 16})));
+        } catch(NoSuchMethodException e) {
+            throw new AssertionError("could not find method, assertion failed", e);
+        } catch(InvocationTargetException e) {
+            throw new AssertionError("could not invoke method, assertion failed", e);
+        } catch(IllegalAccessException e) {
+            throw new AssertionError("could not access method, assertion failed", e);
+        }
     }
 }
 

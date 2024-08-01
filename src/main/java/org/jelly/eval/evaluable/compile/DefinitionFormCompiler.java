@@ -4,9 +4,9 @@ import org.jelly.eval.evaluable.*;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.LispList;
-import org.jelly.utils.LispLists;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.ConsList;
+import org.jelly.utils.ConsUtils;
+import org.jelly.lang.data.Symbol;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -29,19 +29,19 @@ public class DefinitionFormCompiler implements FormCompiler {
 
     @NotNull
     private static DefinitionEvaluable fromCheckedAST(Cons c) {
-        if(c.nth(1) instanceof LispSymbol definedVarName)
+        if(c.nth(1) instanceof Symbol definedVarName)
             return new DefinitionEvaluable(definedVarName,
                     Compiler.compileExpression(c.nth(2)));
 
         else {
-            Cons funSpec = LispLists.requireCons(c.nth(1));
-            LispSymbol funName = (LispSymbol)funSpec.getCar();
-            LispList funParams = LispLists.requireList(funSpec.getCdr());
-            LispList body = LispLists.requireList(c.nthCdr(2));
+            Cons funSpec = ConsUtils.requireCons(c.nth(1));
+            Symbol funName = (Symbol)funSpec.getCar();
+            ConsList funParams = ConsUtils.requireList(funSpec.getCdr());
+            ConsList body = ConsUtils.requireList(c.nthCdr(2));
 
-            List<LispSymbol> paramsList = ListUtils.toJavaList(funParams)
+            List<Symbol> paramsList = ListUtils.toJavaList(funParams)
                     .stream()
-                    .map(a -> (LispSymbol) a)
+                    .map(a -> (Symbol) a)
                     .toList();
             SequenceEvaluable bodEval = Utils.sequenceFromConsList(body);
 
@@ -56,7 +56,7 @@ public class DefinitionFormCompiler implements FormCompiler {
         // (define (fun params) body)
         if(!Utils.startsWithSym(c, "define"))
             throw new RuntimeException("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        if(c.nth(1) instanceof LispSymbol) {
+        if(c.nth(1) instanceof Symbol) {
             try {
                 Compiler.checkExpression(c.nth(2));
             } catch(MalformedFormException mfe) {
@@ -64,10 +64,10 @@ public class DefinitionFormCompiler implements FormCompiler {
             }
         }
         else if(c.nth(1) instanceof Cons fun) {
-            if(!(fun.getCar() instanceof LispSymbol))
+            if(!(fun.getCar() instanceof Symbol))
                 throw new MalformedFormException("cannot define function " + fun.getCar() + " as " + fun.getCar() + " is not a valid function name (it is not a symbol)");
-            Utils.ensureLambdaListAST(LispLists.requireList(fun.getCdr()));
-            Utils.checkSequenceList(LispLists.requireList(c.nthCdr(2)));
+            Utils.ensureLambdaListAST(ConsUtils.requireList(fun.getCdr()));
+            Utils.checkSequenceList(ConsUtils.requireList(c.nthCdr(2)));
         }
         else throw new MalformedFormException("define form is malformed, defined variable" + c.nth(1) + "is neither a symbol nor a function declaration");
     }

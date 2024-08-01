@@ -19,8 +19,6 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
   <version>1.0</version>
 
   <name>jellyt</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -43,12 +41,14 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
       <version>5.10.0</version>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.jetbrains</groupId>
       <artifactId>annotations</artifactId>
       <version>24.0.1</version>
       <scope>compile</scope>
     </dependency>
+
   </dependencies>
 
   <build>
@@ -190,7 +190,7 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
       <!-- https://maven.apache.org/plugins/maven-assembly-plugin/usage.html -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <!-- <version>3.3.0</version> -->
+        <version>3.7.1</version>
         <configuration>
           <descriptorRefs>
 	        <descriptorRef>jar-with-dependencies</descriptorRef>

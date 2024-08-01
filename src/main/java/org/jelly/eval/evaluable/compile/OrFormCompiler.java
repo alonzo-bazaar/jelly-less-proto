@@ -3,7 +3,7 @@ package org.jelly.eval.evaluable.compile;
 import org.jelly.eval.evaluable.OrEvaluable;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.lang.data.Cons;
-import org.jelly.utils.LispLists;
+import org.jelly.utils.ConsUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class OrFormCompiler implements FormCompiler {
@@ -24,14 +24,14 @@ public class OrFormCompiler implements FormCompiler {
 
     @NotNull
     private static OrEvaluable fromCheckedAST(Cons c) {
-        return new OrEvaluable(Utils.toEvaluableList(LispLists.requireList(c.getCdr())));
+        return new OrEvaluable(Utils.toEvaluableList(ConsUtils.requireList(c.getCdr())));
     }
 
     private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c, "or"))
             throw new RuntimeException("ok, or?");
         try {
-            Utils.checkSequenceList(LispLists.requireList(c.getCdr()));
+            Utils.checkSequenceList(ConsUtils.requireList(c.getCdr()));
         } catch(MalformedFormException mfe) {
             throw new MalformedFormException("or form is malformed because child is malformed", mfe);
         } catch(ClassCastException cce) {

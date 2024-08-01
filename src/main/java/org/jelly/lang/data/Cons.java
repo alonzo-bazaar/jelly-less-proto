@@ -2,7 +2,7 @@ package org.jelly.lang.data;
 
 import java.security.InvalidParameterException;
 
-public class Cons implements LispList {
+public class Cons implements ConsList {
     Object car;
     Object cdr;
 
@@ -59,7 +59,7 @@ public class Cons implements LispList {
         /* 0 indexed, che ci mancherebbe altro */
         if (n <= 0)
             return this;
-        if (cdr instanceof LispList ll)
+        if (cdr instanceof ConsList ll)
             return ll.nthCdr(n - 1);
         else
             throw new InvalidParameterException("cannot take cdr of " + cdr.toString() + ". It is not a list");
@@ -84,6 +84,20 @@ public class Cons implements LispList {
             return true;
         if(cdr instanceof Cons ccdr)
             return ccdr.isProperList();
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        // let us please forget efficiency is a thing
+        return car.hashCode() ^ cdr.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object e) {
+        if(e instanceof Cons c) {
+            return c.car.equals(car) && c.cdr.equals(cdr);
+        }
         return false;
     }
 }

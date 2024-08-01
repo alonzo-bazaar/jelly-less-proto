@@ -27,9 +27,9 @@ public class Compiler {
     }
 
     private static FormCompiler compilerForForm(Cons c) {
-        if (c.getCar() instanceof LispSymbol sym) {
+        if (c.getCar() instanceof Symbol sym) {
             // is it a special form?
-            return switch(sym.getName()) {
+            return switch(sym.name()) {
                 case "quote" -> new ConstantFormCompiler(c);
                 case "if" -> new IfFormCompiler(c);
                 case "when" -> new WhenFormCompiler(c);
@@ -43,6 +43,7 @@ public class Compiler {
                 case "begin" -> new SequenceFormCompiler(c);
                 case "and" -> new AndFormCompiler(c);
                 case "or" -> new OrFormCompiler(c);
+                case "define-library" -> new LibraryDefinitionCompiler(c);
 
                 // altrimenti è una chiamata a funzione
                 default -> new FuncallFormCompiler(c);
@@ -58,7 +59,7 @@ public class Compiler {
             case null -> throw new MalformedFormException("null form");
 
             // check for lists (nil or cons)
-            case NilValue n -> {
+            case Nil n -> {
                 if(n!=Constants.NIL)
                     throw new MalformedFormException("no nil value except for NIL can be used");
                 // else ok
@@ -75,7 +76,7 @@ public class Compiler {
     }
 
     private static Evaluable fromAtom(Object exp) {
-        if (exp instanceof LispSymbol sym)
+        if (exp instanceof Symbol sym)
             return new LookupEvaluable(sym);
         else
             return new ConstantEvaluable(exp);

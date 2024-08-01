@@ -1,0 +1,6 @@
+puoi provare a mettere la reflection quella pesante in culo e fare caching dei risultati
+per permettere il caching dei risultati (forse) dovresti rendre il runtime un visitor
+
+penso solo che il runtime visitor sarebbe figo
+
+parser hai le idee del cazzo e i testi del cazzo, fai come meglio credi

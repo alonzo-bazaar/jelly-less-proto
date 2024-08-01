@@ -1,14 +1,14 @@
 package org.jelly.eval.evaluable;
 
 import org.jelly.eval.environment.Environment;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Symbol;
 import org.jelly.lang.data.Constants;
 
 public class SetEvaluable implements Evaluable {
-    private final LispSymbol sym;
+    private final Symbol sym;
     private final Evaluable uncomputedVal;
 
-    public SetEvaluable(LispSymbol sym, Evaluable val) {
+    public SetEvaluable(Symbol sym, Evaluable val) {
         this.sym = sym;
         this.uncomputedVal = val;
     }

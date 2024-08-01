@@ -1,7 +1,5 @@
 package org.jelly.lang.data;
 
-import org.jelly.lang.data.Constants;
-import org.jelly.lang.data.NilValue;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

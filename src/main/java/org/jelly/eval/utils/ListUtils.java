@@ -8,23 +8,23 @@ import org.jelly.utils.Pair;
 
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.Constants;
-import org.jelly.lang.data.LispList;
+import org.jelly.lang.data.ConsList;
 
 public class ListUtils {
-    public static Pair<LispList, Object> splitLast(Cons c) {
+    public static Pair<ConsList, Object> splitLast(Cons c) {
         return new Pair<>(cutLast(c), c.last());
     }
 
-    static LispList cutLast(LispList c) {
+    static ConsList cutLast(ConsList c) {
         if (c == Constants.NIL || c.getCdr() == Constants.NIL)
             return Constants.NIL;
-        if (c.getCdr() instanceof LispList ll)
+        if (c.getCdr() instanceof ConsList ll)
             return new Cons(c.getCar(), cutLast(ll));
         else
             return new Cons(c.getCar(), Constants.NIL);
     }
 
-    public static List<Object> toJavaList(LispList l) {
+    public static List<Object> toJavaList(ConsList l) {
         ArrayList<Object> al = new ArrayList<>(l.length());
         while (l instanceof Cons) {
             al.add(l.getCar());
@@ -38,7 +38,7 @@ public class ListUtils {
         return al;
     }
 
-    public static Stream<Object> toStream(LispList l) {
+    public static Stream<Object> toStream(ConsList l) {
         return toJavaList(l).stream();
     }
 

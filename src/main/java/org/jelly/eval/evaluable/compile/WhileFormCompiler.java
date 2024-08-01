@@ -4,8 +4,8 @@ import org.jelly.eval.evaluable.WhileEvaluable;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.LispList;
-import org.jelly.utils.LispLists;
+import org.jelly.lang.data.ConsList;
+import org.jelly.utils.ConsUtils;
 
 public class WhileFormCompiler implements FormCompiler {
     private final Cons form;
@@ -26,7 +26,7 @@ public class WhileFormCompiler implements FormCompiler {
 
     private static WhileEvaluable fromCheckedAST(Cons c) {
         return new WhileEvaluable(Compiler.compileExpression(c.nth(1)),
-                             Utils.sequenceFromConsList((LispList) c.nthCdr(2)));
+                             Utils.sequenceFromConsList((ConsList) c.nthCdr(2)));
     }
 
     private static void checkAST(Cons c) throws MalformedFormException {
@@ -35,7 +35,7 @@ public class WhileFormCompiler implements FormCompiler {
         if(c.length() < 2)
             throw new MalformedFormException("while form expected to have exactly at least two members (while <condition> <sequence-element>*");
         try {
-            LispList ll = LispLists.requireList(c.getCdr());
+            ConsList ll = ConsUtils.requireList(c.getCdr());
             for(Object o : ListUtils.toJavaList(ll)) {
                 Compiler.checkExpression(o);
             }

@@ -3,7 +3,7 @@ package org.jelly.eval.evaluable.compile;
 import org.jelly.eval.evaluable.AndEvaluable;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.lang.data.Cons;
-import org.jelly.utils.LispLists;
+import org.jelly.utils.ConsUtils;
 
 public class AndFormCompiler implements FormCompiler {
     private final Cons form;
@@ -25,7 +25,7 @@ public class AndFormCompiler implements FormCompiler {
         if(!Utils.startsWithSym(c, "and"))
             throw new RuntimeException("ok, and?");
         try {
-            Utils.checkSequenceList(LispLists.requireList(c.getCdr()));
+            Utils.checkSequenceList(ConsUtils.requireList(c.getCdr()));
         } catch(MalformedFormException mfe) {
             throw new MalformedFormException("and form is malformed because child is malformed", mfe);
         } catch(ClassCastException cce) {
@@ -34,6 +34,6 @@ public class AndFormCompiler implements FormCompiler {
     }
 
     private static AndEvaluable fromCheckedAST(Cons c) {
-        return new AndEvaluable(Utils.toEvaluableList(LispLists.requireList(c.getCdr())));
+        return new AndEvaluable(Utils.toEvaluableList(ConsUtils.requireList(c.getCdr())));
     }
 }

@@ -59,4 +59,13 @@ public final class FFI {
 
         return ForeignMethodCaller.tryCallStatic((Class<?>)args.get(0), (String)args.get(1), argsArr);
     }
+
+    public static Object constuct(List<Object> args) throws IncorrectArgumentsException {
+        Utils.ensureSizeAtLeast("callStatic", 1, args);
+        Utils.ensureSingleOfType("callStatic", 0, Class.class, args);
+
+        Object[] argsArr = args.subList(1, args.size()).toArray();
+
+        return ForeignMethodCaller.construct((Class<?>)args.get(0), argsArr);
+    }
 }

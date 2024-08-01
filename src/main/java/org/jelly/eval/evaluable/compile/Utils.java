@@ -2,15 +2,15 @@ package org.jelly.eval.evaluable.compile;
 
 import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.evaluable.SequenceEvaluable;
-import org.jelly.eval.evaluable.compile.Compiler;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.LispList;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.ConsList;
+import org.jelly.lang.data.Symbol;
+import org.jelly.utils.AstHandling;
+import org.jelly.utils.ConsUtils;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Utils {
     private static String renderFormPrototype(String formName, String[] childrenNames) {
@@ -49,33 +49,75 @@ public class Utils {
         }
     }
 
-    static boolean startsWithSym(LispList ll, String s) {
-        return ((LispSymbol)ll.getCar()).getName().equals(s);
+    static boolean startsWithSym(ConsList ll, String s) {
+        return ((Symbol)ll.getCar()).name().equals(s);
     }
 
-    static void checkSequenceList(LispList ll) throws MalformedFormException {
+    static void checkSequenceList(ConsList ll) throws MalformedFormException {
         List<Object> l = ListUtils.toJavaList(ll);
         for (Object o : l) {
             Compiler.checkExpression(o);
         }
     }
 
-    static SequenceEvaluable sequenceFromConsList(LispList c) {
+    static SequenceEvaluable sequenceFromConsList(ConsList c) {
         return new SequenceEvaluable(toEvaluableList(c));
     }
 
-    static List<Evaluable> toEvaluableList(LispList c) {
+    static List<Evaluable> toEvaluableList(ConsList c) {
         return ListUtils.toStream(c)
             .map(Compiler::compileExpression)
             .toList();
     }
 
-    static void ensureLambdaListAST(LispList ll) throws MalformedFormException {
+    static void ensureLambdaListAST(ConsList ll) throws MalformedFormException {
         List<Object> l = ListUtils.toJavaList(ll);
         for(Object o : l) {
-            if(!(o instanceof LispSymbol)) {
+            if(!(o instanceof Symbol)) {
                 throw new MalformedFormException(o + " should not be in a lambda list, only symbols can be there");
             }
         }
+    }
+
+    static Map<Symbol, Symbol> alistToMap(Cons c) {
+        Map<Symbol, Symbol> res = new HashMap<>();
+        ConsUtils.toStream(c).forEach(a -> res.put(AstHandling.requireSymbol(ConsUtils.nth(a, 0)),
+                                                           AstHandling.requireSymbol(ConsUtils.nth(a, 1))));
+        return res;
+    }
+
+    static void checkSymbolAlist(Cons symbolAList)  throws MalformedFormException {
+        /*
+         * checks for a structure like ((a b) (c d) ...)
+         */
+        for(Object elt : ConsUtils.toList(symbolAList)) {
+            checkListOfSize(ConsUtils.requireCons(elt), 2);
+            checkListType(ConsUtils.requireCons(elt), Symbol.class);
+        }
+    }
+
+    static void checkSymbolList(Cons symbolList) throws MalformedFormException {
+        checkListType(symbolList, Symbol.class);
+    }
+
+    private static void checkListType(Cons list, Class<?> cls) throws MalformedFormException {
+        Optional<Object> culprit = ConsUtils.toStream(list).filter(a -> !cls.isInstance(a)).findFirst();
+        if(culprit.isPresent())
+            throw new MalformedFormException("list was supposed to be only composed of "
+                    + cls.getCanonicalName()
+                    + " objects, but it cocntains "
+                    + culprit.get()
+                    + ", of type " + culprit.get().getClass().getCanonicalName());
+    }
+
+    static void checkListOfSize(Cons list, int size)  throws MalformedFormException {
+        if(!list.isProperList())
+            throw new MalformedFormException("list was supposed to be an exact list of length " + size + " but it's not a proper list");
+        if(list.length() != size)
+            throw new MalformedFormException("list was supposed to be an exact list of length " + size + " but it is of length " + list.length());
+    }
+
+    static void nothing() {
+        return;
     }
 }

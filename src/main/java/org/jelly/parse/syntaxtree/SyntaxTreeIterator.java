@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Stack;
 
 import org.jelly.lang.data.Constants;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Symbol;
 import org.jelly.utils.ListBuilder;
 
 import org.jelly.parse.errors.UnbalancedParenthesesException;
@@ -85,7 +85,7 @@ public class SyntaxTreeIterator implements Iterator<Object> {
 
     private Object asObject(Token t) {
         return switch(t) {
-            case NormalToken nt -> new LispSymbol(nt.getString());
+            case NormalToken nt -> new Symbol(nt.getString());
             case LiteralToken<?> lt -> lt.getVal();
             default -> throw new RuntimeException("token " + t.getString() + " cannot be interpreted as an object");
         };

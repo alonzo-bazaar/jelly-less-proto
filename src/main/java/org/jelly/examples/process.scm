@@ -1,3 +1,1 @@
-(println "ok so I")
-(define (processData data) (+ (call data "getX") (call data "getY")))
-(println "pull up")
+(define (processData data) (+ (* 2 (call data "getX")) (call data "getY")))

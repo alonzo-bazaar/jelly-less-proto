@@ -19,7 +19,7 @@ public class SequenceEvaluable implements Evaluable {
         }
         else {
             this.elements = lst.subList(0, lst.size() - 1);
-            this.last = lst.get(lst.size() - 1);
+            this.last = lst.getLast();
         }
     }
 

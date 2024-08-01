@@ -20,7 +20,7 @@ public class FuncallEvaluable implements Evaluable {
     public Object eval(Environment env) {
         Object funObj = proc.eval(env);
         if (funObj instanceof Procedure fun) {
-            return fun.call(Utils.evlist(args, env));
+            return fun.apply(Utils.evlist(args, env));
         }
         throw new InvalidParameterException(proc + " evaluates to " + funObj + ", which is not a procedure, and thus cannot be called");
     }

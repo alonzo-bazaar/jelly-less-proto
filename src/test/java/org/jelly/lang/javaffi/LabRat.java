@@ -16,6 +16,39 @@ public class LabRat {
         LabRat.counter = y;
     }
 
+    public void methodTakingInt(int i) {
+        System.out.println(i);
+    }
+
+    public void methodTakingBoxedInteger(Integer i) {
+        System.out.println(i);
+    }
+
+    public void methodTakingIntAndString(int i, String s) {
+        System.out.println(i);
+        System.out.println(s);
+    }
+
+    public void methodTakingBoxedIntegerAndString(Integer i, String s) {
+        System.out.println(i);
+        System.out.println(s);
+    }
+
+    public void methodTakingTwoInts(int i, int j) {
+        System.out.println(i);
+        System.out.println(j);
+    }
+
+    public void methodTakingIntAndBoxedInteger(int i, Integer j) {
+        System.out.println(i);
+        System.out.println(j);
+    }
+
+    public void methodTakingTwoBoxedIntegers(Integer i, Integer j) {
+        System.out.println(i);
+        System.out.println(j);
+    }
+
     public int add(Integer y) {
         this.x += y;
         return this.x;

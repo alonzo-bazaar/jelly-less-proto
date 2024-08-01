@@ -1,18 +1,10 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.eval.evaluable.procedure.Procedure;
-import org.jelly.eval.runtime.JellyRuntime;
-import org.jelly.eval.builtinfuns.Utils;
 import org.junit.jupiter.api.Test;
-
-import org.jelly.lang.data.LispSymbol;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
 
 public class CallForeignTest extends BaseEvaluableTest {
     @Test
@@ -67,4 +59,3 @@ public class CallForeignTest extends BaseEvaluableTest {
         assertEquals(255, (int)eval("(callStatic (findClass \"java.lang.Integer\") \"parseInt\" \"ff\" 16)"));
     }
 }
-

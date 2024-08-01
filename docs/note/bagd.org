@@ -1,0 +1,26 @@
+* Idea
+** Module System
+non qualcosa ad hoc
+o un srfi o copia il meccanismo presente in r7rs
+
+srfi 83, r6
+
+** Web something
+coso java per fare webserver stile django
+
+fare qualche ipotesi
+qual'è l'esempio minimo che si può fare
+
+ci sono sempre lavori futuri
+
+fai un po' un'ipotesi su cosa si potrebbe fare
+
+* Donde sta bagdanov
+c'è per tutto agosto
+settimana prossima primi giorni non c'è
+- c'è venerdì 2 agosto
+quella dopo a milano
+(poi boh)
+per il resto sempre qui a lavorare
+
+torna il 2 con una proposta e una valutazione dell'impegno

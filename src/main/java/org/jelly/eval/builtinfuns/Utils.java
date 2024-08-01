@@ -1,7 +1,7 @@
 package org.jelly.eval.builtinfuns;
 
 import org.jelly.eval.evaluable.compile.Compiler;
-import org.jelly.lang.data.LispList;
+import org.jelly.lang.data.ConsList;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +55,7 @@ public class Utils {
     }
 
     public static void ensureLispList(String source, Object arg) throws IncorrectTypeException {
-        if (!(arg instanceof LispList))
+        if (!(arg instanceof ConsList))
             throw new IncorrectTypeException
                     ("cannot call <" + source + "> on object " + arg
                             + "of type <" + arg.getClass().getCanonicalName()

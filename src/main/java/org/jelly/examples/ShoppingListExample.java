@@ -4,9 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.jelly.eval.runtime.JellyRuntime;
-import org.jelly.lang.data.LispList;
-import org.jelly.utils.LispLists;
-import org.jelly.utils.ListBuilder;
+import org.jelly.lang.data.ConsList;
+import org.jelly.utils.ConsUtils;
 
 public class ShoppingListExample {
     public static void main(String args[]) {
@@ -25,7 +24,7 @@ public class ShoppingListExample {
                         "      (* (item-price item) (item-amount item)))" +
                         "   (reduce + (map item-total lst) 0))");
 
-        LispList ll = LispLists.javaListToCons(list);
+        ConsList ll = ConsUtils.toCons(list);
         return (double)jr.call("list-cost", ll);
     }
 

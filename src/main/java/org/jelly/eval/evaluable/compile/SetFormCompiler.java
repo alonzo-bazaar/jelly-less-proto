@@ -3,7 +3,7 @@ package org.jelly.eval.evaluable.compile;
 import org.jelly.eval.evaluable.SetEvaluable;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.Symbol;
 import org.jetbrains.annotations.NotNull;
 
 public class SetFormCompiler implements FormCompiler {
@@ -24,7 +24,7 @@ public class SetFormCompiler implements FormCompiler {
 
     @NotNull
     private static SetEvaluable fromCheckedAST(Cons c)  {
-        return new SetEvaluable((LispSymbol)c.nth(1), Compiler.compileExpression(c.nth(2)));
+        return new SetEvaluable((Symbol)c.nth(1), Compiler.compileExpression(c.nth(2)));
     }
 
     private static void checkAST(Cons c) throws MalformedFormException {
@@ -32,7 +32,7 @@ public class SetFormCompiler implements FormCompiler {
             throw new RuntimeException("set no setty");
         if(c.length() != 3)
             throw new MalformedFormException("set form must have exactly two parameters (set! <var-name> <new-value>)");
-        if(!(c.nth(1) instanceof LispSymbol))
+        if(!(c.nth(1) instanceof Symbol))
             throw new MalformedFormException("set form must with valid variable name (with symbol), " + c.nth(2) + " is not a symbol");
         try {
             Compiler.checkExpression(c.nth(2));

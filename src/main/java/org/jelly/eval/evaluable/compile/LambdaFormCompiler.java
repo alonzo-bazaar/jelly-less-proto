@@ -5,9 +5,9 @@ import org.jelly.eval.evaluable.SequenceEvaluable;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.LispList;
-import org.jelly.utils.LispLists;
-import org.jelly.lang.data.LispSymbol;
+import org.jelly.lang.data.ConsList;
+import org.jelly.utils.ConsUtils;
+import org.jelly.lang.data.Symbol;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -30,10 +30,10 @@ public class LambdaFormCompiler implements FormCompiler {
 
     @NotNull
     private static UserDefinedLambdaEvaluable fromCheckedAST(Cons c) {
-        LispList formalParameters = LispLists.requireList(c.nth(1));
-        LispList body = LispLists.requireList(c.nthCdr(2));
-        List<LispSymbol> paramsList = ListUtils.toStream(formalParameters)
-                .map(a -> (LispSymbol)a)
+        ConsList formalParameters = ConsUtils.requireList(c.nth(1));
+        ConsList body = ConsUtils.requireList(c.nthCdr(2));
+        List<Symbol> paramsList = ListUtils.toStream(formalParameters)
+                .map(a -> (Symbol)a)
                 .toList();
         SequenceEvaluable bodEval = Utils.sequenceFromConsList(body);
         return new UserDefinedLambdaEvaluable(paramsList, bodEval);
@@ -45,8 +45,8 @@ public class LambdaFormCompiler implements FormCompiler {
         if(c.length() < 2)
             throw new MalformedFormException("lambda form must have at least a parameter list");
         try {
-            Utils.ensureLambdaListAST(LispLists.requireList(c.nth(1)));
-            Utils.checkSequenceList(LispLists.requireList(c.nthCdr(2)));
+            Utils.ensureLambdaListAST(ConsUtils.requireList(c.nth(1)));
+            Utils.checkSequenceList(ConsUtils.requireList(c.nthCdr(2)));
         } catch(MalformedFormException mfe) {
             throw new MalformedFormException("lambda form is malformed because child is malformed", mfe);
         } catch(ClassCastException cce) {
