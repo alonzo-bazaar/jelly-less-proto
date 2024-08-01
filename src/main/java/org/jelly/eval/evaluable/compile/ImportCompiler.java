@@ -82,16 +82,16 @@ public class ImportCompiler implements FormCompiler {
             Symbol sym = (Symbol) directive.getCar();
             switch (sym.name()) {
                 case "only", "except" -> {
-                    checkImportForm(ConsUtils.requireCons(ConsUtils.nth(directive, 1)));
+                    checkImportDirective(ConsUtils.requireCons(ConsUtils.nth(directive, 1)));
                     Utils.checkSymbolList(ConsUtils.requireCons(ConsUtils.nthCdr(directive, 2)));
                 }
                 case "prefix" -> {
                     Utils.checkListOfSize(directive, 2);
-                    checkImportForm(ConsUtils.requireCons(ConsUtils.nth(directive, 1)));
+                    checkImportDirective(ConsUtils.requireCons(ConsUtils.nth(directive, 1)));
                     AstHandling.requireSymbol(ConsUtils.requireCons(ConsUtils.nth(directive, 2)));
                 }
                 case "rename" -> {
-                    checkImportForm(ConsUtils.requireCons(ConsUtils.nth(directive, 1)));
+                    checkImportDirective(ConsUtils.requireCons(ConsUtils.nth(directive, 1)));
                     Utils.checkSymbolAlist(ConsUtils.requireCons(ConsUtils.nthCdr(directive, 2)));
                 }
             }
