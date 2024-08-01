@@ -1,13 +1,10 @@
 package org.jelly.eval.library;
 
-import org.jelly.eval.environment.errors.EnvironmentException;
 import org.jelly.eval.environment.errors.UnboundVariableException;
 import org.jelly.eval.evaluable.BaseEvaluableTest;
-import org.jelly.lang.data.Cons;
-import org.jelly.lang.data.Constants;
-import org.jelly.lang.data.Symbol;
-import org.jelly.utils.ConsUtils;
-import org.jelly.utils.ListBuilder;
+import org.jelly.eval.evaluable.errors.MalformedFormException;
+import org.jelly.parse.errors.SyntaxTreeParsingException;
+import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -82,4 +79,51 @@ public class LibraryTest extends BaseEvaluableTest {
     }
 
     // test in negativo (rende gli errori giusti)
+
+    @Test
+    public void testBlowsUpOnWrongImport() {
+        // cannot import symbol
+        assertThrows(SyntaxTreeParsingException.class, () ->
+                eval("(define-library (test esporta)" +
+                        "  (import something)" +
+                        "  (begin" +
+                        "    (define something 20)))"));
+
+        // cannot import unexisting library
+        assertThrows(NoSuchLibraryException.class, () ->
+                eval("(define-library (test esporta)" +
+                        "  (import (waluigi something))" +
+                        "  (begin" +
+                        "    (define something 20)))"));
+    }
+
+    @Test
+    public void testBlowsUpOnWrongExport() {
+        assertThrows(SyntaxTreeParsingException.class, () ->
+                eval("(define-library (test esporta)" +
+                        "  (export (something in the way))" +
+                        "  (begin" +
+                        "    (define something 20)))"));
+
+        assertThrows(SyntaxTreeParsingException.class, () ->
+                eval("(define-library (test esporta)" +
+                        "  (export (replace something (in the way)))" +
+                        "  (begin" +
+                        "    (define something 20)))"));
+
+        assertThrows(SyntaxTreeParsingException.class, () ->
+                eval("(define-library (test esporta)" +
+                        "  (export (replace something 20))" +
+                        "  (begin" +
+                        "    (define something 20)))"));
+    }
+
+    @Test
+    public void testBlowsUpOnWrongBegin() {
+        assertThrows(SyntaxTreeParsingException.class, () ->
+                eval("(define-library (test esporta)" +
+                        "  (export (replace something 20))" +
+                        "  (begin" +
+                        "    (set!)))"));
+    }
 }

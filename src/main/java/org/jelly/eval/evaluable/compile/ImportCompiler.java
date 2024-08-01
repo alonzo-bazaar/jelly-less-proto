@@ -65,7 +65,6 @@ public class ImportCompiler implements FormCompiler {
             for(Object directive : ConsUtils.toList(ConsUtils.requireCons(importForm.getCdr()))) {
                 switch(directive) {
                     case Cons c -> checkImportDirective(c);
-                    case Symbol s -> Utils.nothing();
                     default -> throw new MalformedFormException("cannot follow import directive "
                             + directive
                             + " as it is of type "

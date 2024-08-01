@@ -5,6 +5,7 @@ import org.jelly.lang.data.Constants;
 import org.jelly.lang.data.ConsList;
 import org.jelly.lang.data.Nil;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Stream;
@@ -55,7 +56,10 @@ public class ConsUtils {
         return lb.get();
     }
 
-    public static List<Object> toList(ConsList ll) {
+    public static List<Object> toList(ConsList ll) throws InvalidParameterException {
+        if(ll instanceof Cons c && !c.isProperList())
+            throw new InvalidParameterException("cannot turn improper cons list into list");
+
         List<Object> res = new ArrayList<>(ll.length());
         Object d = ll;
         while(d instanceof Cons dl) {
@@ -66,6 +70,33 @@ public class ConsUtils {
     }
 
     public static Stream<Object> toStream(ConsList ll) {
+        if(ll instanceof Cons c && !c.isProperList())
+            throw new InvalidParameterException("cannot turn improper cons list into stream");
+
         return toList(ll).stream();
+    }
+
+    public static Object[] toArray(ConsList ll) throws InvalidParameterException {
+        if(ll instanceof Cons c && !c.isProperList())
+            throw new InvalidParameterException("cannot turn improper cons list into array");
+
+        Object[] res = new Object[ll.length()];
+        int i = 0;
+
+        Object d = ll;
+        while(d instanceof Cons dl) {
+            res[i] = dl.getCar();
+            d = dl.getCdr();
+        }
+
+        return res;
+    }
+
+    public static String renderList(ConsList ll) {
+        StringBuilder s = new StringBuilder();
+        s.append('(');
+        s.append(ArrayUtils.renderArr(toArray(ll), " "));
+        s.append(')');
+        return s.toString();
     }
 }

@@ -6,7 +6,7 @@ import org.jelly.eval.evaluable.procedure.errors.BadParameterBindException;
 import org.jelly.eval.environment.EnvFrame;
 import org.jelly.lang.data.Constants;
 import org.jelly.lang.data.Symbol;
-import org.jelly.parse.errors.SynthaxTreeParsingException;
+import org.jelly.parse.errors.SyntaxTreeParsingException;
 import org.jelly.utils.ConsUtils;
 
 public class LambdaList {
@@ -24,12 +24,12 @@ public class LambdaList {
                 res.restSym = null;
                 break;
             case 1:
-                throw new SynthaxTreeParsingException("cannot have &rest followed by no actual &rest arguments");
+                throw new SyntaxTreeParsingException("cannot have &rest followed by no actual &rest arguments");
             case 2:
                 res.restSym = restSyms.get(1);
                 break;
             default:
-                throw new SynthaxTreeParsingException("cannot have more than one &rest argument in parameter list");
+                throw new SyntaxTreeParsingException("cannot have more than one &rest argument in parameter list");
         }
 
         return res;

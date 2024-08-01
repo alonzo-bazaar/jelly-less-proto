@@ -3,15 +3,15 @@ package org.jelly.eval.evaluable.compile;
 import org.jelly.eval.evaluable.*;
 import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.lang.data.*;
-import org.jelly.parse.errors.SynthaxTreeParsingException;
+import org.jelly.parse.errors.SyntaxTreeParsingException;
 
 // factory, circa
 public class Compiler {
     public static Evaluable compileExpression(Object expr)
-        throws SynthaxTreeParsingException {
+        throws SyntaxTreeParsingException {
         try {
             return switch(expr) {
-                case null -> throw new SynthaxTreeParsingException("null object cannot be part of an expression");
+                case null -> throw new SyntaxTreeParsingException("null object cannot be part of an expression");
                 case Cons c -> {
                     FormCompiler form = compilerForForm(c);
                     form.check();
@@ -22,7 +22,7 @@ public class Compiler {
         } catch(MalformedFormException mfe) {
             // public facing methods should not throw low level checked expressions,
             // translate potential MalformedExpression into a runtime exception
-            throw new SynthaxTreeParsingException(mfe.getMessage(), mfe);
+            throw new SyntaxTreeParsingException(mfe.getMessage(), mfe);
         }
     }
 

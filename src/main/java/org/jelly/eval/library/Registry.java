@@ -1,7 +1,9 @@
 package org.jelly.eval.library;
 
 import org.jelly.lang.data.ConsList;
+import org.jelly.utils.ConsUtils;
 
+import java.nio.channels.NoConnectionPendingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +14,10 @@ public class Registry {
         registry.put(ll, lib);
     }
     public static Library getLibrary(ConsList ll) {
-        return registry.get(ll);
+        return switch(registry.get(ll)) {
+            case null -> throw new NoSuchLibraryException("cannot access library " + ConsUtils.renderList(ll) + " as it doesn't exist");
+            case Library l -> l;
+        };
     }
     public static void reset() {
         registry.clear();
