@@ -2,9 +2,7 @@ package org.jelly.eval.library;
 
 import org.jelly.eval.environment.errors.UnboundVariableException;
 import org.jelly.eval.evaluable.BaseEvaluableTest;
-import org.jelly.eval.evaluable.errors.MalformedFormException;
 import org.jelly.parse.errors.SyntaxTreeParsingException;
-import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,6 +74,55 @@ public class LibraryTest extends BaseEvaluableTest {
                 "    (define something 20)))");
 
         assertEquals(10, (int)eval("something"));
+    }
+    // syntax shit
+    // multiple import, rename export, prefix import
+    @Test
+    public void testMultipleImport() {
+        eval("(define-library (first exporter)" +
+                "  (export square)" +
+                "  (begin" +
+                "    (define (square x) (* x x))))");
+
+        eval("(define-library (second exporter)" +
+                "  (export cube)" +
+                "  (begin" +
+                "    (define (cube x) (* x x x))))");
+
+        eval("(define-library (importer man)" +
+                "  (import (only (first exporter) square)" +
+                "           (second exporter))" +
+                "  (export hexa)" +
+                "  (begin (define (hexa x) (square (cube x)))))");
+
+
+        eval("(import (importer man))");
+        assertEquals(1_000_000, (int)eval("(hexa 10)"));
+    }
+
+    @Test
+    public void testRenameExport() {
+        eval("(define-library (renamed exporter)" +
+                "  (export (rename prima dopo))" +
+                "  (begin" +
+                "    (define prima 10)))");
+
+        eval("(import (renamed exporter))");
+        assertEquals(10, (int)eval("dopo"));
+    }
+
+    @Test
+    public void testPrefixImport() {
+        eval("(define-library (arit)" +
+                "  (export square cube)" +
+                "  (begin" +
+                "    (define (square x) (* x x))" +
+                "    (define (cube x) (* x x x))))" +
+
+                "(import (prefix (arit) arit-))");
+
+        assertEquals(100, (int)eval("(arit-square 10)"));
+        assertEquals(1000, (int)eval("(arit-cube 10)"));
     }
 
     // test in negativo (rende gli errori giusti)

@@ -69,7 +69,7 @@ public class ImportCompiler implements FormCompiler {
                             + directive
                             + " as it is of type "
                             + directive.getClass().getCanonicalName()
-                            + " which is neither a symbol nor a list");
+                            + "which is not a symbol");
                 }
             }
         } catch (ClassCastException cce) {
@@ -86,9 +86,9 @@ public class ImportCompiler implements FormCompiler {
                     Utils.checkSymbolList(ConsUtils.requireCons(ConsUtils.nthCdr(directive, 2)));
                 }
                 case "prefix" -> {
-                    Utils.checkListOfSize(directive, 2);
+                    Utils.checkListOfSize(directive, 3);
                     checkImportDirective(ConsUtils.requireCons(ConsUtils.nth(directive, 1)));
-                    AstHandling.requireSymbol(ConsUtils.requireCons(ConsUtils.nth(directive, 2)));
+                    AstHandling.requireSymbol(ConsUtils.nth(directive, 2));
                 }
                 case "rename" -> {
                     checkImportDirective(ConsUtils.requireCons(ConsUtils.nth(directive, 1)));

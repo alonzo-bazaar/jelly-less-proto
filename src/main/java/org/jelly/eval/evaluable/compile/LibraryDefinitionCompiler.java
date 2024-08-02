@@ -94,7 +94,7 @@ public class LibraryDefinitionCompiler implements FormCompiler {
             if(elt instanceof Cons c) {
                 Utils.checkListOfSize(c, 3);
                 Utils.checkSymbolList(c);
-                if(!AstHandling.requireSymbol(c.getCar()).name().equals("require")) {
+                if(!AstHandling.requireSymbol(c.getCar()).name().equals("rename")) {
                     throw new MalformedFormException("export directive can only be symbol or (rename <symbol> <symbol>), directive cannot start with " + c.getCar());
                 }
             }
