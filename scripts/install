@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+mvn package -DskipTests=true
+cp "./target/jelly-1.0-jar-with-dependencies.jar"\
+	"$HOME/.local/bin/jarshit/jelly.jar"
+

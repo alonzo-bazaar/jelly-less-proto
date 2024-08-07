@@ -25,4 +25,21 @@ public class LetEvaluableTest extends BaseEvaluableTest {
     public void testNestedLetShadowsLocally() {
         assertEquals(10, (int)eval("(let ((a 10)) (let ((a 20))) a)"));
     }
+
+    @Test
+    public void testRecCall() {
+        assertEquals(3,
+                eval("(let len ((lst (list 1 2 3))) " +
+                        "          (if (null? lst) 0" +
+                        "              (+ 1 (length (cdr lst)))))"));
+    }
+
+    @Test
+    public void testRecCallDoesNotOverride() {
+        define("len", 10);
+        eval("(let len ((lst (list 1 2 3))) " +
+                "          (if (null? lst) 0" +
+                "              (+ 1 (length (cdr lst)))))");
+        assertEquals(10, lookup("len"));
+    }
 }

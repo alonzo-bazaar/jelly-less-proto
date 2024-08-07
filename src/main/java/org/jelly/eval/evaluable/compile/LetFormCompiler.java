@@ -10,6 +10,7 @@ import org.jelly.utils.ConsUtils;
 import org.jelly.lang.data.Symbol;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LetFormCompiler implements FormCompiler {
@@ -30,25 +31,51 @@ public class LetFormCompiler implements FormCompiler {
 
     @NotNull
     private static LetEvaluable fromCheckedAST(Cons c) {
-        Cons frames = ConsUtils.requireCons(c.nth(1));
-        ConsList body = ConsUtils.requireList(c.nthCdr(2));
-        List<Symbol> names = ListUtils.toStream(frames)
-                .map(ConsUtils::requireCons)
-                .map(bind -> (Symbol)bind.nth(0))
-                .toList();
-        List<Evaluable> vals = ListUtils.toStream(frames)
-                .map(ConsUtils::requireCons)
-                .map(bind -> Compiler.compileExpression(bind.nth(1)))
-                .toList();
-        return new LetEvaluable(names, vals, Utils.sequenceFromConsList(body));
+        if (c.nth(1) instanceof Symbol s) {
+            Cons frames = ConsUtils.requireCons(c.nth(2));
+            List<Symbol> params = ListUtils.toStream(frames)
+                    .map(ConsUtils::requireCons)
+                    .map(cell -> (Symbol)cell.nth(0))
+                    .toList();
+            List<Object> initBinds = ListUtils.toStream(frames)
+                    .map(ConsUtils::requireCons)
+                    .map(cell -> cell.nth(1))
+                    .toList();
+            ConsList body = ConsUtils.requireList(c.nthCdr(3));
+
+            UserDefinedLambdaEvaluable fun = new UserDefinedLambdaEvaluable(params, Utils.sequenceFromConsList(body));
+            return new LetEvaluable(List.of(), List.of(),
+                                    new SequenceEvaluable (List.of(new DefinitionEvaluable(s, fun),
+                                                                   new FuncallEvaluable(new LookupEvaluable(s),
+                                                                                            initBinds))));
+        }
+        else {
+            Cons frames = ConsUtils.requireCons(c.nth(1));
+            ConsList body = ConsUtils.requireList(c.nthCdr(2));
+            List<Symbol> names = ListUtils.toStream(frames)
+                    .map(ConsUtils::requireCons)
+                    .map(bind -> (Symbol) bind.nth(0))
+                    .toList();
+            List<Evaluable> vals = ListUtils.toStream(frames)
+                    .map(ConsUtils::requireCons)
+                    .map(bind -> Compiler.compileExpression(bind.nth(1)))
+                    .toList();
+            return new LetEvaluable(names, vals, Utils.sequenceFromConsList(body));
+        }
     }
 
     private static void checkAST(Cons c) throws MalformedFormException {
         if(!Utils.startsWithSym(c, "let"))
             throw new RuntimeException("let let let");
         try {
-            checkBindingsAST(ConsUtils.requireList(c.nth(1))); // bindings
-            Utils.checkSequenceList(ConsUtils.requireList(c.nthCdr(2)));
+            if(c.nth(1) instanceof Symbol s) {
+                checkBindingsAST(ConsUtils.requireList(c.nth(2))); // bindings
+                Utils.checkSequenceList(ConsUtils.requireList(c.nthCdr(3)));
+            }
+            else {
+                checkBindingsAST(ConsUtils.requireList(c.nth(1))); // bindings
+                Utils.checkSequenceList(ConsUtils.requireList(c.nthCdr(2)));
+            }
         } catch(ClassCastException cce) {
             throw new MalformedFormException("let form is malformed because child element has the wrong type, likely some subform has incorrect nesting, check the parentheses", cce);
         } catch(MalformedFormException mfe) {

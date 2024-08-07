@@ -1,5 +1,6 @@
 package org.jelly.eval.runtime;
 
+import java.awt.image.IndexColorModel;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -108,7 +109,13 @@ public class JellyRuntime {
                 else
                     return this.evalExpr(expr);
             }
-        } catch(Throwable ignored) {}
+        } catch(FileNotFoundException fe){
+            System.err.println("cannot load file " + f.getAbsolutePath() + ", no such file or directory");
+        } catch(Throwable t) {
+            System.err.println("Error occured while loading file " + f.getAbsolutePath() + ", of type " + t.getClass().getCanonicalName());
+            System.err.println(t.getMessage());
+            t.printStackTrace();
+        }
         finally {
             cwd = oldCwd;
         }
@@ -207,6 +214,32 @@ public class JellyRuntime {
                 return values.getFirst().equals(values.get(1));
         });
 
+        env.define(new Symbol("eq?"), (Procedure) values -> {
+            Utils.ensureSizeExactly("equal? check",2,values);
+            Object a = values.get(0);
+            Object b = values.get(1);
+
+            if(a instanceof Long an && b instanceof Long bn)
+                return an.longValue() == bn.longValue();
+            if(a instanceof Integer an && b instanceof Integer bn)
+                return an.intValue() == bn.intValue();
+            if(a instanceof Short an && b instanceof Short bn)
+                return an.shortValue() == bn.shortValue();
+
+            if(a instanceof Double an && b instanceof Double bn)
+                return an.doubleValue() == bn.doubleValue();
+            if(a instanceof Float an && b instanceof Float bn)
+                return an.floatValue() == bn.floatValue();
+
+            if(a instanceof Character an && b instanceof Character bn)
+                return an.charValue() == bn.charValue();
+
+            if(a instanceof Byte an && b instanceof Byte bn)
+                return an.byteValue() == bn.byteValue();
+
+            return a == b;
+        });
+
         // special kid lines
         env.define(new Symbol("car"), (Procedure) ListProcessing::car);
         env.define(new Symbol("cdr"), (Procedure) ListProcessing::cdr);
@@ -291,15 +324,42 @@ public class JellyRuntime {
 
         env.define(new Symbol("error"), (Procedure) args -> {
             try {
-                Utils.ensureSizeExactly("error", 1, args);
+                Utils.ensureSizeAtLeast("error", 1, args);
                 Utils.ensureSingleOfType("error", 0, String.class, args);
-                throw new JellyError((String)args.getFirst());
+                if(args.size() == 1)
+                    throw new JellyError((String)args.getFirst());
+                else
+                    throw new JellyError((String)args.getFirst(), args.subList(1, args.size()).toArray());
             } catch(IncorrectTypeException | IncorrectArgumentListException t) {
-                throw new JellyError("error occured, message not specified");
+                throw new JellyError("error occurred, cannot throw error because message not specified", t);
             }
         });
 
-        env.define(new Symbol("array"), (Procedure) args -> args);
+        env.define(new Symbol("array"), (Procedure) List::toArray);
+        env.define(new Symbol("javaList"), (Procedure) args -> args);
+        env.define(new Symbol("values"), (Procedure) Values::new);
+
+        env.define(new Symbol("call-with-values"), (Procedure) args -> {
+            try {
+                Utils.ensureSizeExactly("call-with-values", 2, args);
+                Utils.ensureSingleOfType("call-with-values", 0, Values.class, args);
+                Utils.ensureSingleOfType("call-with-values", 1, Procedure.class, args);
+                return ((Procedure)args.get(1)).apply(((Values)args.get(1)).values());
+            } catch(Throwable t) {
+                throw new JellyError("call-with-values call failed", t);
+            }
+        });
+
+        env.define(new Symbol("apply"), (Procedure) args -> {
+            try {
+                Utils.ensureSizeExactly("apply", 2, args);
+                Utils.ensureSingleOfType("apply", 0, Procedure.class, args);
+                Utils.ensureSingleOfType("apply", 1, ConsList.class, args);
+                return ((Procedure)args.get(0)).apply(ConsUtils.toList(ConsUtils.requireList(args.get(1))));
+            } catch(Throwable t) {
+                throw new JellyError("apply call failed", t);
+            }
+        });
 
         return env;
     }

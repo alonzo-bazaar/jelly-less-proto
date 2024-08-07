@@ -34,6 +34,7 @@ public class Compiler {
                 case "if" -> new IfFormCompiler(c);
                 case "when" -> new WhenFormCompiler(c);
                 case "unless" -> new UnlessFormCompiler(c);
+                case "cond" -> new CondFormCompiler(c);
                 case "while" -> new WhileFormCompiler(c);
                 case "do" -> new DoFormCompiler(c);
                 case "let" -> new LetFormCompiler(c);
