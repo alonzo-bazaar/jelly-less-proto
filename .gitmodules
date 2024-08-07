@@ -1,3 +1,4 @@
 [submodule "lib/jelly-stdlib"]
 	path = lib/jelly-stdlib
 	url = https://github.com/alonzo-bazaar/jelly-stdlib
+	branch = pain
