@@ -2,7 +2,7 @@ package org.jelly.eval.evaluable.compile;
 
 import org.jelly.eval.evaluable.LibraryDefinitionEvaluable;
 import org.jelly.eval.evaluable.SequenceEvaluable;
-import org.jelly.eval.evaluable.errors.MalformedFormException;
+import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.eval.library.ExportDirective;
 import org.jelly.eval.library.ImportSet;
 import org.jelly.lang.data.Cons;

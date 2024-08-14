@@ -1,9 +1,8 @@
 package org.jelly.eval.evaluable.compile;
 
 import org.jelly.eval.evaluable.ConstantEvaluable;
-import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.evaluable.IfEvaluable;
-import org.jelly.eval.evaluable.errors.MalformedFormException;
+import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.ConsList;
 import org.jelly.lang.data.Constants;

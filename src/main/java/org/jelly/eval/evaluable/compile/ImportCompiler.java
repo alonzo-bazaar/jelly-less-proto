@@ -1,7 +1,7 @@
 package org.jelly.eval.evaluable.compile;
 
 import org.jelly.eval.evaluable.ImportEvaluable;
-import org.jelly.eval.evaluable.errors.MalformedFormException;
+import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.eval.library.ImportSet;
 import org.jelly.eval.library.Registry;
 import org.jelly.lang.data.Cons;

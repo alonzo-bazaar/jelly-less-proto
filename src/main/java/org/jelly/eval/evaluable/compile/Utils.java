@@ -2,7 +2,7 @@ package org.jelly.eval.evaluable.compile;
 
 import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.evaluable.SequenceEvaluable;
-import org.jelly.eval.evaluable.errors.MalformedFormException;
+import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.ConsList;
@@ -11,6 +11,7 @@ import org.jelly.utils.AstHandling;
 import org.jelly.utils.ConsUtils;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class Utils {
     private static String renderFormPrototype(String formName, String[] childrenNames) {
@@ -64,10 +65,20 @@ public class Utils {
         return new SequenceEvaluable(toEvaluableList(c));
     }
 
+    static SequenceEvaluable sequenceFromJavaList(List<Object> lst) {
+        return new SequenceEvaluable(toEvaluableList(lst));
+    }
+
     static List<Evaluable> toEvaluableList(ConsList c) {
         return ListUtils.toStream(c)
             .map(Compiler::compileExpression)
             .toList();
+    }
+
+    static List<Evaluable> toEvaluableList(List<Object> lst) {
+        return lst.stream()
+                .map(Compiler::compileExpression)
+                .toList();
     }
 
     static void ensureLambdaListAST(ConsList ll) throws MalformedFormException {
@@ -117,7 +128,23 @@ public class Utils {
             throw new MalformedFormException("list was supposed to be an exact list of length " + size + " but it is of length " + list.length());
     }
 
-    static void nothing() {
-        return;
+    static void nothing() { }
+
+    static void ensureOnlyTailSatisfies(Cons list, Predicate<Object> pred) throws MalformedFormException {
+        Optional<Object> culprit = ConsUtils.toStream(list).dropWhile(pred.negate()).dropWhile(pred).findFirst();
+        if(culprit.isPresent()) {
+            throw new MalformedFormException("forms satisfying predicate exist outside of tail, form"
+                    + culprit.get()
+                    + " not satisfying predicate exists in tail");
+        }
+    }
+
+    static void ensureOnlyHeadSatisfies(Cons list, Predicate<Object> pred) throws MalformedFormException {
+        Optional<Object> culprit = ConsUtils.toStream(list).dropWhile(pred).dropWhile(pred.negate()).findFirst();
+        if(culprit.isPresent()) {
+            throw new MalformedFormException("forms satisfying predicate exist outside of head, form"
+                    + culprit.get()
+                    + " not satisfying predicate exists in head");
+        }
     }
 }

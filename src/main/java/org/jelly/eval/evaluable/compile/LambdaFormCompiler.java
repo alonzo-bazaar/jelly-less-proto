@@ -2,7 +2,7 @@ package org.jelly.eval.evaluable.compile;
 
 import org.jelly.eval.evaluable.UserDefinedLambdaEvaluable;
 import org.jelly.eval.evaluable.SequenceEvaluable;
-import org.jelly.eval.evaluable.errors.MalformedFormException;
+import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.ConsList;

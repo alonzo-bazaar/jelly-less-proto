@@ -1,6 +1,6 @@
 package org.jelly.eval.evaluable.compile;
 
-import org.jelly.eval.evaluable.errors.MalformedFormException;
+import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.eval.evaluable.Evaluable;
 
 public interface FormCompiler {

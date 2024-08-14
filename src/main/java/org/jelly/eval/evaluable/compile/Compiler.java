@@ -1,7 +1,7 @@
 package org.jelly.eval.evaluable.compile;
 
 import org.jelly.eval.evaluable.*;
-import org.jelly.eval.evaluable.errors.MalformedFormException;
+import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.lang.data.*;
 import org.jelly.parse.errors.SyntaxTreeParsingException;
 
@@ -46,6 +46,7 @@ public class Compiler {
                 case "or" -> new OrFormCompiler(c);
                 case "define-library" -> new LibraryDefinitionCompiler(c);
                 case "import" -> new ImportCompiler(c);
+                case "try" -> new TryCatchFormCompiler(c);
 
                 // altrimenti è una chiamata a funzione
                 default -> new FuncallFormCompiler(c);
@@ -69,7 +70,7 @@ public class Compiler {
             case Cons c -> checkCons(c);
 
             // if not null or list it's a non-null atom, we're ok with all non-null atoms
-            default -> {return;}
+            default -> {}
         }
     }
 

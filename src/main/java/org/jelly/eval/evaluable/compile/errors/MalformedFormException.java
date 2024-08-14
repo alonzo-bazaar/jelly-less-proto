@@ -1,4 +1,4 @@
-package org.jelly.eval.evaluable.errors;
+package org.jelly.eval.evaluable.compile.errors;
 
 public class MalformedFormException extends Exception {
     public MalformedFormException(String s) {

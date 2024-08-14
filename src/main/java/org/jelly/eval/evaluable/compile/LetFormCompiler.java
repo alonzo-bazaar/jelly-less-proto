@@ -2,7 +2,7 @@ package org.jelly.eval.evaluable.compile;
 
 import org.jelly.eval.evaluable.*;
 
-import org.jelly.eval.evaluable.errors.MalformedFormException;
+import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.eval.utils.ListUtils;
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.ConsList;
@@ -10,7 +10,6 @@ import org.jelly.utils.ConsUtils;
 import org.jelly.lang.data.Symbol;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LetFormCompiler implements FormCompiler {
@@ -68,11 +67,13 @@ public class LetFormCompiler implements FormCompiler {
         if(!Utils.startsWithSym(c, "let"))
             throw new RuntimeException("let let let");
         try {
-            if(c.nth(1) instanceof Symbol s) {
+            if(c.nth(1) instanceof Symbol) {
+                // iterating let
                 checkBindingsAST(ConsUtils.requireList(c.nth(2))); // bindings
                 Utils.checkSequenceList(ConsUtils.requireList(c.nthCdr(3)));
             }
             else {
+                // normal let
                 checkBindingsAST(ConsUtils.requireList(c.nth(1))); // bindings
                 Utils.checkSequenceList(ConsUtils.requireList(c.nthCdr(2)));
             }

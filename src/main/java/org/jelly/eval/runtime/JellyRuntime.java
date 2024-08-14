@@ -1,6 +1,5 @@
 package org.jelly.eval.runtime;
 
-import java.awt.image.IndexColorModel;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -215,7 +214,19 @@ public class JellyRuntime {
         });
 
         env.define(new Symbol("eq?"), (Procedure) values -> {
-            Utils.ensureSizeExactly("equal? check",2,values);
+            Utils.ensureSizeExactly("eq? check",2,values);
+            Object a = values.get(0);
+            Object b = values.get(1);
+
+            if(a instanceof Symbol as && b instanceof Symbol bs) {
+                return as.equals(bs);
+            }
+
+            return a == b;
+        });
+
+        env.define(new Symbol("eqv?"), (Procedure) values -> {
+            Utils.ensureSizeExactly("eqv? check",2,values);
             Object a = values.get(0);
             Object b = values.get(1);
 
@@ -236,6 +247,10 @@ public class JellyRuntime {
 
             if(a instanceof Byte an && b instanceof Byte bn)
                 return an.byteValue() == bn.byteValue();
+
+            if(a instanceof Symbol as && b instanceof Symbol bs) {
+                return as.equals(bs);
+            }
 
             return a == b;
         });
