@@ -24,7 +24,7 @@ public class BaseEvaluableTest {
     @BeforeEach
     public void refreshEnv() {
         Registry.reset();
-        jr = new JellyRuntime();
+        jr = new JellyRuntime(true);
     }
 
     @AfterEach

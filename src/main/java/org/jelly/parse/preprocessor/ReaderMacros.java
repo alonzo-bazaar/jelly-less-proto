@@ -35,7 +35,11 @@ public class ReaderMacros implements Iterator<Object> {
                             else throw new RuntimeException("quote reader is last token in item stream, what the fuck bro");
                         }
                         case "#f" -> s; // TODO: lambda shorthand
-                        case "#a" -> s; // TODO: array literal
+                        // case "#a" -> s;
+                        /* array literal va messo altrove,
+                         * qui produco codice, se voglio aggiungere sintassi per letterali devo farlo prima
+                         * e poi rendere un literalToken
+                         */
                         default -> s;
                     };
             case Cons c -> deepMacro(c);

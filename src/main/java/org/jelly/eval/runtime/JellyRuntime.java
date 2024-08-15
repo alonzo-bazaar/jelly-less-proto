@@ -1,5 +1,6 @@
 package org.jelly.eval.runtime;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -9,13 +10,12 @@ import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
 
+import org.jelly.app.repl.Repl;
 import org.jelly.eval.builtinfuns.*;
 import org.jelly.eval.environment.Environment;
 import org.jelly.eval.errors.IncorrectArgumentListException;
 import org.jelly.eval.errors.IncorrectTypeException;
-import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.eval.runtime.error.JellyError;
 import org.jelly.lang.data.*;
 import org.jelly.lang.errors.CompilationError;
@@ -25,12 +25,7 @@ import org.jelly.eval.evaluable.compile.Compiler;
 import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.environment.errors.VariableDoesNotExistException;
 
-import org.jelly.parse.errors.ParsingException;
 import org.jelly.parse.reading.Reading;
-import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
-import org.jelly.parse.token.TokenIterator;
-
-import org.jelly.utils.FileLineIterator;
 
 import org.jelly.eval.utils.FileSystemUtils;
 import org.jelly.utils.ConsUtils;
@@ -52,20 +47,30 @@ public class JellyRuntime {
         loadStandardLibrary();
     }
 
-    private void loadStandardLibrary () {
+    public JellyRuntime(boolean forTesting) {
+        if(forTesting) {
+            loadMiniStandardLibrary();
+        }
+        else {
+            loadStandardLibrary();
+        }
+    }
+
+    private void loadStandardLibraryFile (String filename) {
         Path home = Paths.get(System.getProperty("user.home"));
         // TODO magari falla funzionare un po' meglio
         // TODO comunque non si installa in automatico sto file, quindi eh...
+        String windowsPath = "\\AppData\\Roaming\\jelly\\" + filename;
+        String unixPath = ".local/lib/jelly/" + filename;
+
         Path stdLibPath = switch(OsUtils.getOs()) {
-            case OsUtils.OSType.Linux, OsUtils.OSType.MacOS
-                    -> home.resolve(".local/lib/jelly/stdlib.scm");
-            case OsUtils.OSType.Windows
-                    -> home.resolve("\\AppData\\Roaming\\jelly\\stdlib.scm");
+            case OsUtils.OSType.Linux, OsUtils.OSType.MacOS -> home.resolve(unixPath);
+            case OsUtils.OSType.Windows -> home.resolve(windowsPath);
             case OsUtils.OSType.Other -> {
                 System.err.println("Unknown os type " + System.getProperty("os.name", "generic"));
                 System.err.println("Assuming it's posix, so loading posix stdlib path");
 
-                yield home.resolve(".local/lib/jelly/stdlib.scm");
+                yield home.resolve(unixPath);
             }
         };
 
@@ -74,6 +79,14 @@ public class JellyRuntime {
         } catch(FileNotFoundException e) {
             System.err.println("could not find standard library file \"" + stdLibPath + "\"  some functionality may be missing");
         }
+    }
+
+    private void loadStandardLibrary () {
+        loadStandardLibraryFile("jellyrc.scm");
+    }
+
+    private void loadMiniStandardLibrary() {
+        loadStandardLibraryFile("testrc.scm");
     }
 
     public Object evalExpr(Object le) throws CompilationError {
@@ -163,57 +176,8 @@ public class JellyRuntime {
     // TODO: move repl in separate class and pass the runtime to the repl class
     // current library &Co. would make little sense in a runtime, but enough sense a repl
     public void runRepl() {
-        Scanner scan = new Scanner(System.in);
-        Iterator<Object> expressions = Reading.readingScanner(scan);
-
-        while (true) {
-            try {
-                replPrompt();
-                if(expressions.hasNext()) {
-                    Object expr = expressions.next();
-                    Object val = evalExpr(expr);
-                    System.out.println(val);
-                }
-                else {
-                    System.out.println("hello, goodbye");
-                    break;
-                }
-            } catch (Throwable t){
-                if (!replHandleThrowable(t, scan)) {
-                    System.out.println("ok, bye then");
-                    break;
-                }
-            }
-        }
-
-        scan.close();
-    }
-
-    private boolean replHandleThrowable(Throwable t, Scanner s) {
-        System.out.println("caught error of type : " + t.getClass().getCanonicalName());
-        System.out.println("error: " + t.getMessage());
-        System.out.println("see stack trace? [y(es)/n(o)] ");
-
-        String wannaStackTrace = s.next();
-        if(wannaStackTrace.toLowerCase().startsWith("y")) {
-            if(t instanceof MalformedFormException || t instanceof ParsingException) {
-                while(t.getCause() != null) {
-                    System.out.println(t);
-                    t = t.getCause();
-                }
-            }
-            else {
-                t.printStackTrace();
-            }
-        }
-
-        System.out.println("continue? [y(es)/n(o)] ");
-        String wannaContinue = s.next();
-        return wannaContinue.toLowerCase().startsWith("y");
-    }
-
-    private void replPrompt() {
-        System.out.print("eval >> ");
+        Repl repl = new Repl();
+        repl.run(this);
     }
 
     public Environment buildInitialEnvironment() {

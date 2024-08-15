@@ -75,48 +75,7 @@ public class App
     }
 
     public static void repl() {
-        Scanner scan = new Scanner(System.in);
-        Iterator<Object> expressions = Reading.readingScanner(scan);
-
-        while (true) {
-            try {
-                replPrompt();
-                if(expressions.hasNext()) {
-                    Object expr = expressions.next();
-                    Object val = runtime.evalExpr(expr);
-                    System.out.println(val);
-                }
-                else {
-                    System.out.println("hello, goodbye");
-                    break;
-                }
-            } catch (Throwable t){
-                if (!replHandleThrowable(t, scan)) {
-                    System.out.println("ok, bye then");
-                    break;
-                }
-            }
-        }
-
-        scan.close();
-    }
-
-    private static boolean replHandleThrowable(Throwable t, Scanner s) {
-        System.out.println("caught error of type : " + t.getClass().getCanonicalName());
-        System.out.println("error: " + t.getMessage());
-        System.out.println("see stack trace? [y(es)/n(o)] ");
-
-        String wannaStackTrace = s.next();
-        if(wannaStackTrace.toLowerCase().startsWith("y"))
-            t.printStackTrace();
-
-        System.out.println("continue? [y(es)/n(o)] ");
-        String wannaContinue = s.next();
-        return wannaContinue.toLowerCase().startsWith("y");
-    }
-
-    private static void replPrompt() {
-        System.out.print("eval >> ");
+        runtime.runRepl();
     }
 }
 
