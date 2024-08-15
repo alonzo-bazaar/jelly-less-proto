@@ -99,4 +99,12 @@ public class ConsUtils {
         s.append(')');
         return s.toString();
     }
+
+    public static ConsList of(Object... elts) {
+        ListBuilder lb = new ListBuilder();
+        for (Object elt : elts) {
+            lb.addLast(elt);
+        }
+        return lb.get();
+    }
 }

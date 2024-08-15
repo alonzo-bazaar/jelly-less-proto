@@ -29,7 +29,7 @@ public final class PunctuationToken extends Token {
 }
 
 final class PunctuationTypeTeller {
-    private static Map<String, PunctuationToken.PunctuationType> stringType = new HashMap<>();
+    private static final Map<String, PunctuationToken.PunctuationType> stringType = new HashMap<>();
     PunctuationTypeTeller() {
         stringType.put("(", PunctuationToken.PunctuationType.PAREN_OPEN);
         stringType.put(")", PunctuationToken.PunctuationType.PAREN_CLOSE);

@@ -1,19 +1,22 @@
-package org.jelly.parse.syntaxtree;
+package org.jelly.parse;
 
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.Constants;
 import org.jelly.lang.data.Symbol;
 import org.jelly.parse.errors.ParsingException;
 import org.jelly.parse.errors.UnbalancedParenthesesException;
-import org.jelly.utils.DebuggingUtils;
+import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
+import org.jelly.utils.ConsUtils;
 import org.junit.jupiter.api.Test;
+
+import javax.swing.plaf.synth.SynthButtonUI;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SyntaxTreeIteratorTest {
+public class SyntaxTreeIteratorTest extends BaseParserTest {
     @Test
     public void testSymbols() throws ParsingException {
-        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("mamma mia");
+        SyntaxTreeIterator ei = expressionsFromLines("mamma mia");
         Object o;
         Symbol ls;
 
@@ -28,7 +31,7 @@ public class SyntaxTreeIteratorTest {
 
     @Test
     public void testIntegers() throws ParsingException {
-        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("20 30 0");
+        SyntaxTreeIterator ei = expressionsFromLines("20 30 0");
         Object o;
 
         o = ei.next();
@@ -45,14 +48,14 @@ public class SyntaxTreeIteratorTest {
 
     @Test
     public void testConsLenght() throws ParsingException {
-        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("(ei fu siccome immobile)");
+        SyntaxTreeIterator ei = expressionsFromLines("(ei fu siccome immobile)");
         Object o = ei.next();
         assertEquals(4, ((Cons)o).length());
     }
 
     @Test
     public void testConsContents() throws ParsingException {
-        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("(define x 20)");
+        SyntaxTreeIterator ei = expressionsFromLines("(define x 20)");
         // in cons fa (cons define (cons x (cons 20 nil))),
         // stiamo testando contro questa struttura
         Object o = ei.next();
@@ -70,7 +73,7 @@ public class SyntaxTreeIteratorTest {
 
     @Test
     public void testNestedConses() throws ParsingException {
-        SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("((ok))");
+        SyntaxTreeIterator ei = expressionsFromLines("((ok))");
         // in cons fa (cons (cons ok nil) nil),
         // stiamo testando contro questa struttura
         Object outer = ei.next();
@@ -85,54 +88,62 @@ public class SyntaxTreeIteratorTest {
     }
 
     @Test
+    public void testQuote() {
+        SyntaxTreeIterator ei = expressionsFromLines("(id 'a)");
+        assertEquals(ConsUtils.of(new Symbol("id"), new Symbol("'"), new Symbol("a")),
+                ei.next());
+        assertFalse(ei.hasNext());
+    }
+
+    @Test
     public void testThrowsOnUnbalancedParentheses () {
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings(")");
+                    SyntaxTreeIterator ei = expressionsFromLines(")");
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("))");
+                    SyntaxTreeIterator ei = expressionsFromLines("))");
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("())");
-                    ei.next();
-                    ei.next();
-                });
-
-        assertThrows(UnbalancedParenthesesException.class,
-                () -> {
-                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("()))");
+                    SyntaxTreeIterator ei = expressionsFromLines("())");
                     ei.next();
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("(");
+                    SyntaxTreeIterator ei = expressionsFromLines("()))");
+                    ei.next();
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("((");
+                    SyntaxTreeIterator ei = expressionsFromLines("(");
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("(()");
+                    SyntaxTreeIterator ei = expressionsFromLines("((");
                     ei.next();
                 });
 
         assertThrows(UnbalancedParenthesesException.class,
                 () -> {
-                    SyntaxTreeIterator ei = DebuggingUtils.expressionsFromStrings("((()");
+                    SyntaxTreeIterator ei = expressionsFromLines("(()");
+                    ei.next();
+                });
+
+        assertThrows(UnbalancedParenthesesException.class,
+                () -> {
+                    SyntaxTreeIterator ei = expressionsFromLines("((()");
                     ei.next();
                 });
     }

@@ -9,11 +9,13 @@ import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
 import org.jelly.eval.builtinfuns.*;
 import org.jelly.eval.environment.Environment;
 import org.jelly.eval.errors.IncorrectArgumentListException;
 import org.jelly.eval.errors.IncorrectTypeException;
+import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.eval.runtime.error.JellyError;
 import org.jelly.lang.data.*;
 import org.jelly.lang.errors.CompilationError;
@@ -23,11 +25,12 @@ import org.jelly.eval.evaluable.compile.Compiler;
 import org.jelly.eval.evaluable.Evaluable;
 import org.jelly.eval.environment.errors.VariableDoesNotExistException;
 
+import org.jelly.parse.errors.ParsingException;
+import org.jelly.parse.reading.Reading;
 import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
 import org.jelly.parse.token.TokenIterator;
 
 import org.jelly.utils.FileLineIterator;
-import org.jelly.utils.DebuggingUtils;
 
 import org.jelly.eval.utils.FileSystemUtils;
 import org.jelly.utils.ConsUtils;
@@ -79,7 +82,8 @@ public class JellyRuntime {
     }
 
     public Object evalString(String s) throws CompilationError {
-        Iterator<Object> ei = DebuggingUtils.expressionsFromStrings(s);
+        // Iterator<Object> ei = Reading.expressionsFromStrings(s);
+        Iterator<Object> ei = Reading.readingLines(s);
         while (ei.hasNext()) {
             Object le = ei.next();
             if (ei.hasNext())
@@ -87,8 +91,8 @@ public class JellyRuntime {
             else
                 return this.evalExpr(le);
         }
-        // si spera unreachable
-        return null;
+
+        throw new RuntimeException("bro, this part was supposed to be unreachable");
     }
 
     public Object evalFile(File f) throws FileNotFoundException, CompilationError , InvalidParameterException {
@@ -99,7 +103,8 @@ public class JellyRuntime {
         Path oldCwd = cwd;
         cwd = FileSystemUtils.fileDir(f);
         try {
-            Iterator<Object> expressions = new SyntaxTreeIterator(new TokenIterator(new FileLineIterator(f)));
+            // Iterator<Object> expressions = new SyntaxTreeIterator(new TokenIterator(new FileLineIterator(f)));
+            Iterator<Object> expressions = Reading.readingFile(f);
 
             while (expressions.hasNext()) {
                 Object expr = expressions.next();
@@ -153,6 +158,62 @@ public class JellyRuntime {
             return p.apply(arglist);
         }
         throw new InvalidParameterException(funName + " is not a function, and thus cannot be called");
+    }
+
+    // TODO: move repl in separate class and pass the runtime to the repl class
+    // current library &Co. would make little sense in a runtime, but enough sense a repl
+    public void runRepl() {
+        Scanner scan = new Scanner(System.in);
+        Iterator<Object> expressions = Reading.readingScanner(scan);
+
+        while (true) {
+            try {
+                replPrompt();
+                if(expressions.hasNext()) {
+                    Object expr = expressions.next();
+                    Object val = evalExpr(expr);
+                    System.out.println(val);
+                }
+                else {
+                    System.out.println("hello, goodbye");
+                    break;
+                }
+            } catch (Throwable t){
+                if (!replHandleThrowable(t, scan)) {
+                    System.out.println("ok, bye then");
+                    break;
+                }
+            }
+        }
+
+        scan.close();
+    }
+
+    private boolean replHandleThrowable(Throwable t, Scanner s) {
+        System.out.println("caught error of type : " + t.getClass().getCanonicalName());
+        System.out.println("error: " + t.getMessage());
+        System.out.println("see stack trace? [y(es)/n(o)] ");
+
+        String wannaStackTrace = s.next();
+        if(wannaStackTrace.toLowerCase().startsWith("y")) {
+            if(t instanceof MalformedFormException || t instanceof ParsingException) {
+                while(t.getCause() != null) {
+                    System.out.println(t);
+                    t = t.getCause();
+                }
+            }
+            else {
+                t.printStackTrace();
+            }
+        }
+
+        System.out.println("continue? [y(es)/n(o)] ");
+        String wannaContinue = s.next();
+        return wannaContinue.toLowerCase().startsWith("y");
+    }
+
+    private void replPrompt() {
+        System.out.print("eval >> ");
     }
 
     public Environment buildInitialEnvironment() {

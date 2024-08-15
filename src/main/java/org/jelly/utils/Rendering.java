@@ -1,14 +1,11 @@
 package org.jelly.utils;
 
-import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
-import org.jelly.parse.token.TokenIterator;
-
 /**
  * utilities used in debug and test code
  * there are several pieces of code that are often reused for such purposes,
  * this class has been made to avoid littering test code with such utilities
  */
-public class DebuggingUtils {
+public class Rendering {
 
     // utilities
     public static String renderDebugString(String s) {
@@ -40,11 +37,4 @@ public class DebuggingUtils {
         };
     }
 
-    public static TokenIterator tokensFromStrings(String... lines) {
-        return new TokenIterator(new StringArrIterator(lines));
-    }
-
-    public static SyntaxTreeIterator expressionsFromStrings(String... lines) {
-        return new SyntaxTreeIterator(tokensFromStrings(lines));
-    }
 }

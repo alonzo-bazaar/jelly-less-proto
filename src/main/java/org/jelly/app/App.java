@@ -7,10 +7,7 @@ import java.util.Iterator;
 
 import org.jelly.eval.runtime.JellyRuntime;
 import org.jelly.parse.errors.ParsingException;
-import org.jelly.parse.syntaxtree.SyntaxTreeIterator;
-import org.jelly.parse.token.TokenIterator;
-import org.jelly.parse.token.Token;
-import org.jelly.utils.InputLinesIterator;
+import org.jelly.parse.reading.Reading;
 
 /**
  * the jellyt package contains some sort of package level façade
@@ -79,9 +76,7 @@ public class App
 
     public static void repl() {
         Scanner scan = new Scanner(System.in);
-        Iterator<String> lines = new InputLinesIterator();
-        Iterator<Token> tokens = new TokenIterator(lines);
-        Iterator<Object> expressions = new SyntaxTreeIterator(tokens);
+        Iterator<Object> expressions = Reading.readingScanner(scan);
 
         while (true) {
             try {

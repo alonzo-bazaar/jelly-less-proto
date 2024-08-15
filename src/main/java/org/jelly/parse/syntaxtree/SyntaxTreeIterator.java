@@ -10,6 +10,8 @@ import org.jelly.utils.ListBuilder;
 import org.jelly.parse.errors.UnbalancedParenthesesException;
 import org.jelly.parse.token.*;
 
+import javax.swing.plaf.synth.SynthButtonUI;
+
 
 public class SyntaxTreeIterator implements Iterator<Object> {
     private final Iterator<Token> tokens;
@@ -64,11 +66,17 @@ public class SyntaxTreeIterator implements Iterator<Object> {
                                 stack.peek().addLast(lb.get());
                             }
                             break;
+                        case PunctuationToken.PunctuationType.QUOTE:
+                            if(stack.isEmpty())
+                                return new Symbol("'");
+                            else
+                                stack.peek().addLast(new Symbol("'"));
+                            break;
                         default:
                             // non ho ancora implementato un reader, quindi quote, comma, backquote etc. non fanno
                             // e non ho ancora implementato un sistema di package, quindi colon e double colon non fanno
                             // :(
-                            throw new RuntimeException("cannot have punctuation token " + t.getString() + " as a toplevel expression");
+                            throw new RuntimeException("cannot have punctuation token " + t.getString() + " in an a expression (yet)");
                     }
                 }
                 default -> {

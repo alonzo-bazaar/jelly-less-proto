@@ -97,7 +97,7 @@ public class ProcedureTest extends BaseEvaluableTest {
                    "(cons (fn (car lst)) (-map fn (cdr lst))))))");
         eval("(define square (lambda (x) (* x x)))");
 
-        Object lst = eval("(map square (quote (1 2 3)))");
+        Object lst = eval("(-map square (quote (1 2 3)))");
         assertEquals(1, (int)((ConsList)lst).nth(0));
         assertEquals(4, (int)((ConsList)lst).nth(1));
         assertEquals(9, (int)((ConsList)lst).nth(2));

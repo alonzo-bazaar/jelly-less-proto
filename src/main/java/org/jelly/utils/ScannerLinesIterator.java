@@ -4,12 +4,12 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public final class InputLinesIterator implements Iterator<String> {
+public final class ScannerLinesIterator implements Iterator<String> {
     private final Scanner scanner;
     private boolean isOpen = false;
     
-    public InputLinesIterator() {
-        this.scanner = new Scanner(System.in);
+    public ScannerLinesIterator(Scanner scanner) {
+        this.scanner = scanner;
         this.isOpen = true;
     }
 

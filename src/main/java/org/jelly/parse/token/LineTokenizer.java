@@ -72,8 +72,7 @@ public class LineTokenizer {
     }
 
 
-
-    // utility idiote, ma comunque utility
+    // utility, idiote, ma comunque utility
     private boolean isAtEndOfLine() {
         return currentIndex == currentLine.length();
     }
