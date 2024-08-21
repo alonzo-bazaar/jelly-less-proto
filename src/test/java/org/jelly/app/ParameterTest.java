@@ -1,40 +1,41 @@
 package org.jelly.app;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.jelly.app.RunningParameters.RunningMode;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ParameterTest 
 {
     @Test
-    public void replFileTest() {
-        String[] s = {"repl", "file"};
+    public void testReplArgv() {
+        String[] s = {"repl", "things"};
         RunningParameters rn = RunningParameters.fromArgs(s);
         assertEquals(RunningMode.REPL_MODE, rn.getRunningMode());
-        assertTrue(rn.hasFile());
-        assertEquals(rn.getFilename(), "file");
+        assertFalse(rn.hasFile());
+        assertArrayEquals(new String[]{"things"}, rn.getRuntimeArgv());
     }
 
     @Test
-    public void replNoFileTest() {
+    public void testReplNoArgv() {
         String[] s = { "repl" };
         RunningParameters rn = RunningParameters.fromArgs(s);
         assertEquals(RunningMode.REPL_MODE, rn.getRunningMode());
         assertFalse(rn.hasFile());
+        assertArrayEquals(new String[]{}, rn.getRuntimeArgv());
     }
 
     @Test
-    public void batchFileTest() {
-        String[] s = {"batch", "file"};
+    public void testBatchArgv() {
+        String[] s = {"batch", "things"};
         RunningParameters rn = RunningParameters.fromArgs(s);
         assertEquals(RunningMode.BATCH_MODE, rn.getRunningMode());
-        assertTrue(rn.hasFile());
-        assertEquals("file", rn.getFilename());
+        assertFalse(rn.hasFile());
+        assertArrayEquals(new String[]{"things"}, rn.getRuntimeArgv());
     }
 
     @Test
-    public void batchNoFileTest() {
+    public void testNoBatchNoArgv() {
         String[] s = { "batch" };
         RunningParameters rn = RunningParameters.fromArgs(s);
         assertEquals(RunningMode.BATCH_MODE, rn.getRunningMode());
@@ -42,19 +43,20 @@ public class ParameterTest
     }
 
     @Test
-    public void defaultFileTest() {
-        String[] s = { "file" };
+    public void testNoBatchNoRepl() {
+        String[] s = { "mamma", "mia" };
         RunningParameters rn = RunningParameters.fromArgs(s);
-        assertEquals(RunningMode.BATCH_MODE, rn.getRunningMode());
-        assertTrue(rn.hasFile());
-        assertEquals("file", rn.getFilename());
+        assertEquals(RunningMode.REPL_MODE, rn.getRunningMode());
+        assertFalse(rn.hasFile());
+        assertArrayEquals(new String[]{"mamma", "mia"}, rn.getRuntimeArgv());
     }
 
     @Test
-    public void defaultNoFileTest() {
+    public void testEmptyArgv() {
         String[] s = {};
         RunningParameters rn = RunningParameters.fromArgs(s);
         assertEquals(RunningMode.REPL_MODE, rn.getRunningMode());
         assertFalse(rn.hasFile());
+        assertArrayEquals(new String[]{}, rn.getRuntimeArgv());
     }
 }

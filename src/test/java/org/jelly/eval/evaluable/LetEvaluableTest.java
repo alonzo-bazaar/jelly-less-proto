@@ -31,7 +31,7 @@ public class LetEvaluableTest extends BaseEvaluableTest {
         assertEquals(3,
                 eval("(let len ((lst (list 1 2 3))) " +
                         "          (if (null? lst) 0" +
-                        "              (+ 1 (length (cdr lst)))))"));
+                        "              (+ 1 (len (cdr lst)))))"));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class LetEvaluableTest extends BaseEvaluableTest {
         define("len", 10);
         eval("(let len ((lst (list 1 2 3))) " +
                 "          (if (null? lst) 0" +
-                "              (+ 1 (length (cdr lst)))))");
+                "              (+ 1 (len (cdr lst)))))");
         assertEquals(10, lookup("len"));
     }
 }

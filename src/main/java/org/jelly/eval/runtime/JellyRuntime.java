@@ -1,6 +1,5 @@
 package org.jelly.eval.runtime;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -12,10 +11,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jelly.app.repl.Repl;
+import org.jelly.eval.ErrorFormatter;
 import org.jelly.eval.builtinfuns.*;
 import org.jelly.eval.environment.Environment;
 import org.jelly.eval.errors.IncorrectArgumentListException;
 import org.jelly.eval.errors.IncorrectTypeException;
+import org.jelly.eval.library.Library;
 import org.jelly.eval.runtime.error.JellyError;
 import org.jelly.lang.data.*;
 import org.jelly.lang.errors.CompilationError;
@@ -178,6 +179,30 @@ public class JellyRuntime {
     public void runRepl() {
         Repl repl = new Repl();
         repl.run(this);
+    }
+
+    public void inLibrary(Library lib) {
+        env.push(lib.getInternalEnv());
+    }
+
+    public void outLibarary() {
+        env.pop();
+    }
+
+    public void setInLibrary(String name, Object val, Library lib) {
+        if(!lib.getInternalEnv().containsKey(new Symbol(name)))
+            throw new RuntimeException("cannot set " + name + " in library, as no variable called " + name + " in library");
+        lib.getInternalEnv().put(new Symbol(name), val);
+    }
+
+    public void defineInLibrary(String name, Object val, Library lib) {
+        if(lib.getInternalEnv().containsKey(new Symbol(name)))
+            ErrorFormatter.warn(name + " already defined in library");
+        lib.getInternalEnv().put(new Symbol(name), val);
+    }
+
+    public Object getFromLibrary(String name, Object val, Library lib) {
+        return lib.getInternalEnv().get(new Symbol(name));
     }
 
     public Environment buildInitialEnvironment() {

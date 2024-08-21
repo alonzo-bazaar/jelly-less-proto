@@ -1,12 +1,11 @@
 package org.jelly.eval.environment;
 
 import org.jelly.lang.data.Symbol;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class EnvFrame {
+public class EnvFrame implements Map<Symbol, Object> {
     private final Map<Symbol, Object> nameToExpr;
 
     public EnvFrame() {
@@ -29,16 +28,66 @@ public class EnvFrame {
     }
 
     // Environment does all the checking, input data assumed to be valid
-    public Object lookup(Symbol sym) {
+    @Override
+    public Object get(Object sym) {
         return nameToExpr.get(sym);
     }
 
-    public boolean hasSymbol(Symbol sym) {
+    @Override
+    public Object put(Symbol sym, Object val) {
+        Object old = nameToExpr.get(sym);
+        nameToExpr.put(sym, val);
+        return old;
+    }
+
+    @Override
+    public boolean containsKey(Object sym) {
         return nameToExpr.containsKey(sym);
     }
 
-    public void bind(Symbol sym, Object val) {
-        nameToExpr.put(sym, val);
+    @Override
+    public boolean containsValue(Object val) {
+        return nameToExpr.containsValue(val);
+    }
+
+    @Override
+    public @NotNull Set<Symbol> keySet() {
+        return nameToExpr.keySet();
+    }
+
+    @Override
+    public int size() {
+        return nameToExpr.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return nameToExpr.isEmpty();
+    }
+
+    @Override
+    public @NotNull Set<Entry<Symbol, Object>> entrySet() {
+        return nameToExpr.entrySet();
+    }
+
+    @Override
+    public Object remove(Object sym) {
+        return nameToExpr.remove(sym);
+    }
+
+    @Override
+    public @NotNull Collection<Object> values() {
+        return nameToExpr.values();
+    }
+
+    @Override
+    public void putAll(Map<? extends Symbol, ? extends Object> map) {
+        nameToExpr.putAll(map);
+    }
+
+    @Override
+    public void clear() {
+        nameToExpr.clear();
     }
 
     void dump() {

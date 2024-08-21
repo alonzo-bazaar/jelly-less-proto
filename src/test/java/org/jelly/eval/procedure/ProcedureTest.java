@@ -112,7 +112,7 @@ public class ProcedureTest extends BaseEvaluableTest {
     @Test
     public void testJustRest() throws ParsingException {
         eval("(define (-length lst) (if (null? lst) 0 (+ 1 (-length (cdr lst)))))");
-        eval("(define (nargs &rest args) (length args))");
+        eval("(define (nargs &rest args) (-length args))");
         assertEquals(0, (int)eval("(nargs)"));
         assertEquals(1, (int)eval("(nargs 0)"));
         assertEquals(2, (int)eval("(nargs 0 0)"));

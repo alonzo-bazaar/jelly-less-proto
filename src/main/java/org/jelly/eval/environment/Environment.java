@@ -13,6 +13,14 @@ public class Environment {
     private EnvFrame head;
     private Environment tail = null;
 
+    public Environment getTail() {
+        return tail;
+    }
+
+    public EnvFrame getHead() {
+        return head;
+    }
+
     public Environment() {
         this.head = new EnvFrame();
         this.tail = null;
@@ -30,7 +38,7 @@ public class Environment {
 
     public Object lookup(Symbol name) {
         for(Environment env = this; env!=null; env = env.tail) {
-            Object o = env.head.lookup(name);
+            Object o = env.head.get(name);
             if(o != null) {
                 return o;
             }
@@ -50,13 +58,35 @@ public class Environment {
         return this.extend(new EnvFrame(ls, le));
     }
 
+    public Environment push(EnvFrame frame) {
+        Environment oldSelf = new Environment(this.head, this.tail);
+        this.head = frame;
+        this.tail = oldSelf;
+        return this;
+    }
+
+    public EnvFrame pop() {
+        if(this.tail == null) {
+            throw new NullPointerException("environment has null tail, cannot pop any further");
+        }
+
+        // this = this.tail modificherebbe un po' di reference, temo
+        Environment newTail = this.tail.tail;
+        EnvFrame newHead = this.tail.head;
+        EnvFrame popped = this.head;
+
+        this.tail = newTail;
+        this.head = newHead;
+        return popped;
+    }
+
     public void set(Symbol sym, Object val)
         throws VariableDoesNotExistException
     {
         Environment e = this;
         while(e != null) {
-            if(e.head.hasSymbol(sym)) {
-                e.head.bind(sym,val);
+            if(e.head.containsKey(sym)) {
+                e.head.put(sym,val);
                 return;
             }
             e = e.tail;
@@ -70,10 +100,10 @@ public class Environment {
 
     public void define(Symbol sym, Object val)
     {
-        if(head.hasSymbol(sym))
+        if(head.containsKey(sym))
             ErrorFormatter.warn("redefining variable " + sym.name());
 
-        head.bind(sym, val);
+        head.put(sym, val);
     }
 
     public void reset() {

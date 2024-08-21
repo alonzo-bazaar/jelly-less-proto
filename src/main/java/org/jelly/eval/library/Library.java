@@ -2,26 +2,25 @@ package org.jelly.eval.library;
 import org.jelly.eval.environment.EnvFrame;
 import org.jelly.lang.data.Symbol;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class Library {
-    private EnvFrame internalEnv = new EnvFrame();
-    private Map<Symbol, Object> exported = new HashMap<>();
+    private final EnvFrame internalEnv = new EnvFrame();
+    private final ExportedFrame exportedFrame = new ExportedFrame(this);
 
     public Map<Symbol, Object> getExportedBindings() {
-        return exported;
+        return exportedFrame;
     }
 
     public Object get(Symbol symbol) {
-        return exported.get(symbol);
+        return exportedFrame.get(symbol);
     }
 
-    public EnvFrame getFrame() {
+    public void export(Symbol exposed, Symbol internal) {
+        exportedFrame.directExport(exposed, internal);
+    }
+
+    public EnvFrame getInternalEnv() {
         return internalEnv;
-    }
-
-    public void export(Symbol sym, Object obj) {
-        exported.put(sym, obj);
     }
 }

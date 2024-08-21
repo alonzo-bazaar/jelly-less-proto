@@ -48,12 +48,12 @@ public class LambdaList {
             }
             else if(vals.size() == positional.size()) {
                 EnvFrame frame = new EnvFrame(this.positional, vals);
-                frame.bind(restSym, Constants.NIL); // empty list
+                frame.put(restSym, Constants.NIL); // empty list
                 return frame;
             }
             else { // vals.size() > positional.size()
                 EnvFrame frame = new EnvFrame(this.positional,vals.subList(0, positional.size()));
-                frame.bind(restSym, ConsUtils.toCons(vals.subList(positional.size(), vals.size())));
+                frame.put(restSym, ConsUtils.toCons(vals.subList(positional.size(), vals.size())));
                 return frame;
             }
         }

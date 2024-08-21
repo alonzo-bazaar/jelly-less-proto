@@ -1,6 +1,7 @@
-package org.jelly.eval.environment;
+package org.jelly.eval.runtime;
 
-import org.jelly.eval.runtime.JellyRuntime;
+import org.jelly.eval.library.Registry;
+import org.jelly.lang.data.Symbol;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -47,5 +48,22 @@ public class JellyRuntimeTest {
         assertEquals( 20, (int)j2.get("a"));
         j1.set("a", 15);
         assertEquals( 20, (int)j2.get("a"));
+    }
+
+    @Test
+    public void testDefineInLibraryLibraryValue() {
+        JellyRuntime jr = new JellyRuntime();
+        jr.evalString("(define-library (ok) (export ok))");
+        jr.defineInLibrary("ok", 2, Registry.getLibrary("ok"));
+        assertEquals(2, Registry.getLibrary("ok").getInternalEnv().get(new Symbol("ok")));
+    }
+
+    // @Test
+    public void testDefineInLibraryImportedValue() {
+        JellyRuntime jr = new JellyRuntime();
+        jr.evalString("(define-library (ok) (export ok))");
+        jr.evalString("(import (ok))");
+        jr.defineInLibrary("ok", 2, Registry.getLibrary("ok"));
+        assertEquals(2, jr.evalString("ok"));
     }
 }

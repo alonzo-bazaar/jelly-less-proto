@@ -16,6 +16,6 @@ public class ImportEvaluable implements Evaluable {
     @Override
     public Object eval(Environment env) {
         importSet.importInto(env);
-        return new Undefined();
+        return importSet;
     }
 }

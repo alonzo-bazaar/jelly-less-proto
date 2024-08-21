@@ -27,42 +27,42 @@ public class LambdaListTest extends BaseEvaluableTest {
     public void testNormalBinding() {
         LambdaList params = LambdaList.fromList(syms("a", "b", "c"));
         EnvFrame frame = params.bind(vals(10, 20, 30));
-        assertEquals(10, frame.lookup(new Symbol("a")));
-        assertEquals(20, frame.lookup(new Symbol("b")));
-        assertEquals(30, frame.lookup(new Symbol("c")));
+        assertEquals(10, frame.get(new Symbol("a")));
+        assertEquals(20, frame.get(new Symbol("b")));
+        assertEquals(30, frame.get(new Symbol("c")));
     }
 
     @Test
     public void testEmptyRest() {
         LambdaList params = LambdaList.fromList(syms("a", "b", "c", "&rest", "d"));
         EnvFrame frame = params.bind(vals(10, 20, 30));
-        assertEquals(10, frame.lookup(new Symbol("a")));
-        assertEquals(20, frame.lookup(new Symbol("b")));
-        assertEquals(30, frame.lookup(new Symbol("c")));
-        assertSame(Constants.NIL, frame.lookup(new Symbol("d")));
+        assertEquals(10, frame.get(new Symbol("a")));
+        assertEquals(20, frame.get(new Symbol("b")));
+        assertEquals(30, frame.get(new Symbol("c")));
+        assertSame(Constants.NIL, frame.get(new Symbol("d")));
     }
 
     @Test
     public void testFullRest() {
         LambdaList params = LambdaList.fromList(syms("a", "b", "c", "&rest", "d"));
         EnvFrame frame = params.bind(vals(10, 20, 30, 40));
-        assertEquals(10, frame.lookup(new Symbol("a")));
-        assertEquals(20, frame.lookup(new Symbol("b")));
-        assertEquals(30, frame.lookup(new Symbol("c")));
+        assertEquals(10, frame.get(new Symbol("a")));
+        assertEquals(20, frame.get(new Symbol("b")));
+        assertEquals(30, frame.get(new Symbol("c")));
 
-        assertEquals(40, ConsUtils.nth(frame.lookup(new Symbol("d")), 0));
-        assertEquals(1, ConsUtils.requireList(frame.lookup(new Symbol("d"))).length());
+        assertEquals(40, ConsUtils.nth(frame.get(new Symbol("d")), 0));
+        assertEquals(1, ConsUtils.requireList(frame.get(new Symbol("d"))).length());
     }
 
     @Test
     public void testJustRest() {
         LambdaList params = LambdaList.fromList(syms("&rest", "a"));
         EnvFrame frame = params.bind(vals(10, 'a', 30, "test"));
-        assertEquals(10, ConsUtils.nth(frame.lookup(new Symbol("a")),0));
-        assertEquals('a', ConsUtils.nth(frame.lookup(new Symbol("a")),1));
-        assertEquals(30, ConsUtils.nth(frame.lookup(new Symbol("a")),2));
-        assertEquals("test", ConsUtils.nth(frame.lookup(new Symbol("a")),3));
+        assertEquals(10, ConsUtils.nth(frame.get(new Symbol("a")),0));
+        assertEquals('a', ConsUtils.nth(frame.get(new Symbol("a")),1));
+        assertEquals(30, ConsUtils.nth(frame.get(new Symbol("a")),2));
+        assertEquals("test", ConsUtils.nth(frame.get(new Symbol("a")),3));
 
-        assertEquals(4, ConsUtils.requireList(frame.lookup(new Symbol("a"))).length());
+        assertEquals(4, ConsUtils.requireList(frame.get(new Symbol("a"))).length());
     }
 }

@@ -16,8 +16,7 @@ public class ExportDirective {
 
     public void directLibrary(Library l) {
         for(Symbol key : directives.keySet()) {
-            Object val = l.getFrame().lookup(key);
-            l.export(directives.get(key), val);
+            l.export(directives.get(key), key);
         }
     }
 }

@@ -1,5 +1,6 @@
 package org.jelly.eval.library;
 
+import org.jelly.eval.environment.EnvFrame;
 import org.jelly.eval.environment.Environment;
 import org.jelly.lang.data.Symbol;
 
@@ -73,8 +74,9 @@ public class ImportSet {
     }
 
     public void importInto(Environment env) {
-        for(Symbol sym: bindings.keySet()) {
-            env.define(sym, bindings.get(sym));
-        }
+        env.push(new EnvFrame(bindings));
+        // for(Symbol sym: bindings.keySet()) {
+        //     env.define(sym, bindings.get(sym));
+        // }
     }
 }

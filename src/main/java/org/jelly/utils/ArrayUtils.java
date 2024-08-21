@@ -28,7 +28,8 @@ public class ArrayUtils {
             sb.append(arr[i]);
             sb.append(separator);
         }
-        sb.append(arr[arr.length-1]);
+        if(arr.length != 0)
+            sb.append(arr[arr.length-1]);
         return sb.toString();
     }
 }

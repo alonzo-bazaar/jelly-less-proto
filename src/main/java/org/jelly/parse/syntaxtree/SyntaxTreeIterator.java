@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import org.jelly.lang.data.Constants;
 import org.jelly.lang.data.Symbol;
+import org.jelly.parse.errors.SyntaxTreeParsingException;
 import org.jelly.utils.ListBuilder;
 
 import org.jelly.parse.errors.UnbalancedParenthesesException;
@@ -67,11 +68,17 @@ public class SyntaxTreeIterator implements Iterator<Object> {
                             }
                             break;
                         case PunctuationToken.PunctuationType.QUOTE:
+                        case PunctuationToken.PunctuationType.BACKTICK:
                             if(stack.isEmpty())
-                                return new Symbol("'");
+                                return new Symbol(t.getString());
                             else
-                                stack.peek().addLast(new Symbol("'"));
+                                stack.peek().addLast(new Symbol(t.getString()));
                             break;
+                        case PunctuationToken.PunctuationType.COLON:
+                            if(stack.isEmpty())
+                                return new Symbol(t.getString());
+                            else
+                                throw new SyntaxTreeParsingException("can only have colon as a toplevel form (for now)");
                         default:
                             // non ho ancora implementato un reader, quindi quote, comma, backquote etc. non fanno
                             // e non ho ancora implementato un sistema di package, quindi colon e double colon non fanno
