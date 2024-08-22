@@ -8,7 +8,7 @@ public class Library {
     private final EnvFrame internalEnv = new EnvFrame();
     private final ExportedFrame exportedFrame = new ExportedFrame(this);
 
-    public Map<Symbol, Object> getExportedBindings() {
+    public ExportedFrame getExportedBindings() {
         return exportedFrame;
     }
 

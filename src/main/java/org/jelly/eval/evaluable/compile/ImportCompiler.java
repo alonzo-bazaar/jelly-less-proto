@@ -35,8 +35,8 @@ public class ImportCompiler implements FormCompiler {
                 .map(ImportCompiler::parseImportDirective)
                 .toList();
 
-        ImportSet res = ImportSet.empty();
-        for(ImportSet imp : imports) {
+        ImportSet res = imports.getFirst();
+        for(ImportSet imp : imports.subList(1, imports.size())) {
             res = ImportSet.join(res, imp);
         }
         return res;
