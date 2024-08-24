@@ -27,13 +27,13 @@ public class LibraryDefinitionEvaluable implements Evaluable {
 
     @Override
     public Library eval(Environment env) {
-        Library lib = new Library();
         Environment ext = new Environment(env.getHead(), env.getTail());
+        Library lib = new Library(ext);
         for(ImportSet imp : importSets) {
             imp.importInto(ext);
         }
 
-        ext.push(lib.getInternalEnv());
+        ext.push(lib.getBindngsFrame());
 
         for(SequenceEvaluable begin : beginForms) {
             begin.eval(ext);

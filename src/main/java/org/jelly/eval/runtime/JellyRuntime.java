@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jelly.app.repl.Repl;
 import org.jelly.eval.ErrorFormatter;
 import org.jelly.eval.builtinfuns.*;
 import org.jelly.eval.environment.Environment;
@@ -42,7 +41,7 @@ public class JellyRuntime {
      * representing different lisp "sessions"
      */
     private Path cwd = Paths.get(System.getProperty("user.dir"));
-    private final Environment env = buildInitialEnvironment();
+    private Environment env = buildInitialEnvironment();
 
     public JellyRuntime() {
         loadStandardLibrary();
@@ -177,32 +176,39 @@ public class JellyRuntime {
     // TODO: move repl in separate class and pass the runtime to the repl class
     // current library &Co. would make little sense in a runtime, but enough sense a repl
     public void runRepl() {
-        Repl repl = new Repl();
-        repl.run(this);
+        Repl repl = new Repl(this);
+        repl.run();
     }
 
     public void inLibrary(Library lib) {
-        env.push(lib.getInternalEnv());
+        env.push(lib.getBindngsFrame());
     }
-
     public void outLibarary() {
         env.pop();
     }
 
+    Environment getEnv() {
+        return env;
+    }
+
+    void setEnv(Environment env) {
+        this.env = env;
+    }
+
     public void setInLibrary(String name, Object val, Library lib) {
-        if(!lib.getInternalEnv().containsKey(new Symbol(name)))
+        if(!lib.getBindngsFrame().containsKey(new Symbol(name)))
             throw new RuntimeException("cannot set " + name + " in library, as no variable called " + name + " in library");
-        lib.getInternalEnv().put(new Symbol(name), val);
+        lib.getBindngsFrame().put(new Symbol(name), val);
     }
 
     public void defineInLibrary(String name, Object val, Library lib) {
-        if(lib.getInternalEnv().containsKey(new Symbol(name)))
+        if(lib.getBindngsFrame().containsKey(new Symbol(name)))
             ErrorFormatter.warn(name + " already defined in library");
-        lib.getInternalEnv().put(new Symbol(name), val);
+        lib.getBindngsFrame().put(new Symbol(name), val);
     }
 
     public Object getFromLibrary(String name, Object val, Library lib) {
-        return lib.getInternalEnv().get(new Symbol(name));
+        return lib.getBindngsFrame().get(new Symbol(name));
     }
 
     public Environment buildInitialEnvironment() {

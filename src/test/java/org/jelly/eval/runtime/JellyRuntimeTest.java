@@ -55,7 +55,7 @@ public class JellyRuntimeTest {
         JellyRuntime jr = new JellyRuntime();
         jr.evalString("(define-library (ok) (export ok))");
         jr.defineInLibrary("ok", 2, Registry.getLibrary("ok"));
-        assertEquals(2, Registry.getLibrary("ok").getInternalEnv().get(new Symbol("ok")));
+        assertEquals(2, Registry.getLibrary("ok").getBindngsFrame().get(new Symbol("ok")));
     }
 
     @Test

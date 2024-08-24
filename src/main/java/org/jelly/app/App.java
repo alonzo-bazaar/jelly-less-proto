@@ -20,8 +20,7 @@ public class App
             System.out.println(arg);
         }
         RunningParameters runningParameters = RunningParameters.fromArgs(args);
-        // runtime.define("argv", runningParameters.getRuntimeArgv());
-        runtime.defineInLibrary("argv", runningParameters.runtimeArgv, Registry.getLibrary("sys"));
+        // runtime.defineInLibrary("argv", runningParameters.runtimeArgv, Registry.getLibrary("sys"));
         App.run(runningParameters);
     }
 

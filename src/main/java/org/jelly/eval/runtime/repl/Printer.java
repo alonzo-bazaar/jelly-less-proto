@@ -1,4 +1,4 @@
-package org.jelly.app.repl;
+package org.jelly.eval.runtime.repl;
 
 import org.jelly.lang.data.*;
 import org.jelly.utils.ArrayUtils;

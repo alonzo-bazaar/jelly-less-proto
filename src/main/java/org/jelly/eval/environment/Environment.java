@@ -54,10 +54,6 @@ public class Environment {
         return new Environment(frame, this);
     }
 
-    public Environment extend(List<Symbol> ls, List<Object> le) {
-        return this.extend(new EnvFrame(ls, le));
-    }
-
     public Environment push(EnvFrame frame) {
         Environment oldSelf = new Environment(this.head, this.tail);
         this.head = frame;

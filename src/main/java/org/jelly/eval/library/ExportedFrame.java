@@ -37,7 +37,7 @@ public class ExportedFrame extends EnvFrame {
     public Object get(Object sym) {
         if(sym instanceof Symbol && redirects.containsKey(sym)) {
             Symbol internal = redirects.get(sym);
-            return lib.getInternalEnv().get(internal);
+            return lib.getBindngsFrame().get(internal);
         }
         return direct.get(sym);
     }
@@ -55,7 +55,7 @@ public class ExportedFrame extends EnvFrame {
     @Override
     public boolean containsValue(Object val) {
         return direct.containsValue(val)
-                || redirects.values().stream().anyMatch(a -> lib.getInternalEnv().get(a).equals(val));
+                || redirects.values().stream().anyMatch(a -> lib.getBindngsFrame().get(a).equals(val));
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ExportedFrame extends EnvFrame {
     public @NotNull Set<Entry<Symbol, Object>> entrySet() {
         Set<Entry<Symbol, Object>> res = new HashSet<>();
         redirects.forEach((internal, external) ->
-                res.add(new AbstractMap.SimpleEntry<>(external, lib.getInternalEnv().get(internal))));
+                res.add(new AbstractMap.SimpleEntry<>(external, lib.getBindngsFrame().get(internal))));
         direct.forEach((key, value) ->
                 res.add(new AbstractMap.SimpleEntry<>(key, value)));
         return res;
@@ -92,7 +92,7 @@ public class ExportedFrame extends EnvFrame {
     @Override
     public @NotNull Collection<Object> values() {
         return Stream.concat(direct.values().stream(),
-                             redirects.values().stream().map(a -> lib.getInternalEnv().get(a)))
+                             redirects.values().stream().map(a -> lib.getBindngsFrame().get(a)))
                     .collect(Collectors.toSet());
     }
 

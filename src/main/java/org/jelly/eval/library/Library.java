@@ -1,12 +1,18 @@
 package org.jelly.eval.library;
 import org.jelly.eval.environment.EnvFrame;
+import org.jelly.eval.environment.Environment;
 import org.jelly.lang.data.Symbol;
 
-import java.util.Map;
-
 public class Library {
-    private final EnvFrame internalEnv = new EnvFrame();
+    private final EnvFrame bindingsFrame = new EnvFrame();
     private final ExportedFrame exportedFrame = new ExportedFrame(this);
+
+    // messo qui solo per debuggability
+    private final Environment internalEnironment;
+
+    public Library(Environment internalEnironment) {
+        this.internalEnironment = internalEnironment;
+    }
 
     public ExportedFrame getExportedBindings() {
         return exportedFrame;
@@ -20,7 +26,11 @@ public class Library {
         exportedFrame.directExport(exposed, internal);
     }
 
-    public EnvFrame getInternalEnv() {
-        return internalEnv;
+    public EnvFrame getBindngsFrame() {
+        return bindingsFrame;
+    }
+
+    public Environment getInternalEnvironment() {
+        return internalEnironment;
     }
 }

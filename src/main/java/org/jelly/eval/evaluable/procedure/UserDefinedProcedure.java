@@ -22,7 +22,7 @@ public class UserDefinedProcedure implements Procedure {
     }
 
     /**
-     * @params values the values of the arguments with which the procedure is called
+     * @param values: the values of the arguments with which the procedure is called
      */
     @Override
     public Object apply(List<Object> values) {
