@@ -5,6 +5,7 @@ import org.jelly.eval.evaluable.SequenceEvaluable;
 import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.eval.library.ExportDirective;
 import org.jelly.eval.library.ImportSet;
+import org.jelly.eval.library.LazyImportSet;
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.Symbol;
 import org.jelly.utils.AstHandling;
@@ -38,7 +39,7 @@ public class LibraryDefinitionCompiler implements FormCompiler {
         List<Cons> libraryDeclarations = ConsUtils.toStream(ConsUtils.requireCons(c.nthCdr(2)))
                 .map(ConsUtils::requireCons)
                 .toList();
-        List<ImportSet> imports = libraryDeclarations
+        List<LazyImportSet> imports = libraryDeclarations
                 .stream()
                 .filter(a -> AstHandling.requireSymbol(a.getCar()).name().equals("import"))
                 .map(ImportCompiler::parseImportDeclaration)
@@ -81,10 +82,12 @@ public class LibraryDefinitionCompiler implements FormCompiler {
         // everything else
         for(Object elt : ConsUtils.toList(ConsUtils.requireCons(c.nthCdr(2)))) {
             Cons celt = ConsUtils.requireCons(elt);
-            switch(AstHandling.requireSymbol(celt.getCar()).name()) {
+            String s = AstHandling.requireSymbol(celt.getCar()).name();
+            switch(s) {
                 case "import" -> ImportCompiler.checkImportForm(celt);
                 case "export" -> checkExportForm(celt);
                 case "begin" -> checkBeginForm(celt);
+                default -> throw new MalformedFormException("invalid " + s + "library declaration");
             }
         }
     }

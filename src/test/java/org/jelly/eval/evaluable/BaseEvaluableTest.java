@@ -1,6 +1,5 @@
 package org.jelly.eval.evaluable;
 
-import org.jelly.eval.library.Registry;
 import org.jelly.eval.runtime.JellyRuntime;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +22,7 @@ public class BaseEvaluableTest {
 
     @BeforeEach
     public void refreshEnv() {
-        Registry.reset();
+        // jr.getLibraryRegistry().reset();
         jr = new JellyRuntime(true);
     }
 

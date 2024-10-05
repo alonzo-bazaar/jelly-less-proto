@@ -1,6 +1,7 @@
 package org.jelly.eval.evaluable;
 
 import org.jelly.eval.environment.Environment;
+import org.jelly.eval.runtime.error.JellyError;
 import org.jelly.lang.data.Symbol;
 import org.jelly.lang.data.Constants;
 
@@ -21,7 +22,7 @@ public class SetEvaluable implements Evaluable {
             return computed_val;
         }
         catch(Throwable t) {
-            return Constants.NIL;
+            throw new JellyError("error while setting " + sym, t);
         }
     }
 }

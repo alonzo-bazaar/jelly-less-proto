@@ -3,9 +3,11 @@ package org.jelly.eval.runtime;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -14,8 +16,10 @@ import org.jelly.eval.ErrorFormatter;
 import org.jelly.eval.builtinfuns.*;
 import org.jelly.eval.environment.Environment;
 import org.jelly.eval.errors.IncorrectArgumentListException;
+import org.jelly.eval.errors.IncorrectArgumentsException;
 import org.jelly.eval.errors.IncorrectTypeException;
 import org.jelly.eval.library.Library;
+import org.jelly.eval.library.LibraryRegistry;
 import org.jelly.eval.runtime.error.JellyError;
 import org.jelly.lang.data.*;
 import org.jelly.lang.errors.CompilationError;
@@ -29,6 +33,7 @@ import org.jelly.parse.reading.Reading;
 
 import org.jelly.eval.utils.FileSystemUtils;
 import org.jelly.utils.ConsUtils;
+import org.jelly.utils.ListBuilder;
 import org.jelly.utils.OsUtils;
 
 
@@ -41,19 +46,24 @@ public class JellyRuntime {
      * representing different lisp "sessions"
      */
     private Path cwd = Paths.get(System.getProperty("user.dir"));
-    private Environment env = buildInitialEnvironment();
+    private Environment env = buildInitialEnvironment().setRuntime(this);
+    private final LibraryRegistry registry = new LibraryRegistry(this);
 
     public JellyRuntime() {
         loadStandardLibrary();
     }
 
-    public JellyRuntime(boolean forTesting) {
-        if(forTesting) {
+    public JellyRuntime(boolean loadMiniStd) {
+        if(loadMiniStd) {
             loadMiniStandardLibrary();
         }
         else {
             loadStandardLibrary();
         }
+    }
+
+    public LibraryRegistry getLibraryRegistry() {
+        return this.registry;
     }
 
     private void loadStandardLibraryFile (String filename) {
@@ -228,6 +238,10 @@ public class JellyRuntime {
         env.define(new Symbol("nil"), Constants.NIL);
         env.define(new Symbol("#t"), Constants.TRUE);
         env.define(new Symbol("#f"), Constants.FALSE);
+        env.define(new Symbol("undefined"), Constants.UNDEFINED);
+        env.define(new Symbol("null"), null);
+
+        env.define(new Symbol("runtime"), this);
 
         env.define(new Symbol("not"), (Procedure) values -> {
                 Utils.ensureSizeExactly("not",1,values);
@@ -237,6 +251,11 @@ public class JellyRuntime {
         env.define(new Symbol("null?"), (Procedure) values -> {
                 Utils.ensureSizeExactly("null? check",1,values);
                 return values.getFirst() == Constants.NIL;
+        });
+
+        env.define(new Symbol("javaNull?"), (Procedure) values -> {
+            Utils.ensureSizeExactly("javaNull? check",1,values);
+            return values.getFirst() == null;
         });
 
         env.define(new Symbol("cons?"), (Procedure) values -> {
@@ -340,9 +359,15 @@ public class JellyRuntime {
         env.define(new Symbol("construct"), (Procedure) FFI::constuct);
 
         env.define(new Symbol("display"), (Procedure) values -> {
-                    Utils.ensureSizeExactly("display", 1, values);
-                    System.out.print(values.getFirst());
-                    return Constants.NIL;
+            Utils.ensureSizeExactly("display", 1, values);
+            System.out.print(values.getFirst());
+            return Constants.NIL;
+        });
+
+        env.define(new Symbol("errdisplay"), (Procedure) values -> {
+            Utils.ensureSizeExactly("errdisplay", 1, values);
+            System.err.print(values.getFirst());
+            return Constants.NIL;
         });
 
         env.define(new Symbol("loadFile"), (Procedure) values -> Files.loadFile(this, values));
@@ -352,8 +377,8 @@ public class JellyRuntime {
                 Utils.ensureSizeExactly("getCwd", 0, values);
                 List<String> cwdList = FileSystemUtils.pathList(this.cwd);
                 return ConsUtils.toCons(cwdList.stream().map(a -> (Object)a).toList());
-            } catch (Throwable ignored) {
-                return new Undefined();
+            } catch (Throwable t) {
+                throw new JellyError("call to getCwd failed", t);
             }
         });
 
@@ -361,10 +386,12 @@ public class JellyRuntime {
             try {
                 Utils.ensureSizeExactly("getCwd", 0, values);
                 return this.cwd.toString();
-            } catch (Throwable ignored) {
-                return new Undefined();
+            } catch (Throwable t) {
+                throw new JellyError("call to getCwdString failed", t);
             }
         });
+
+        env.define(new Symbol("getCwdPath"), (Procedure) values -> this.cwd);
 
         // TODO potresti rendere il dumpenv una struttura più ispezionabile per facilitare l'utilizzo di questa per debugging
         env.define(new Symbol("dumpenv"), (Procedure) values -> {
@@ -379,7 +406,9 @@ public class JellyRuntime {
                 Utils.ensureSingleOfType("findClass", 0, String.class, args);
                 return Class.forName((String) args.getFirst());
             } catch (ClassNotFoundException e) {
-                return new Undefined();
+                throw new JellyError("cannot find class : " + args.getFirst(), e);
+            } catch(ClassCastException e) {
+                throw new JellyError("incorrect type parameter passed to function findClass", e);
             }
         });
 
@@ -389,7 +418,7 @@ public class JellyRuntime {
                 Utils.ensureSizeExactly("classOf", 1, args);
                 return args.getFirst().getClass();
             } catch (Throwable t) {
-                return new Undefined();
+                throw new JellyError("call to classOf failed", t);
             }
         });
 
@@ -407,15 +436,93 @@ public class JellyRuntime {
         });
 
         env.define(new Symbol("array"), (Procedure) List::toArray);
-        env.define(new Symbol("javaList"), (Procedure) args -> args);
         env.define(new Symbol("values"), (Procedure) Values::new);
+        env.define(new Symbol("javaList"), (Procedure) values -> values);
+
+        env.define(new Symbol("jarr"), (Procedure) List::toArray);
+        env.define(new Symbol("jlist"), (Procedure) values -> values);
+
+        env.define(new Symbol("jlist->cons"), (Procedure) values -> {
+            try {
+                Utils.ensureSizeExactly("jlist->cons", 1, values);
+                Utils.ensureSingleOfType("jlist->cons", 0, List.class, values);
+                ListBuilder lb = new ListBuilder();
+                for(Object o : (List<?>)values.getFirst()) {
+                    lb.addLast(o);
+                }
+                return lb.get();
+            } catch (IncorrectTypeException | IncorrectArgumentListException t) {
+                throw new JellyError("arrToCons call failed, likely due to incorrect parameters", t);
+            }
+        });
+
+        env.define(new Symbol("jarr->cons"), (Procedure) values -> {
+            try {
+                Utils.ensureSizeExactly("jarr->cons", 1, values);
+                Utils.ensureSingleOfType("jarr->cons", 0, Object[].class, values);
+                ListBuilder lb = new ListBuilder();
+                for(Object o : (Object[])values.getFirst()) {
+                    lb.addLast(o);
+                }
+                return lb.get();
+            } catch (IncorrectTypeException | IncorrectArgumentListException t) {
+                throw new JellyError("arrToCons call failed, likely due to incorrect parameters", t);
+            }
+        });
+
+        env.define(new Symbol("cons->jlist"), (Procedure) values -> {
+            try {
+                Utils.ensureSizeExactly("cons->jlist", 1, values);
+                Utils.ensureSingleOfType("cons->jlist", 0, ConsList.class, values);
+                List<Object> res = new ArrayList<>();
+                ConsList c = (ConsList)values.getFirst();
+                while(c instanceof Cons cons) {
+                    res.add(c.getCar());
+                    if(c.getCdr() instanceof ConsList cdr) {
+                        c = cdr;
+                    } else {
+                        throw new IncorrectArgumentsException("cannot convert improper list to java list");
+                    }
+                }
+                return res;
+            } catch (IncorrectTypeException | IncorrectArgumentListException t) {
+                throw new JellyError("arrToCons call failed, likely due to incorrect parameters", t);
+            }
+        });
+
+        env.define(new Symbol("cons->jarr"), (Procedure) values -> {
+            try {
+                Utils.ensureSizeExactly("cons->jarr", 1, values);
+                Utils.ensureSingleOfType("cons->jarr", 0, ConsList.class, values);
+                ConsList c = (ConsList)values.getFirst();
+                Object[] res = new Object[c.length()];
+                int i = 0;
+
+                while(c instanceof Cons cons) {
+                    res[i++] = c.getCar();
+
+                    if(c.getCdr() instanceof ConsList cdr) {
+                        c = cdr;
+                    } else {
+                        throw new IncorrectArgumentsException("cannot convert improper list to java list");
+                    }
+                }
+                return res;
+            } catch (IncorrectTypeException | IncorrectArgumentListException t) {
+                throw new JellyError("arrToCons call failed, likely due to incorrect parameters", t);
+            }
+        });
+
+        // alias
+        env.define(new Symbol("arrayToCons"), env.lookup(new Symbol("jarr->cons")));
+        env.define(new Symbol("javaListToCons"), env.lookup(new Symbol("jlist->cons")));
 
         env.define(new Symbol("call-with-values"), (Procedure) args -> {
             try {
                 Utils.ensureSizeExactly("call-with-values", 2, args);
                 Utils.ensureSingleOfType("call-with-values", 0, Values.class, args);
                 Utils.ensureSingleOfType("call-with-values", 1, Procedure.class, args);
-                return ((Procedure)args.get(1)).apply(((Values)args.get(1)).values());
+                return ((Procedure)args.get(1)).apply(((Values)args.get(0)).values());
             } catch(Throwable t) {
                 throw new JellyError("call-with-values call failed", t);
             }
@@ -429,6 +536,47 @@ public class JellyRuntime {
                 return ((Procedure)args.get(0)).apply(ConsUtils.toList(ConsUtils.requireList(args.get(1))));
             } catch(Throwable t) {
                 throw new JellyError("apply call failed", t);
+            }
+        });
+
+        env.define(new Symbol("field"), (Procedure) values -> {
+            try {
+                Utils.ensureSizeExactly("field", 2, values);
+                Utils.ensureSingleOfType("field", 1, String.class, values);
+                Object obj = values.get(0);
+                String fieldName = (String)values.get(1);
+
+                Field field = obj.getClass().getDeclaredField(fieldName);
+                field.setAccessible(true);
+                return  field.get(obj);
+            } catch(Throwable t) {
+                throw new JellyError("field call failed", t);
+            }
+        });
+
+        env.define(new Symbol("fieldPublic"), (Procedure) values -> {
+            try {
+                Utils.ensureSizeExactly("fieldPublic", 2, values);
+                Utils.ensureSingleOfType("fieldPublic", 1, String.class, values);
+                Object obj = values.get(0);
+                String fieldName = (String)values.get(1);
+
+                Field field = obj.getClass().getDeclaredField(fieldName);
+                return  field.get(obj);
+            } catch(Throwable t) {
+                throw new JellyError("fieldPublic call failed", t);
+            }
+        });
+
+        env.define(new Symbol("fieldStatic"), (Procedure) values -> {
+            try {
+                Utils.ensureSizeExactly("fieldStatic", 2, values);
+                Utils.ensureSingleOfType("fieldStatic", 0, Class.class, values);
+                Utils.ensureSingleOfType("fieldStatic", 1, String.class, values);
+
+                return ((Class<?>)values.get(0)).getField((String)values.get(1)).get(null);
+            } catch(Throwable t) {
+                throw new JellyError("fieldStatic call failed", t);
             }
         });
 

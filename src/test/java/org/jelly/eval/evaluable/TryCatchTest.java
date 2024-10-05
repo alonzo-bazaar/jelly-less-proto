@@ -23,6 +23,12 @@ public class TryCatchTest extends BaseEvaluableTest {
     }
 
     @Test
+    public void testCatchThrowable() {
+        assertEquals("oh yes",
+                eval("(try (error \"oh no\") (catch (Throwable t) \"oh yes\"))"));
+    }
+
+    @Test
     public void testSkipCatchReturn() {
         assertEquals("oh yes", eval("(try (error \"oh no\")" +
                 "     (catch (FileNotFoundException fnf)" +

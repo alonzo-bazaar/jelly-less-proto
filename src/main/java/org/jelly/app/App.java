@@ -3,7 +3,6 @@ package org.jelly.app;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import org.jelly.eval.library.Registry;
 import org.jelly.eval.runtime.JellyRuntime;
 import org.jelly.parse.errors.ParsingException;
 
@@ -16,11 +15,9 @@ public class App
 {
     private static final JellyRuntime runtime = new JellyRuntime();
     public static void main( String[] args ) {
-        for (String arg : args) {
-            System.out.println(arg);
-        }
         RunningParameters runningParameters = RunningParameters.fromArgs(args);
-        // runtime.defineInLibrary("argv", runningParameters.runtimeArgv, Registry.getLibrary("sys"));
+        runtime.setInLibrary("argv", runningParameters.runtimeArgv,
+                runtime.getLibraryRegistry().getLibrary("sys"));
         App.run(runningParameters);
     }
 

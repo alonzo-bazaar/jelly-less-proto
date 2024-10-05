@@ -7,7 +7,11 @@ public class JellyError extends RuntimeException {
         super(s);
     }
 
-    public JellyError(String s, Object... irritants) {
-        super(s + ".\nAnnoyants:" + ArrayUtils.renderArr(irritants, ",\n") + "\n");
+    public JellyError(String s, Throwable t) {
+        super("Jelly Error : " + s, t);
+    }
+
+    public JellyError(String s, Object... annoyants) {
+        super(s + ".\nAnnoyants:" + ArrayUtils.renderArr(annoyants, ",\n") + "\n");
     }
 }

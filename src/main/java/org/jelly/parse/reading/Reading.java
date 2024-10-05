@@ -14,7 +14,11 @@ import java.util.Scanner;
 
 public class Reading {
     public static Iterator<Object> readingFile(File f) throws FileNotFoundException {
-        return readingIterator(new FileLineIterator(f));
+        FileLineIterator lines = new FileLineIterator(f);
+        if(shebang(f)) {
+            lines.next();
+        }
+        return readingIterator(lines);
     }
 
     public static Iterator<Object> readingLines(String... lines) {
@@ -27,5 +31,10 @@ public class Reading {
 
     private static Iterator<Object> readingIterator(Iterator<String> lines) {
         return ReaderMacros.from(new SyntaxTreeIterator(new TokenIterator(lines)));
+    }
+
+    private static boolean shebang(File f) throws FileNotFoundException {
+        String s = new Scanner(f).nextLine();
+        return s.startsWith("#!");
     }
 }

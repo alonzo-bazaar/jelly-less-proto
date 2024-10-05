@@ -4,96 +4,128 @@ import org.jelly.lang.data.Symbol;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class EnvFrame implements Map<Symbol, Object> {
-    private final Map<Symbol, Object> nameToExpr;
+    Map<Symbol, Box> inner;
+
+    // quando vedo se posso mutare gli oggetti sottostanti e restare parallelo metto concurrenthasMap
 
     public EnvFrame() {
-        this.nameToExpr = new HashMap<>();
+        inner = new ConcurrentHashMap<>();
     }
 
     public EnvFrame(Map<Symbol, Object> nameToExpr) {
-        this.nameToExpr = nameToExpr;
+        inner = new ConcurrentHashMap<>();
+        nameToExpr.forEach((key, value) -> inner.put(key, new Box(value)));
     }
 
     public EnvFrame(List<Symbol> names, List<Object> exprs) {
-        this.nameToExpr = new HashMap<>();
         /* expects names and exprs to have the same size
          * I would assert it, but I don't know if throwing an exception in the
          * constructor is a good idea
          */
+        inner = new ConcurrentHashMap<>();
         for (int i = 0; i < names.size(); ++i) {
-            this.nameToExpr.put(names.get(i), exprs.get(i));
+            inner.put(names.get(i), new Box(exprs.get(i)));
         }
     }
 
-    // Environment does all the checking, input data assumed to be valid
+    // basic things I need
     @Override
-    public Object get(Object sym) {
-        return nameToExpr.get(sym);
+    public Object get(Object s) {
+        return switch(inner.get(s)) {
+            case null -> null;
+            case Box b -> b.get();
+        };
     }
 
     @Override
-    public Object put(Symbol sym, Object val) {
-        Object old = nameToExpr.get(sym);
-        nameToExpr.put(sym, val);
+    public Object put(Symbol s, Object newVal) {
+        Object old = null;
+        if(inner.containsKey(s)) {
+            old = inner.get(s).get();
+            inner.get(s).set(newVal);
+        }
+        else {
+            inner.put(s, new Box(newVal));
+        }
         return old;
     }
 
+    // envframe specifics
+    void dump() {
+        // prints the entire state of the frame
+        for (Symbol s : keySet()) {
+            System.out.println(s + " : " +get(s));
+        }
+    }
+
+    public Box getBox(Symbol sym) {
+        return inner.get(sym);
+    }
+
+    public void putBox(Symbol sym, Box box) {
+        inner.put(sym, box);
+    }
+
+    // other things I have to implement for this to be a map
     @Override
-    public boolean containsKey(Object sym) {
-        return nameToExpr.containsKey(sym);
+    public void clear() {
+        inner.clear();
     }
 
     @Override
-    public boolean containsValue(Object val) {
-        return nameToExpr.containsValue(val);
+    public boolean containsKey(Object o) {
+        return inner.containsKey(o);
     }
 
     @Override
-    public @NotNull Set<Symbol> keySet() {
-        return nameToExpr.keySet();
+    public boolean containsValue(Object o) {
+        return inner.containsValue(new Box(o));
     }
 
     @Override
-    public int size() {
-        return nameToExpr.size();
+    public @NotNull Set<Map.Entry<Symbol, Object>> entrySet() {
+        return inner.entrySet()
+                .stream()
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue().get()))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public boolean isEmpty() {
-        return nameToExpr.isEmpty();
+        return inner.isEmpty();
     }
 
     @Override
-    public @NotNull Set<Entry<Symbol, Object>> entrySet() {
-        return nameToExpr.entrySet();
+    public @NotNull Set<Symbol> keySet() {
+        return inner.keySet();
     }
 
     @Override
-    public Object remove(Object sym) {
-        return nameToExpr.remove(sym);
+    public void putAll(@NotNull Map<? extends Symbol, ? extends Object> other) {
+        // other.forEach((key, value) -> put(key, new Box(value)));
+        throw new UnsupportedOperationException("EnvFrame can't putAll from a non EnvFrame map, parameter "
+                + other + " not accepted");
+    }
+
+    public void putAll(EnvFrame f) {
+        inner.putAll(f.inner);
     }
 
     @Override
+    public Object remove(Object key) {
+        return inner.remove(key);
+    }
+
+    @Override
+    public int size() {
+        return inner.size();
+    }
+
     public @NotNull Collection<Object> values() {
-        return nameToExpr.values();
-    }
-
-    @Override
-    public void putAll(Map<? extends Symbol, ? extends Object> map) {
-        nameToExpr.putAll(map);
-    }
-
-    @Override
-    public void clear() {
-        nameToExpr.clear();
-    }
-
-    void dump() {
-        // prints the entire state of the frame
-        for (Symbol s : nameToExpr.keySet()) {
-            System.out.println(s + " : " + nameToExpr.get(s));
-        }
+        return inner.values().stream().map(Box::get).collect(Collectors.toSet());
     }
 }

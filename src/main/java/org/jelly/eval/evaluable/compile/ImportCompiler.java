@@ -2,8 +2,7 @@ package org.jelly.eval.evaluable.compile;
 
 import org.jelly.eval.evaluable.ImportEvaluable;
 import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
-import org.jelly.eval.library.ImportSet;
-import org.jelly.eval.library.Registry;
+import org.jelly.eval.library.LazyImportSet;
 import org.jelly.lang.data.Cons;
 import org.jelly.lang.data.Symbol;
 import org.jelly.utils.AstHandling;
@@ -29,34 +28,34 @@ public class ImportCompiler implements FormCompiler {
         return new ImportEvaluable(parseImportDeclaration(form));
     }
 
-    public static ImportSet parseImportDeclaration(Cons c) {
-        List<ImportSet> imports = ConsUtils.toStream(ConsUtils.requireCons(c.getCdr()))
+    public static LazyImportSet parseImportDeclaration(Cons c) {
+        List<LazyImportSet> imports = ConsUtils.toStream(ConsUtils.requireCons(c.getCdr()))
                 .map(ConsUtils::requireCons)
                 .map(ImportCompiler::parseImportDirective)
                 .toList();
 
-        ImportSet res = imports.getFirst();
-        for(ImportSet imp : imports.subList(1, imports.size())) {
-            res = ImportSet.join(res, imp);
+        LazyImportSet res = imports.getFirst();
+        for(LazyImportSet imp : imports.subList(1, imports.size())) {
+            res = LazyImportSet.join(res, imp);
         }
         return res;
     }
 
-    public static ImportSet parseImportDirective(Cons c) {
+    public static LazyImportSet parseImportDirective(Cons c) {
         return switch(AstHandling.requireSymbol(c.getCar()).name()) {
-            case "only" -> ImportSet.only(parseImportDirective(ConsUtils.requireCons(c.nth(1))),
+            case "only" -> LazyImportSet.only(parseImportDirective(ConsUtils.requireCons(c.nth(1))),
                                               ConsUtils.toStream(ConsUtils.requireCons(c.nthCdr(2)))
                                                       .map(AstHandling::requireSymbol)
                                                       .collect(Collectors.toSet()));
-            case "except" -> ImportSet.except(parseImportDirective(ConsUtils.requireCons(c.nth(1))),
+            case "except" -> LazyImportSet.except(parseImportDirective(ConsUtils.requireCons(c.nth(1))),
                                               ConsUtils.toStream(ConsUtils.requireCons(c.nthCdr(2)))
                                                       .map(AstHandling::requireSymbol)
                                                       .collect(Collectors.toSet()));
-            case "rename" -> ImportSet.rename(parseImportDirective(ConsUtils.requireCons(c.nth(1))),
+            case "rename" -> LazyImportSet.rename(parseImportDirective(ConsUtils.requireCons(c.nth(1))),
                                               Utils.alistToMap(ConsUtils.requireCons(c.nthCdr(2))));
-            case "prefix" -> ImportSet.prefix(parseImportDirective(ConsUtils.requireCons(c.nth(1))),
+            case "prefix" -> LazyImportSet.prefix(parseImportDirective(ConsUtils.requireCons(c.nth(1))),
                                               AstHandling.requireSymbol(c.nth(2)));
-            default -> ImportSet.library(Registry.getLibrary(c));
+            default -> LazyImportSet.library(c);
         };
     }
 

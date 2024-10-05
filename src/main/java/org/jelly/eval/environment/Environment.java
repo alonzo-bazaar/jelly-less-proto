@@ -1,10 +1,12 @@
 package org.jelly.eval.environment;
 
-import java.util.List;
+import java.nio.file.Path;
 
 import org.jelly.eval.ErrorFormatter;
 import org.jelly.eval.environment.errors.UnboundVariableException;
 import org.jelly.eval.environment.errors.VariableDoesNotExistException;
+import org.jelly.eval.library.LibraryRegistry;
+import org.jelly.eval.runtime.JellyRuntime;
 import org.jelly.lang.data.Symbol;
 
 public class Environment {
@@ -12,6 +14,7 @@ public class Environment {
     // terminata da null perchè sì
     private EnvFrame head;
     private Environment tail = null;
+    private JellyRuntime runtime = null;
 
     public Environment getTail() {
         return tail;
@@ -36,12 +39,39 @@ public class Environment {
         this.tail = tail;
     }
 
+    public Environment(Environment env) {
+        this.head = env.head;
+        this.tail = env.tail;
+        this.setRuntime(env.getRuntime());
+    }
+
+    private Environment getRoot() {
+        if(this.tail == null)
+            return this;
+        return this.tail.getRoot();
+    }
+
+    public Environment setRuntime(JellyRuntime jr) {
+        this.getRoot().runtime = jr;
+        return this;
+    }
+
+    public JellyRuntime getRuntime() {
+        return this.getRoot().runtime;
+    }
+
+    public LibraryRegistry getLibraryRegistry () {
+        return this.getRuntime().getLibraryRegistry();
+    }
+
+    public Path getCwd() {
+        return this.getRuntime().resolvePath("");
+    }
+
     public Object lookup(Symbol name) {
         for(Environment env = this; env!=null; env = env.tail) {
-            Object o = env.head.get(name);
-            if(o != null) {
-                return o;
-            }
+            if(env.head.containsKey(name))
+                return env.head.get(name);
         }
         throw new UnboundVariableException("variable " + name.name() + " is not bound");
     }
@@ -114,6 +144,14 @@ public class Environment {
             tail.dump();
         else
             System.out.println("-- the end --");
+    }
+
+    public Box getBox(Symbol name) {
+        for(Environment env = this; env!=null; env = env.tail) {
+            if(env.head.containsKey(name))
+                return env.head.getBox(name);
+        }
+        throw new UnboundVariableException("variable " + name.name() + " is not bound");
     }
 }
 

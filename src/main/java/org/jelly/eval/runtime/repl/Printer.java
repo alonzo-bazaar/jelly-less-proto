@@ -8,6 +8,8 @@ import java.util.List;
 public class Printer {
     public static String render(Object o) {
         return switch(o) {
+            case null -> "null";
+            case Boolean b -> b?"#t":"#f";
             case ConsList cl -> renderList(cl);
             case Symbol sym -> renderSymbol(sym);
             case String str -> renderString(str);

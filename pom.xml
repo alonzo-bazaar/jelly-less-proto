@@ -184,7 +184,7 @@ specificate nel file siano un pochino vecchie, specie junit, scusate
         </configuration>
       </plugin>
 
-      <!-- idk the tutorial told me to use it to build -->
+      <!-- idk the tutorial told me to use it to get -->
       <!-- https://www.baeldung.com/executable-jar-with-maven -->
       <!-- https://stackoverflow.com/questions/574594/how-can-i-create-an-executable-runnable-jar-with-dependencies-using-maven -->
       <!-- https://maven.apache.org/plugins/maven-assembly-plugin/usage.html -->

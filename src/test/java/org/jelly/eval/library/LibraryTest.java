@@ -141,7 +141,8 @@ public class LibraryTest extends BaseEvaluableTest {
                 eval("(define-library (test esporta)" +
                         "  (import (waluigi something))" +
                         "  (begin" +
-                        "    (define something 20)))"));
+                        "    (define something 20)))" +
+                        "(import (test esporta))")); // import aggiunto per la lazyaggine delle librerie
     }
 
     @Test
@@ -172,5 +173,14 @@ public class LibraryTest extends BaseEvaluableTest {
                         "  (export (replace something 20))" +
                         "  (begin" +
                         "    (set!)))"));
+    }
+
+    @Test
+    public void testDefineAfterImportOnly() {
+        eval("(define-library (one) (export one) (begin (define one 1)))");
+        eval("(import (only (one) one))");
+        eval("(define x 2)");
+        assertEquals(1, (int)lookup("one"));
+        assertEquals(2, (int)lookup("x"));
     }
 }

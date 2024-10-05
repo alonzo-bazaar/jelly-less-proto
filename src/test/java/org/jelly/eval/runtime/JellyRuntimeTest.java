@@ -1,9 +1,10 @@
 package org.jelly.eval.runtime;
 
-import org.jelly.eval.library.Registry;
+import org.jelly.eval.library.LibraryRegistry;
 import org.jelly.lang.data.Symbol;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class JellyRuntimeTest {
     @Test
@@ -51,19 +52,44 @@ public class JellyRuntimeTest {
     }
 
     @Test
+    public void testNullNull() {
+        JellyRuntime jr = new JellyRuntime();
+        assertNull(jr.get("null"));
+    }
+
+    @Test
     public void testDefineInLibraryLibraryValue() {
         JellyRuntime jr = new JellyRuntime();
-        jr.evalString("(define-library (ok) (export ok))");
-        jr.defineInLibrary("ok", 2, Registry.getLibrary("ok"));
-        assertEquals(2, Registry.getLibrary("ok").getBindngsFrame().get(new Symbol("ok")));
+        LibraryRegistry registry = jr.getLibraryRegistry();
+        jr.evalString("(define-library (ok) (export ok) (begin (define ok null)))");
+        jr.defineInLibrary("ok", 2, registry.getLibrary("ok"));
+        assertEquals(2, registry.getLibrary("ok").getBindngsFrame().get(new Symbol("ok")));
     }
 
     @Test
     public void testDefineInLibraryImportedValue() {
         JellyRuntime jr = new JellyRuntime();
-        jr.evalString("(define-library (ok) (export ok))");
+        jr.evalString("(define-library (ok) (export ok) (begin (define ok null)))");
         jr.evalString("(import (ok))");
-        jr.defineInLibrary("ok", 2, Registry.getLibrary("ok"));
+        jr.defineInLibrary("ok", 2, jr.getLibraryRegistry().getLibrary("ok"));
+        assertEquals(2, jr.evalString("ok"));
+    }
+
+    @Test
+    public void testSetInLibraryLibraryValue() {
+        JellyRuntime jr = new JellyRuntime();
+        LibraryRegistry registry = jr.getLibraryRegistry();
+        jr.evalString("(define-library (ok) (export ok) (begin (define ok null)))");
+        jr.setInLibrary("ok", 2, registry.getLibrary("ok"));
+        assertEquals(2, registry.getLibrary("ok").getBindngsFrame().get(new Symbol("ok")));
+    }
+
+    @Test
+    public void testSetInLibraryImportedValue() {
+        JellyRuntime jr = new JellyRuntime();
+        jr.evalString("(define-library (ok) (export ok) (begin (define ok null)))");
+        jr.evalString("(import (ok))");
+        jr.setInLibrary("ok", 2, jr.getLibraryRegistry().getLibrary("ok"));
         assertEquals(2, jr.evalString("ok"));
     }
 }

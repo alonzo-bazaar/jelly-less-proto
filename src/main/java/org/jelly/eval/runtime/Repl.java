@@ -4,7 +4,6 @@ import org.jelly.eval.ErrorFormatter;
 import org.jelly.eval.environment.Environment;
 import org.jelly.eval.evaluable.compile.errors.MalformedFormException;
 import org.jelly.eval.library.Library;
-import org.jelly.eval.library.Registry;
 import org.jelly.eval.runtime.repl.Printer;
 import org.jelly.lang.data.ConsList;
 import org.jelly.lang.data.Constants;
@@ -112,7 +111,7 @@ public class Repl {
             return;
         }
         currentLibraryName = libName;
-        currentLibrary = Registry.getLibrary(libName);
+        currentLibrary = jr.getLibraryRegistry().getLibrary(libName);
         oldEnv = jr.getEnv();
         jr.setEnv(currentLibrary.getInternalEnvironment());
         System.out.println("you are how inside library " + Printer.renderList(libName));
