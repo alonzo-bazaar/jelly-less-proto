@@ -3,18 +3,24 @@ package org.jelly.eval.library;
 import org.jelly.lang.data.ConsList;
 import org.jelly.lang.data.Symbol;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public abstract class LazyImportSet {
-    private final ConsList libraryName;
-    private final LazyImportSet parent;
+    private final List<ConsList> libraryNames;
+    private final List<LazyImportSet> parents;
     private ImportSet built = null;
 
     abstract ImportSet build(LibraryRegistry r);
 
-    public ConsList getLibraryName() {
-        return this.libraryName;
+    public List<ConsList> getLibraryNames() {
+        return this.libraryNames;
+    }
+
+    public ConsList getFirstLibraryName() {
+        return this.libraryNames.getFirst();
     }
 
     public ImportSet get(LibraryRegistry r) {
@@ -24,20 +30,28 @@ public abstract class LazyImportSet {
     }
 
     private LazyImportSet(ConsList libraryName) {
-        this.libraryName = libraryName;
-        this.parent = null;
+        this.libraryNames = new ArrayList<>();
+        libraryNames.addLast(libraryName);
+        this.parents = null;
     }
 
     private LazyImportSet(LazyImportSet parent) {
-        this.libraryName = parent.libraryName;
-        this.parent = parent;
+        this.libraryNames = parent.libraryNames;
+        this.parents = List.of(parent);
+    }
+
+    private LazyImportSet(LazyImportSet genitore1, LazyImportSet genitore2) {
+        this.libraryNames = new ArrayList<>();
+        this.libraryNames.addAll(genitore1.libraryNames);
+        this.libraryNames.addAll(genitore2.libraryNames);
+        this.parents = List.of(genitore1, genitore2);
     }
 
     public static LazyImportSet library (ConsList libraryName) {
         return new LazyImportSet(libraryName) {
             @Override
             ImportSet build(LibraryRegistry r) {
-                return ImportSet.library(r.getLibrary(libraryName), libraryName);
+                return ImportSet.library(r.getLibrary(libraryName));
             }
         };
     }
@@ -79,7 +93,7 @@ public abstract class LazyImportSet {
    }
 
    public static LazyImportSet join(LazyImportSet a, LazyImportSet b) {
-       return new LazyImportSet(a) {
+       return new LazyImportSet(a, b) {
            @Override
            ImportSet build(LibraryRegistry r) {
                return ImportSet.join(a.get(r), b.get(r));

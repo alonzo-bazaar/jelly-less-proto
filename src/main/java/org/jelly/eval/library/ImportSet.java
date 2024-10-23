@@ -9,16 +9,14 @@ import java.util.Collection;
 import java.util.Map;
 
 public class ImportSet {
-    private final ConsList libraryName;
     private final EnvFrame bindings;
 
-    private ImportSet(EnvFrame frame, ConsList name) {
+    private ImportSet(EnvFrame frame) {
         this.bindings = frame;
-        this.libraryName = name;
     }
 
-    public static ImportSet library(Library lib, ConsList libraryName) {
-        return new ImportSet(lib.getExportedBindings(), libraryName);
+    public static ImportSet library(Library lib) {
+        return new ImportSet(lib.getExportedBindings());
     }
 
     public static ImportSet only(ImportSet orig, Collection<Symbol> only) {
@@ -28,7 +26,7 @@ public class ImportSet {
                 newBinds.put(sym, orig.bindings.get(sym));
             }
         }
-        return new ImportSet(newBinds, orig.libraryName);
+        return new ImportSet(newBinds);
     }
 
     public static ImportSet except(ImportSet orig, Collection<Symbol> except) {
@@ -38,7 +36,7 @@ public class ImportSet {
                 newBinds.put(sym, orig.bindings.get(sym));
             }
         }
-        return new ImportSet(newBinds, orig.libraryName);
+        return new ImportSet(newBinds);
     }
 
     private static ImportSet prefix(ImportSet orig, String prefix) {
@@ -46,7 +44,7 @@ public class ImportSet {
         for(Symbol sym : orig.bindings.keySet()) {
             newBinds.put(new Symbol(prefix.concat(sym.name())), orig.bindings.get(sym));
         }
-        return new ImportSet(newBinds, orig.libraryName);
+        return new ImportSet(newBinds);
     }
 
     public static ImportSet prefix(ImportSet orig, Symbol sym) {
@@ -61,20 +59,16 @@ public class ImportSet {
                 case Symbol newSym -> newBinds.put(newSym, orig.bindings.get(sym));
             }
         }
-        return new ImportSet(newBinds, orig.libraryName);
+        return new ImportSet(newBinds);
     }
 
     public static ImportSet join(ImportSet a, ImportSet b) {
         // destructive, import sets used with join are not expected to be used outside of join, so it's fine
         a.bindings.putAll(b.bindings);
-        return new ImportSet(a.bindings, a.libraryName);
+        return new ImportSet(a.bindings);
     }
 
     public void importInto(Environment env) {
         env.getHead().putAll(bindings);
-    }
-
-    public ConsList getLibraryName() {
-        return libraryName;
     }
 }

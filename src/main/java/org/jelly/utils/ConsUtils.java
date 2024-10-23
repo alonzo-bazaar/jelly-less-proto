@@ -87,6 +87,7 @@ public class ConsUtils {
         while(d instanceof Cons dl) {
             res[i] = dl.getCar();
             d = dl.getCdr();
+            i++;
         }
 
         return res;

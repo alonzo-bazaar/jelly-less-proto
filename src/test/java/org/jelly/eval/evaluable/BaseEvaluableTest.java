@@ -23,7 +23,9 @@ public class BaseEvaluableTest {
     @BeforeEach
     public void refreshEnv() {
         // jr.getLibraryRegistry().reset();
-        jr = new JellyRuntime(true);
+        jr = new JellyRuntime();
+        jr.evalString("(import (jelly functional))");
+        jr.evalString("(import (jelly list base))");
     }
 
     @AfterEach

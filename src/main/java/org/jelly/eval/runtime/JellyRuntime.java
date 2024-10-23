@@ -21,6 +21,7 @@ import org.jelly.eval.errors.IncorrectTypeException;
 import org.jelly.eval.library.Library;
 import org.jelly.eval.library.LibraryRegistry;
 import org.jelly.eval.runtime.error.JellyError;
+import org.jelly.eval.runtime.repl.Printer;
 import org.jelly.lang.data.*;
 import org.jelly.lang.errors.CompilationError;
 
@@ -48,32 +49,35 @@ public class JellyRuntime {
     private Path cwd = Paths.get(System.getProperty("user.dir"));
     private Environment env = buildInitialEnvironment().setRuntime(this);
     private final LibraryRegistry registry = new LibraryRegistry(this);
+    private final List<Path> loadPath = new ArrayList<>();
 
     public JellyRuntime() {
-        loadStandardLibrary();
+        loadPath.addLast(getStdLibRootPath());
+        loadrc();
     }
 
-    public JellyRuntime(boolean loadMiniStd) {
-        if(loadMiniStd) {
-            loadMiniStandardLibrary();
-        }
-        else {
-            loadStandardLibrary();
-        }
+    public List<Path> getLoadPath() {
+        return loadPath;
+    }
+    public void addToLoadPath(Path p) {
+        loadPath.addLast(p);
+    }
+    public boolean removeFromLoadPath(Path p) {
+        return loadPath.remove(p);
     }
 
     public LibraryRegistry getLibraryRegistry() {
         return this.registry;
     }
 
-    private void loadStandardLibraryFile (String filename) {
+    public Path getStdLibRootPath() {
         Path home = Paths.get(System.getProperty("user.home"));
         // TODO magari falla funzionare un po' meglio
         // TODO comunque non si installa in automatico sto file, quindi eh...
-        String windowsPath = "\\AppData\\Roaming\\jelly\\" + filename;
-        String unixPath = ".local/lib/jelly/" + filename;
+        String windowsPath = "\\AppData\\Roaming\\jelly\\";
+        String unixPath = ".local/lib/jelly/";
 
-        Path stdLibPath = switch(OsUtils.getOs()) {
+        return switch(OsUtils.getOs()) {
             case OsUtils.OSType.Linux, OsUtils.OSType.MacOS -> home.resolve(unixPath);
             case OsUtils.OSType.Windows -> home.resolve(windowsPath);
             case OsUtils.OSType.Other -> {
@@ -83,6 +87,10 @@ public class JellyRuntime {
                 yield home.resolve(unixPath);
             }
         };
+    }
+
+    private void loadStandardLibraryFile (String filename) {
+        Path stdLibPath = getStdLibRootPath().resolve(filename);
 
         try {
             evalFile(stdLibPath.toFile());
@@ -91,12 +99,8 @@ public class JellyRuntime {
         }
     }
 
-    private void loadStandardLibrary () {
+    private void loadrc() {
         loadStandardLibraryFile("jellyrc.scm");
-    }
-
-    private void loadMiniStandardLibrary() {
-        loadStandardLibraryFile("testrc.scm");
     }
 
     public Object evalExpr(Object le) throws CompilationError {
@@ -360,7 +364,7 @@ public class JellyRuntime {
 
         env.define(new Symbol("display"), (Procedure) values -> {
             Utils.ensureSizeExactly("display", 1, values);
-            System.out.print(values.getFirst());
+            System.out.print(Printer.render(values.getFirst()));
             return Constants.NIL;
         });
 
@@ -577,6 +581,35 @@ public class JellyRuntime {
                 return ((Class<?>)values.get(0)).getField((String)values.get(1)).get(null);
             } catch(Throwable t) {
                 throw new JellyError("fieldStatic call failed", t);
+            }
+        });
+
+        env.define(new Symbol ("getLoadPath"), (Procedure) values -> {
+            try {
+                Utils.ensureSizeExactly("getLoadPath", 0, values);
+                return this.loadPath;
+            } catch(Throwable t) {
+                throw new JellyError("call to getLoadPath failed", t);
+            }
+        });
+        env.define(new Symbol("loadPathAdd"), (Procedure) values -> {
+            try {
+                Utils.ensureSizeExactly("loadPathAdd", 1 ,values);
+                Utils.ensureSingleOfType("loadPathAdd", 0, Path.class, values);
+                this.addToLoadPath((Path)values.getFirst());
+                return values.getFirst();
+            } catch(Throwable t) {
+                throw new JellyError("call to loadPathAdd failed", t);
+            }
+        });
+
+        env.define(new Symbol("loadPathRemove"), (Procedure) values -> {
+            try {
+                Utils.ensureSizeExactly("loadPathRemove", 1 ,values);
+                Utils.ensureSingleOfType("loadPathRemove", 0, Path.class, values);
+                return this.removeFromLoadPath((Path)values.getFirst());
+            } catch(Throwable t) {
+                throw new JellyError("call to loadPathRemove failed", t);
             }
         });
 
